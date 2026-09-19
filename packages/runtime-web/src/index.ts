@@ -121,6 +121,15 @@ export interface WebExecutionContext {
   readonly dispose?: () => import("@arc/core").MaybePromise<void>
 }
 
+const TRACEPARENT_PATTERN = /^00-[0-9a-f]{32}-[0-9a-f]{16}-[0-9a-f]{2}$/i
+
+function requestTraceContext(request: Request): import("@arc/core").TraceContext | undefined {
+  const traceparent = request.headers.get("traceparent")
+  if (!traceparent || !TRACEPARENT_PATTERN.test(traceparent)) return undefined
+  const tracestate = request.headers.get("tracestate")
+  return { traceparent: traceparent.toLowerCase(), ...(tracestate ? { tracestate } : {}) }
+}
+
 export interface WebRuntimeOptions {
   readonly onError?: (error: unknown) => void
   readonly tracer?: ArcTracer
@@ -139,6 +148,7 @@ export function createWebRuntime<ExecutionContext extends WebExecutionContext = 
     async fetch(request: Request, context?: ExecutionContext): Promise<Response> {
       try {
         return await (async () => {
+      const propagatedTraceContext = requestTraceContext(request)
       let built
       try {
         built = buildApplication(application, { providers: context?.providers ?? [], allowMissingCapabilities: true })
@@ -220,7 +230,8 @@ export function createWebRuntime<ExecutionContext extends WebExecutionContext = 
               version: definition.version,
               payload: validatedPayload,
               createdAt: new Date().toISOString(),
-              ...(idempotencyKey ? { idempotencyKey } : {})
+              ...(idempotencyKey ? { idempotencyKey } : {}),
+              ...(propagatedTraceContext ? { traceContext: propagatedTraceContext } : {})
             }
             await transport.send(message, dispatchOptions.delaySeconds === undefined ? undefined : { delaySeconds: dispatchOptions.delaySeconds })
             return id
