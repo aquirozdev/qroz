@@ -19,8 +19,8 @@ export class NonRetryableJobError extends Error {
 }
 
 export type JobExecutionOutcome =
-  | { readonly action: "ack"; readonly job: string; readonly version: number }
-  | { readonly action: "retry"; readonly job: string; readonly version: number; readonly delaySeconds?: number; readonly error: unknown }
+  | { readonly action: "ack"; readonly job: string; readonly version: number; readonly duplicate?: boolean }
+  | { readonly action: "retry"; readonly job: string; readonly version: number; readonly delaySeconds?: number; readonly reason?: "handler-error" | "idempotency-in-progress" | "idempotency-completion-failed"; readonly error?: unknown }
   | { readonly action: "discard"; readonly reason: "invalid-envelope" | "unknown-job" | "invalid-payload" | "non-retryable"; readonly error?: unknown }
 
 export interface ExecuteJobOptions {
@@ -105,24 +105,66 @@ export async function executeJobEnvelope(
     return { action: "discard", reason: "invalid-payload", error: mapped }
   }
 
+  const idempotency = entry.definition.idempotency
+  const allowedCapabilities = [
+    ...(entry.definition.requires ?? []),
+    ...(idempotency ? [idempotency.store] : [])
+  ]
+  const resolver = createCapabilityResolver(built, allowedCapabilities, owner)
+  for (const target of allowedCapabilities) resolver.use(target)
+
+  let idempotencyClaim: { key: string; token: string; store: import("@arc/core").JobIdempotencyStore } | undefined
+  if (idempotency) {
+    const store = resolver.use(idempotency.store)
+    const key = envelope.idempotencyKey ?? idempotency.key(input)
+    const claim = await store.claim(key, { leaseSeconds: idempotency.leaseSeconds ?? 60 })
+    if (!claim.acquired) {
+      if (claim.state === "completed") {
+        return { action: "ack", job: envelope.job, version: envelope.version, duplicate: true }
+      }
+      return {
+        action: "retry",
+        job: envelope.job,
+        version: envelope.version,
+        reason: "idempotency-in-progress",
+        ...(claim.retryAfterSeconds === undefined ? {} : { delaySeconds: claim.retryAfterSeconds })
+      }
+    }
+    idempotencyClaim = { key, token: claim.token, store }
+  }
+
   try {
-    const resolver = createCapabilityResolver(built, entry.definition.requires ?? [], owner)
-    for (const target of entry.definition.requires ?? []) resolver.use(target)
     const tracer = options.tracer ?? noopTracer
     await tracer.enterSpan("arc.job", {
       "arc.app": application.name,
       "arc.module": entry.moduleName,
       "arc.job": entry.definition.name,
       "arc.job.version": entry.definition.version,
-      "arc.job.attempts": options.attempts ?? 1
+      "arc.job.attempts": options.attempts ?? 1,
+      ...(idempotencyClaim ? { "arc.job.idempotent": true } : {})
     }, async () => entry.definition.handler(input, {
       ...resolver,
       messageId: envelope.id,
       attempts: options.attempts ?? 1,
       ...(envelope.idempotencyKey ? { idempotencyKey: envelope.idempotencyKey } : {})
     }))
+
+    if (idempotencyClaim) {
+      const completed = await idempotencyClaim.store.complete(
+        idempotencyClaim.key,
+        idempotencyClaim.token,
+        entry.definition.idempotency?.ttlSeconds === undefined ? undefined : { ttlSeconds: entry.definition.idempotency.ttlSeconds }
+      )
+      if (!completed) {
+        const error = new Error(`Lost idempotency claim for '${idempotencyClaim.key}' before completion`)
+        options.onError?.(error)
+        return { action: "retry", job: envelope.job, version: envelope.version, reason: "idempotency-completion-failed", error }
+      }
+    }
+
     return { action: "ack", job: envelope.job, version: envelope.version }
   } catch (error) {
+    if (idempotencyClaim) await idempotencyClaim.store.release(idempotencyClaim.key, idempotencyClaim.token)
     options.onError?.(error)
     if (error instanceof NonRetryableJobError) {
       return { action: "discard", reason: "non-retryable", error }
@@ -132,6 +174,7 @@ export async function executeJobEnvelope(
       action: "retry",
       job: envelope.job,
       version: envelope.version,
+      reason: "handler-error",
       ...(delaySeconds === undefined ? {} : { delaySeconds }),
       error
     }

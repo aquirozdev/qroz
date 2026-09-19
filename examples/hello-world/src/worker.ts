@@ -4,7 +4,9 @@ import { createCloudflareJobConsumer } from "@arc/jobs-cloudflare"
 import { createR2Storage, type R2BucketLike } from "@arc/storage-r2"
 import { createCloudflareQueue, type CloudflareQueueBindingLike } from "@arc/queue-cloudflare"
 import { provideQueue } from "@arc/queue"
-import { notificationDeliverySink, notificationJobsQueue, notificationsQueue, type NotificationMessage } from "./notifications.js"
+import { provideIdempotencyStore } from "@arc/idempotency"
+import { createDurableObjectIdempotencyStore, type DurableObjectNamespaceLike } from "@arc/idempotency-cloudflare-do"
+import { notificationDeliverySink, notificationIdempotency, notificationJobsQueue, notificationsQueue, type NotificationMessage } from "./notifications.js"
 import type { JobEnvelope } from "@arc/core"
 import { application, audit, repository } from "./app.js"
 import { filesStorage } from "./files.js"
@@ -14,6 +16,7 @@ export interface Env {
   FILES: R2BucketLike
   NOTIFICATIONS: CloudflareQueueBindingLike<NotificationMessage>
   JOBS: CloudflareQueueBindingLike<JobEnvelope>
+  IDEMPOTENCY: DurableObjectNamespaceLike
 }
 
 const cloudflareApplication = withProviders(application, [
@@ -35,6 +38,7 @@ const jobs = createCloudflareJobConsumer<Env>(cloudflareApplication, {
   providers(env) {
     return [
       provideQueue(notificationJobsQueue, createCloudflareQueue(env.JOBS)),
+      provideIdempotencyStore(notificationIdempotency, createDurableObjectIdempotencyStore(env.IDEMPOTENCY)),
       provide(notificationDeliverySink, {
         async deliver(message: string) {
           console.log("deliver notification", message)

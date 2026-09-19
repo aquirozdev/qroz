@@ -1,6 +1,6 @@
 {
   "name": "@arc/example-hello-world",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "private": true,
   "type": "module",
   "dependencies": {
@@ -15,6 +15,9 @@
     "@arc/queue-cloudflare": "file:../../packages/queue-cloudflare",
     "@arc/jobs": "file:../../packages/jobs",
     "@arc/jobs-memory": "file:../../packages/jobs-memory",
-    "@arc/jobs-cloudflare": "file:../../packages/jobs-cloudflare"
+    "@arc/jobs-cloudflare": "file:../../packages/jobs-cloudflare",
+    "@arc/idempotency": "file:../../packages/idempotency",
+    "@arc/idempotency-memory": "file:../../packages/idempotency-memory",
+    "@arc/idempotency-cloudflare-do": "file:../../packages/idempotency-cloudflare-do"
   }
 }

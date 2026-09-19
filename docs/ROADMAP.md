@@ -56,7 +56,7 @@ Delivered:
 
 Open gate:
 
-- run the shared runtime suite inside real `workerd` via Wrangler / Cloudflare Vitest plugin.
+- run the shared runtime suite inside real `workerd` via Wrangler / Cloudflare Vitest plugin. A pinned GitHub Actions `workerd-smoke` job now exists; it must pass remotely before the gate is closed.
 
 After that:
 
@@ -135,9 +135,20 @@ Delivered in v0.4:
 - job semantic tracing;
 - Cloudflare example DLQ/max-retry configuration.
 
+Delivered in v0.5:
+
+- first-class idempotency policy on jobs;
+- atomic claim/lease/completion contract;
+- in-memory implementation;
+- Cloudflare Durable Object structural implementation;
+- completed duplicate acknowledgement without handler execution;
+- active-lease retry and failed-handler release;
+- Application Graph v3 idempotency metadata.
+
 Still required before calling jobs complete:
 
-- durable idempotency claim/lease store (current key is metadata only);
+- real workerd Durable Object integration test;
+- lease heartbeat/extension for genuinely long-running jobs;
 - trace-context propagation inside envelopes;
 - deployment-manifest representation for max retries/DLQ/batching;
 - `workerd` integration test;
@@ -223,6 +234,8 @@ Already delivered:
 
 Next:
 
+- integrate the official MCP TypeScript SDK v2 (`@modelcontextprotocol/server`) using the 2026-07-28 protocol revision;
+- expose read-only `inspect/context/diff/explain` tools over the existing Application Graph;
 - formal JSON Schemas for CLI outputs;
 - context-size budgets and measurements;
 - MCP read-only server backed by Application Graph;

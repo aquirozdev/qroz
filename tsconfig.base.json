@@ -65,6 +65,15 @@
       ],
       "@arc/telemetry-cloudflare": [
         "packages/telemetry-cloudflare/src/index.ts"
+      ],
+      "@arc/idempotency": [
+        "packages/idempotency/src/index.ts"
+      ],
+      "@arc/idempotency-memory": [
+        "packages/idempotency-memory/src/index.ts"
+      ],
+      "@arc/idempotency-cloudflare-do": [
+        "packages/idempotency-cloudflare-do/src/index.ts"
       ]
     }
   }

@@ -208,7 +208,7 @@ export function createWebRuntime<ExecutionContext extends WebExecutionContext = 
             const resolver = createCapabilityResolver(built, [definition.transport], owner)
             const transport = resolver.use(definition.transport)
             const id = dispatchOptions.id ?? crypto.randomUUID()
-            const idempotencyKey = definition.idempotencyKey?.(validatedPayload)
+            const idempotencyKey = definition.idempotency?.key(validatedPayload)
             const message = {
               kind: "arc.job-message" as const,
               schemaVersion: 1 as const,
