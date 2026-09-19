@@ -1,0 +1,19 @@
+{
+  "name": "arc-framework-poc",
+  "private": true,
+  "version": "0.4.0",
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "examples/*"
+  ],
+  "scripts": {
+    "clean": "find packages examples -type d -name dist -prune -exec rm -rf {} +",
+    "build": "tsc -b",
+    "typecheck": "tsc -b --pretty false",
+    "test": "npm run build && node --test examples/hello-world/test/*.test.mjs",
+    "verify": "npm run clean && npm run typecheck && npm test",
+    "inspect": "npm run build && node packages/cli/bin/arc.mjs inspect examples/hello-world/dist/app.js",
+    "inspect:json": "npm run build && node packages/cli/bin/arc.mjs inspect examples/hello-world/dist/app.js --json"
+  }
+}

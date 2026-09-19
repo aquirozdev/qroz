@@ -1,0 +1,235 @@
+{
+  "schemaVersion": 2,
+  "name": "example",
+  "capabilities": [
+    {
+      "name": "users.repository",
+      "configured": true
+    },
+    {
+      "name": "audit.sink",
+      "configured": true
+    },
+    {
+      "name": "storage.files",
+      "configured": true,
+      "kind": "resource",
+      "resourceType": "object-storage",
+      "features": [
+        "get",
+        "head",
+        "put",
+        "delete",
+        "streaming"
+      ]
+    },
+    {
+      "name": "queue.notifications",
+      "configured": true,
+      "kind": "resource",
+      "resourceType": "message-queue",
+      "features": [
+        "send",
+        "delay"
+      ]
+    },
+    {
+      "name": "queue.jobs.notifications",
+      "configured": true,
+      "kind": "resource",
+      "resourceType": "message-queue",
+      "features": [
+        "send",
+        "delay"
+      ]
+    },
+    {
+      "name": "notifications.delivery",
+      "configured": true
+    }
+  ],
+  "providers": [
+    {
+      "capability": "users.repository"
+    },
+    {
+      "capability": "audit.sink"
+    },
+    {
+      "capability": "storage.files"
+    },
+    {
+      "capability": "queue.notifications"
+    },
+    {
+      "capability": "queue.jobs.notifications"
+    },
+    {
+      "capability": "notifications.delivery"
+    }
+  ],
+  "modules": [
+    {
+      "name": "users",
+      "endpoints": [
+        {
+          "name": "getUser",
+          "method": "GET",
+          "path": "/users/:id",
+          "status": 200,
+          "requires": [
+            "users.repository"
+          ],
+          "emits": [],
+          "dispatches": [],
+          "hasParamsSchema": true,
+          "hasBodySchema": false,
+          "hasQuerySchema": false,
+          "hasOutputSchema": true
+        },
+        {
+          "name": "createUser",
+          "method": "POST",
+          "path": "/users",
+          "status": 201,
+          "requires": [
+            "users.repository"
+          ],
+          "emits": [
+            {
+              "event": "user.created",
+              "version": 1
+            }
+          ],
+          "dispatches": [],
+          "hasParamsSchema": false,
+          "hasBodySchema": true,
+          "hasQuerySchema": false,
+          "hasOutputSchema": true
+        },
+        {
+          "name": "searchUsers",
+          "method": "GET",
+          "path": "/users",
+          "status": 200,
+          "requires": [
+            "users.repository"
+          ],
+          "emits": [],
+          "dispatches": [],
+          "hasParamsSchema": false,
+          "hasBodySchema": false,
+          "hasQuerySchema": true,
+          "hasOutputSchema": true
+        }
+      ],
+      "listeners": [
+        {
+          "name": "auditUserCreated",
+          "event": "user.created",
+          "version": 1,
+          "requires": [
+            "audit.sink"
+          ],
+          "emits": [],
+          "dispatches": []
+        }
+      ],
+      "jobs": []
+    },
+    {
+      "name": "files",
+      "endpoints": [
+        {
+          "name": "putFile",
+          "method": "POST",
+          "path": "/files",
+          "status": 201,
+          "requires": [
+            "storage.files"
+          ],
+          "emits": [],
+          "dispatches": [],
+          "hasParamsSchema": false,
+          "hasBodySchema": true,
+          "hasQuerySchema": false,
+          "hasOutputSchema": true
+        },
+        {
+          "name": "getFile",
+          "method": "GET",
+          "path": "/files/:key",
+          "status": 200,
+          "requires": [
+            "storage.files"
+          ],
+          "emits": [],
+          "dispatches": [],
+          "hasParamsSchema": true,
+          "hasBodySchema": false,
+          "hasQuerySchema": false,
+          "hasOutputSchema": true
+        }
+      ],
+      "listeners": [],
+      "jobs": []
+    },
+    {
+      "name": "notifications",
+      "endpoints": [
+        {
+          "name": "enqueueNotification",
+          "method": "POST",
+          "path": "/notifications",
+          "status": 200,
+          "requires": [
+            "queue.notifications"
+          ],
+          "emits": [],
+          "dispatches": [],
+          "hasParamsSchema": false,
+          "hasBodySchema": true,
+          "hasQuerySchema": false,
+          "hasOutputSchema": true
+        },
+        {
+          "name": "dispatchNotification",
+          "method": "POST",
+          "path": "/notification-jobs",
+          "status": 200,
+          "requires": [],
+          "emits": [],
+          "dispatches": [
+            {
+              "job": "notifications.deliver",
+              "version": 1
+            }
+          ],
+          "hasParamsSchema": false,
+          "hasBodySchema": true,
+          "hasQuerySchema": false,
+          "hasOutputSchema": true
+        }
+      ],
+      "listeners": [],
+      "jobs": [
+        {
+          "name": "DeliverNotification",
+          "job": "notifications.deliver",
+          "version": 1,
+          "transport": "queue.jobs.notifications",
+          "requires": [
+            "notifications.delivery"
+          ],
+          "retry": {
+            "strategy": "exponential",
+            "delaySeconds": 5,
+            "maxDelaySeconds": 60
+          },
+          "idempotent": true,
+          "hasInputSchema": true
+        }
+      ]
+    }
+  ]
+}

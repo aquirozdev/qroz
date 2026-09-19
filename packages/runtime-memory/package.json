@@ -1,0 +1,21 @@
+{
+  "name": "@arc/runtime-memory",
+  "version": "0.4.0",
+  "type": "module",
+  "dependencies": {
+    "@arc/core": "file:../core",
+    "@arc/runtime-web": "file:../runtime-web"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b"
+  }
+}

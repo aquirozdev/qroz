@@ -1,0 +1,37 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "arc-example",
+  "main": "src/worker.ts",
+  "compatibility_date": "2026-09-18",
+  "observability": {
+    "logs": { "enabled": true },
+    "traces": { "enabled": true, "head_sampling_rate": 1 }
+  },
+  "r2_buckets": [
+    {
+      "binding": "FILES",
+      "bucket_name": "arc-example-files"
+    }
+  ],
+  "queues": {
+    "producers": [
+      {
+        "binding": "NOTIFICATIONS",
+        "queue": "arc-example-notifications"
+      },
+      {
+        "binding": "JOBS",
+        "queue": "arc-example-jobs"
+      }
+    ],
+    "consumers": [
+      {
+        "queue": "arc-example-jobs",
+        "max_batch_size": 10,
+        "max_batch_timeout": 5,
+        "max_retries": 3,
+        "dead_letter_queue": "arc-example-jobs-dlq"
+      }
+    ]
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "files": [],
+  "references": [
+    {
+      "path": "./packages/core"
+    },
+    {
+      "path": "./packages/runtime-web"
+    },
+    {
+      "path": "./packages/runtime-memory"
+    },
+    {
+      "path": "./packages/runtime-cloudflare"
+    },
+    {
+      "path": "./packages/storage"
+    },
+    {
+      "path": "./packages/storage-memory"
+    },
+    {
+      "path": "./packages/storage-r2"
+    },
+    {
+      "path": "./packages/testing"
+    },
+    {
+      "path": "./packages/queue"
+    },
+    {
+      "path": "./packages/queue-memory"
+    },
+    {
+      "path": "./packages/queue-cloudflare"
+    },
+    {
+      "path": "./examples/hello-world"
+    },
+    {
+      "path": "./packages/jobs"
+    },
+    {
+      "path": "./packages/jobs-memory"
+    },
+    {
+      "path": "./packages/jobs-cloudflare"
+    },
+    {
+      "path": "./packages/telemetry"
+    },
+    {
+      "path": "./packages/telemetry-cloudflare"
+    }
+  ]
+}

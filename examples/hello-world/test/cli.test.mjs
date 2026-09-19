@@ -1,0 +1,62 @@
+import test from "node:test"
+import assert from "node:assert/strict"
+import { execFileSync } from "node:child_process"
+
+const cli = "packages/cli/bin/arc.mjs"
+const app = "examples/hello-world/dist/app.js"
+
+test("CLI emits deterministic JSON application graph", () => {
+  const output = execFileSync(process.execPath, [cli, "inspect", app, "--json"], {
+    cwd: new URL("../../..", import.meta.url),
+    encoding: "utf8"
+  })
+  const graph = JSON.parse(output)
+  assert.equal(graph.schemaVersion, 2)
+  assert.equal(graph.name, "example")
+  assert.equal(graph.modules[0].endpoints[0].path, "/users/:id")
+  assert.deepEqual(graph.modules[0].endpoints[0].requires, ["users.repository"])
+})
+
+test("CLI validates an application", () => {
+  const output = execFileSync(process.execPath, [cli, "validate", app, "--json"], {
+    cwd: new URL("../../..", import.meta.url),
+    encoding: "utf8"
+  })
+  assert.deepEqual(JSON.parse(output), { ok: true, app: "example" })
+})
+
+
+test("CLI explains stable framework error codes for humans and agents", () => {
+  const output = execFileSync(process.execPath, [cli, "explain", "ARC1004", "--json"], {
+    cwd: new URL("../../..", import.meta.url),
+    encoding: "utf8"
+  })
+  const explanation = JSON.parse(output)
+  assert.equal(explanation.code, "ARC1004")
+  assert.match(explanation.remediation, /Provide the required capability/)
+})
+
+test("CLI context returns a compact semantic module view", () => {
+  const output = execFileSync(process.execPath, [cli, "context", app, "users", "--json"], {
+    cwd: new URL("../../..", import.meta.url),
+    encoding: "utf8"
+  })
+  const context = JSON.parse(output)
+  assert.equal(context.app, "example")
+  assert.equal(context.module.name, "users")
+  assert.deepEqual(context.capabilities.map((item) => item.name), ["users.repository", "audit.sink"])
+  assert.deepEqual(context.events.emits, [{ event: "user.created", version: 1, producer: "createUser", producerKind: "endpoint" }])
+  assert.deepEqual(context.jobs.definitions, [])
+})
+
+test("CLI diff compares applications semantically", () => {
+  const fixture = "examples/hello-world/dist-diff-fixture.mjs"
+  const output = execFileSync(process.execPath, [cli, "diff", app, fixture, "--json"], {
+    cwd: new URL("../../..", import.meta.url),
+    encoding: "utf8"
+  })
+  const diff = JSON.parse(output)
+  assert.ok(diff.routes.added.includes("GET /health"))
+  assert.ok(diff.routes.removed.includes("GET /users/:id"))
+  assert.ok(diff.capabilities.removed.includes("users.repository"))
+})

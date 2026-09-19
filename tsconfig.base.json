@@ -1,0 +1,71 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "skipLibCheck": true,
+    "verbatimModuleSyntax": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@arc/core": [
+        "packages/core/src/index.ts"
+      ],
+      "@arc/runtime-web": [
+        "packages/runtime-web/src/index.ts"
+      ],
+      "@arc/runtime-memory": [
+        "packages/runtime-memory/src/index.ts"
+      ],
+      "@arc/runtime-cloudflare": [
+        "packages/runtime-cloudflare/src/index.ts"
+      ],
+      "@arc/testing": [
+        "packages/testing/src/index.ts"
+      ],
+      "@arc/storage": [
+        "packages/storage/src/index.ts"
+      ],
+      "@arc/storage-memory": [
+        "packages/storage-memory/src/index.ts"
+      ],
+      "@arc/storage-r2": [
+        "packages/storage-r2/src/index.ts"
+      ],
+      "@arc/queue": [
+        "packages/queue/src/index.ts"
+      ],
+      "@arc/queue-memory": [
+        "packages/queue-memory/src/index.ts"
+      ],
+      "@arc/queue-cloudflare": [
+        "packages/queue-cloudflare/src/index.ts"
+      ],
+      "@arc/jobs": [
+        "packages/jobs/src/index.ts"
+      ],
+      "@arc/jobs-memory": [
+        "packages/jobs-memory/src/index.ts"
+      ],
+      "@arc/jobs-cloudflare": [
+        "packages/jobs-cloudflare/src/index.ts"
+      ],
+      "@arc/telemetry": [
+        "packages/telemetry/src/index.ts"
+      ],
+      "@arc/telemetry-cloudflare": [
+        "packages/telemetry-cloudflare/src/index.ts"
+      ]
+    }
+  }
+}

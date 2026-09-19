@@ -1,0 +1,22 @@
+{
+  "name": "@arc/jobs-memory",
+  "version": "0.4.0",
+  "type": "module",
+  "dependencies": {
+    "@arc/core": "file:../core",
+    "@arc/jobs": "file:../jobs",
+    "@arc/queue-memory": "file:../queue-memory"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b"
+  }
+}

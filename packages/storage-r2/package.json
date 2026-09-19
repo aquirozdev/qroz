@@ -1,0 +1,20 @@
+{
+  "name": "@arc/storage-r2",
+  "version": "0.4.0",
+  "type": "module",
+  "dependencies": {
+    "@arc/storage": "file:../storage"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b"
+  }
+}
