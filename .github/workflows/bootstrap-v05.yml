@@ -29,10 +29,19 @@ jobs:
           cat .arc-upload/part.* | base64 --decode > /tmp/arc-v05-diff.tgz
           tar -xzf /tmp/arc-v05-diff.tgz
 
-          rm -f             packages/storage-memory/src/index.d.ts             packages/storage-memory/src/index.d.ts.map             packages/storage-memory/src/index.js             packages/storage-memory/src/index.js.map             packages/storage/src/index.d.ts             packages/storage/src/index.d.ts.map             packages/storage/src/index.js             packages/storage/src/index.js.map
+          rm -f \
+            packages/storage-memory/src/index.d.ts \
+            packages/storage-memory/src/index.d.ts.map \
+            packages/storage-memory/src/index.js \
+            packages/storage-memory/src/index.js.map \
+            packages/storage/src/index.d.ts \
+            packages/storage/src/index.d.ts.map \
+            packages/storage/src/index.js \
+            packages/storage/src/index.js.map
 
           rm -rf .arc-upload
-          rm -f .github/workflows/bootstrap-v05.yml
+          # Workflow files are managed by the authenticated connector after source publication.
+          rm -f .github/workflows/ci.yml
 
       - name: Install and verify
         shell: bash
@@ -47,7 +56,10 @@ jobs:
         run: |
           set -euo pipefail
           npm run build
-          ./node_modules/.bin/wrangler dev             --config examples/hello-world/wrangler.jsonc             --local             --port 8787 > /tmp/arc-wrangler.log 2>&1 &
+          ./node_modules/.bin/wrangler dev \
+            --config examples/hello-world/wrangler.jsonc \
+            --local \
+            --port 8787 > /tmp/arc-wrangler.log 2>&1 &
           WRANGLER_PID=$!
           trap 'kill "$WRANGLER_PID" 2>/dev/null || true' EXIT
 
@@ -62,12 +74,12 @@ jobs:
           cat /tmp/arc-wrangler.log
           exit 1
 
-      - name: Commit verified v0.5
+      - name: Commit verified v0.5 source
         shell: bash
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          git commit -m "feat: add durable job idempotency and CI gates"
+          git commit -m "feat: add durable job idempotency"
           git push origin HEAD:feat/v0.5-durable-idempotency
