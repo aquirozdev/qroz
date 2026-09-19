@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { resolve } from "node:path"
 import { pathToFileURL } from "node:url"
-import { buildApplication, explainError, inspect } from "@arc/core"
+import { buildApplication, explainError, inspect, inspectModuleContext } from "@arc/core"
 
 const args = process.argv.slice(2)
 const command = args[0]
@@ -20,37 +20,6 @@ async function loadApplication(appPath) {
   const application = loaded.default
   if (!application || application.kind !== "arc.app") fail(`module '${appPath}' default export is not an Arc application`)
   return application
-}
-
-function moduleContext(graph, moduleName) {
-  const mod = graph.modules.find((item) => item.name === moduleName)
-  if (!mod) fail(`module '${moduleName}' does not exist in '${graph.name}'`)
-  const requiredNames = new Set([
-    ...mod.endpoints.flatMap((endpoint) => endpoint.requires),
-    ...mod.listeners.flatMap((listener) => listener.requires),
-    ...mod.jobs.flatMap((job) => [job.transport, ...job.requires])
-  ])
-  const capabilities = graph.capabilities.filter((item) => requiredNames.has(item.name))
-  return {
-    schemaVersion: 1,
-    app: graph.name,
-    module: mod,
-    capabilities,
-    events: {
-      consumes: mod.listeners.map((listener) => ({ event: listener.event, version: listener.version, listener: listener.name })),
-      emits: [
-        ...mod.endpoints.flatMap((endpoint) => endpoint.emits.map((event) => ({ ...event, producer: endpoint.name, producerKind: "endpoint" }))),
-        ...mod.listeners.flatMap((listener) => listener.emits.map((event) => ({ ...event, producer: listener.name, producerKind: "listener" })))
-      ]
-    },
-    jobs: {
-      definitions: mod.jobs,
-      dispatches: [
-        ...mod.endpoints.flatMap((endpoint) => endpoint.dispatches.map((job) => ({ ...job, producer: endpoint.name, producerKind: "endpoint" }))),
-        ...mod.listeners.flatMap((listener) => listener.dispatches.map((job) => ({ ...job, producer: listener.name, producerKind: "listener" })))
-      ]
-    }
-  }
 }
 
 function indexBy(items, key) {
@@ -137,7 +106,8 @@ if (command === "context") {
   try {
     const application = await loadApplication(positional[0])
     buildApplication(application)
-    const context = moduleContext(inspect(application), positional[1])
+    const context = inspectModuleContext(application, positional[1])
+    if (!context) fail(`module '${positional[1]}' does not exist in '${application.name}'`)
     console.log(json ? JSON.stringify(context, null, 2) : printContext(context) ?? "")
     process.exit(0)
   } catch (error) {
