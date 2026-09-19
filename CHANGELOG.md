@@ -1,5 +1,20 @@
 # Changelog
 
+## v0.5.0 — durable idempotency and CI gates
+
+- added first-class lease-based job idempotency policy;
+- added atomic claim/complete/release store contract;
+- added Memory idempotency implementation;
+- added Cloudflare Durable Object structural adapter and storage-side logic;
+- duplicate completed jobs now ack without handler re-execution;
+- active leases defer duplicates using queue retry;
+- failed handlers release claims for subsequent retry;
+- Application Graph bumped to schema v3 with idempotency metadata;
+- added 5 idempotency/DO tests, bringing local suite to 48/48;
+- removed generated build artifacts accidentally committed inside source folders;
+- added GitHub Actions verification and pinned Wrangler/workerd smoke test;
+- documented current MCP v2, Cloudflare Durable Object and idempotency decisions.
+
 ## 0.4.0 — distributed execution research release
 
 ### Added

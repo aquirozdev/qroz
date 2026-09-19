@@ -42,6 +42,15 @@
     },
     {
       "path": "../../packages/jobs-cloudflare"
+    },
+    {
+      "path": "../../packages/idempotency"
+    },
+    {
+      "path": "../../packages/idempotency-memory"
+    },
+    {
+      "path": "../../packages/idempotency-cloudflare-do"
     }
   ],
   "include": [

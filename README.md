@@ -6,7 +6,7 @@ Arc is an executable research prototype for a portable TypeScript application fr
 
 The goal is not “Laravel rewritten in TypeScript”. The goal is Laravel-level application ergonomics with explicit architecture, Web Standards portability, typed capabilities, a semantic Application Graph, deterministic tooling and provider-specific escape hatches.
 
-## Current status — v0.4 distributed-execution research release
+## Current status — v0.5 durable-idempotency research release
 
 The repository now proves more than a router:
 
@@ -19,11 +19,14 @@ The repository now proves more than a router:
 - portable application definition separated from runtime composition via `withProviders()`;
 - typed capabilities and strict `requires` enforcement;
 - explicit event producers via `emits`, with runtime enforcement;
-- deterministic Application Graph v2 with job definitions/producers;
+- deterministic Application Graph v3 with job definitions/producers;
 - semantic resource metadata in the graph;
 - Object Storage capability with Memory + Cloudflare R2 adapters;
 - Queue producer capability with feature detection and Memory + Cloudflare Queues adapters;
 - first-class typed/versioned `job()` definitions and `dispatches`;
+- lease-based durable job idempotency contract with explicit store capability;
+- Memory + Cloudflare Durable Object idempotency adapters;
+- completed duplicate suppression and active-lease retry semantics;
 - Memory + Cloudflare job consumers with per-message ack/retry semantics;
 - fixed/exponential retry delays and explicit non-retryable failures;
 - poison-message handling for invalid envelopes/payloads/unknown versions;
@@ -42,7 +45,7 @@ The repository now proves more than a router:
 ```text
 TypeScript strict build     PASS
 npm install --offline       PASS (all current dependencies are local workspace packages)
-Full automated suite        43 / 43 PASS
+Full automated suite        48 / 48 PASS
 Memory runtime              PASS
 Cloudflare adapter          PASS (structural adapter tests)
 Memory/R2 storage contract  PASS
@@ -159,7 +162,7 @@ export const DeliverNotification = job({
 })
 ```
 
-Producers declare `dispatches: [DeliverNotification]`; undeclared dispatch fails with `ARC1009`. Jobs are visible in Application Graph v2 and semantic CLI context/diff. Delivery is intentionally modeled as at-least-once. Durable idempotency enforcement remains an explicit future gate rather than an exactly-once claim.
+Producers declare `dispatches: [DeliverNotification]`; undeclared dispatch fails with `ARC1009`. Jobs are visible in Application Graph v3 and semantic CLI context/diff. Delivery is intentionally modeled as at-least-once. Durable idempotency is now enforced through an atomic claim/lease/completion store. Arc still does not claim exactly-once execution; external side effects should reuse the same idempotency key where supported.
 
 ## Observability
 
@@ -198,6 +201,9 @@ packages/
   jobs-cloudflare/     Cloudflare Queue consumer adapter
   telemetry/           portable semantic tracing contract
   telemetry-cloudflare/ Workers custom-span bridge
+  idempotency/         typed idempotency-store capability
+  idempotency-memory/  deterministic local lease store
+  idempotency-cloudflare-do/ Durable Object structural adapter
 
 examples/
   hello-world/
@@ -233,4 +239,4 @@ docs/
 9. **Escape hatches remain reachable.** Adapters may expose `native()` where necessary.
 10. **Human DX = Agent DX.** Errors and tooling are deterministic and machine-readable.
 
-See `docs/ROADMAP.md` for the implementation sequence and remaining gates.
+See `docs/IDEMPOTENCY.md`, `docs/QUALITY-GATES.md`, and `docs/ROADMAP.md` for the current guarantees and remaining gates.

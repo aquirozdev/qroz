@@ -101,6 +101,24 @@ export interface JobEnvelope {
   readonly idempotencyKey?: string
 }
 
+export type JobIdempotencyClaim =
+  | { readonly acquired: true; readonly token: string }
+  | { readonly acquired: false; readonly state: "processing"; readonly retryAfterSeconds?: number }
+  | { readonly acquired: false; readonly state: "completed" }
+
+export interface JobIdempotencyStore {
+  claim(key: string, options: { readonly leaseSeconds: number }): Promise<JobIdempotencyClaim>
+  complete(key: string, token: string, options?: { readonly ttlSeconds?: number }): Promise<boolean>
+  release(key: string, token: string): Promise<boolean>
+}
+
+export interface JobIdempotencyPolicy<InputSchema extends StandardSchemaLike = StandardSchemaLike> {
+  readonly store: Capability<JobIdempotencyStore>
+  readonly key: (input: InferOutput<InputSchema>) => string
+  readonly leaseSeconds?: number
+  readonly ttlSeconds?: number
+}
+
 export interface JobRetryPolicy {
   readonly strategy?: "fixed" | "exponential"
   readonly delaySeconds?: number
@@ -121,7 +139,7 @@ export interface JobDefinition<InputSchema extends StandardSchemaLike = Standard
   readonly input: InputSchema
   readonly requires?: readonly Capability<any>[]
   readonly retry?: JobRetryPolicy
-  readonly idempotencyKey?: (input: InferOutput<InputSchema>) => string
+  readonly idempotency?: JobIdempotencyPolicy<InputSchema>
   readonly handler: (input: InferOutput<InputSchema>, ctx: JobExecutionContext) => MaybePromise<void>
 }
 
@@ -353,7 +371,13 @@ export function buildApplication(application: AppDefinition, options: BuildAppli
       jobKeys.add(key)
       registerCapability(item.transport, `${mod.name}.${jobName}`)
       for (const target of item.requires ?? []) registerCapability(target, `${mod.name}.${jobName}`)
-      validateRequiredCapabilities(providers, [item.transport, ...(item.requires ?? [])], `${mod.name}.${jobName}`, options.allowMissingCapabilities ?? false)
+      if (item.idempotency) registerCapability(item.idempotency.store, `${mod.name}.${jobName}`)
+      validateRequiredCapabilities(
+        providers,
+        [item.transport, ...(item.requires ?? []), ...(item.idempotency ? [item.idempotency.store] : [])],
+        `${mod.name}.${jobName}`,
+        options.allowMissingCapabilities ?? false
+      )
     }
   }
 
@@ -403,7 +427,7 @@ export function createCapabilityResolver(
 }
 
 export interface ApplicationGraph {
-  schemaVersion: 2
+  schemaVersion: 3
   name: string
   capabilities: Array<{
     name: string
@@ -443,7 +467,7 @@ export interface ApplicationGraph {
       transport: string
       requires: string[]
       retry?: JobRetryPolicy
-      idempotent: boolean
+      idempotency?: { store: string; leaseSeconds: number; ttlSeconds?: number }
       hasInputSchema: boolean
     }>
   }>
@@ -465,11 +489,12 @@ export function inspect(application: AppDefinition): ApplicationGraph {
     for (const item of Object.values(mod.jobs ?? {})) {
       capabilities.set(item.transport.id, item.transport)
       for (const target of item.requires ?? []) capabilities.set(target.id, target)
+      if (item.idempotency) capabilities.set(item.idempotency.store.id, item.idempotency.store)
     }
   }
 
   return {
-    schemaVersion: 2,
+    schemaVersion: 3,
     name: application.name,
     capabilities: [...capabilities.values()].map((target) => ({
       name: target.name,
@@ -509,7 +534,13 @@ export function inspect(application: AppDefinition): ApplicationGraph {
         transport: item.transport.name,
         requires: (item.requires ?? []).map((target) => target.name),
         ...(item.retry ? { retry: item.retry } : {}),
-        idempotent: Boolean(item.idempotencyKey),
+        ...(item.idempotency ? {
+          idempotency: {
+            store: item.idempotency.store.name,
+            leaseSeconds: item.idempotency.leaseSeconds ?? 60,
+            ...(item.idempotency.ttlSeconds === undefined ? {} : { ttlSeconds: item.idempotency.ttlSeconds })
+          }
+        } : {}),
         hasInputSchema: Boolean(item.input)
       }))
     }))

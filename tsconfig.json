@@ -35,6 +35,15 @@
       "path": "./packages/queue-cloudflare"
     },
     {
+      "path": "./packages/idempotency"
+    },
+    {
+      "path": "./packages/idempotency-memory"
+    },
+    {
+      "path": "./packages/idempotency-cloudflare-do"
+    },
+    {
       "path": "./examples/hello-world"
     },
     {

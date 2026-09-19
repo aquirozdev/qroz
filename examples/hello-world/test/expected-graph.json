@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "name": "example",
   "capabilities": [
     {
@@ -44,6 +44,17 @@
       ]
     },
     {
+      "name": "jobs.notifications.idempotency",
+      "configured": true,
+      "kind": "resource",
+      "resourceType": "idempotency-store",
+      "features": [
+        "atomic-claim",
+        "lease",
+        "completion"
+      ]
+    },
+    {
       "name": "notifications.delivery",
       "configured": true
     }
@@ -63,6 +74,9 @@
     },
     {
       "capability": "queue.jobs.notifications"
+    },
+    {
+      "capability": "jobs.notifications.idempotency"
     },
     {
       "capability": "notifications.delivery"
@@ -226,7 +240,11 @@
             "delaySeconds": 5,
             "maxDelaySeconds": 60
           },
-          "idempotent": true,
+          "idempotency": {
+            "store": "jobs.notifications.idempotency",
+            "leaseSeconds": 30,
+            "ttlSeconds": 86400
+          },
           "hasInputSchema": true
         }
       ]

@@ -131,3 +131,32 @@ The adapter is tested structurally using the documented Worker `fetch(request, e
 - strict TypeScript build passes;
 - clean offline install remains supported;
 - workerd/real PostgreSQL gates remain blocked by npm DNS in this environment.
+
+
+## v0.5 — durable idempotency and remote quality gates
+
+### Durable job idempotency
+
+- replaced metadata-only `idempotencyKey()` definitions with explicit job `idempotency` policies;
+- introduced `JobIdempotencyStore` claim/complete/release contract;
+- lease tokens prevent stale workers from completing/releasing another claim;
+- completed duplicates are acknowledged without invoking the handler again;
+- concurrent deliveries observing an active lease are retried;
+- failed handlers release claims so queue retry can re-acquire them;
+- completion TTL is supported;
+- added `@arc/idempotency`, `@arc/idempotency-memory`, and `@arc/idempotency-cloudflare-do`;
+- Application Graph bumped to schema v3 and exposes idempotency store/lease/TTL metadata.
+
+### Repository hygiene and CI
+
+- removed accidentally generated `.js`, `.d.ts`, and source-map files from `src/`;
+- added GitHub Actions strict verification gate;
+- added pinned workerd smoke gate using Wrangler;
+- pinned CI TypeScript toolchain independently of developer-global installations.
+
+### Verification
+
+- 48/48 local automated tests pass;
+- strict TypeScript build passes;
+- clean offline workspace installation passes;
+- real remote workerd CI is now encoded but must execute successfully on GitHub before the platform gate changes from pending to verified.

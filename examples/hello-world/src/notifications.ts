@@ -1,5 +1,6 @@
 import { capability, endpoint, job, module, type JobEnvelope } from "@arc/core"
 import { queue } from "@arc/queue"
+import { idempotencyStore } from "@arc/idempotency"
 import { object, string } from "./schema.js"
 
 export interface NotificationMessage {
@@ -13,6 +14,7 @@ export interface NotificationDeliverySink {
 export const notificationsQueue = queue<NotificationMessage>("notifications", { requires: ["delay"] })
 export const notificationJobsQueue = queue<JobEnvelope>("jobs.notifications", { requires: ["delay"] })
 export const notificationDeliverySink = capability<NotificationDeliverySink>("notifications.delivery")
+export const notificationIdempotency = idempotencyStore("jobs.notifications.idempotency")
 
 const NotificationBody = object({ message: string({ min: 1 }) })
 const NotificationResult = object({ queued: string() })
@@ -25,8 +27,11 @@ export const DeliverNotification = job({
   input: NotificationBody,
   requires: [notificationDeliverySink],
   retry: { strategy: "exponential", delaySeconds: 5, maxDelaySeconds: 60 },
-  idempotencyKey(input) {
-    return `notification:${input.message}`
+  idempotency: {
+    store: notificationIdempotency,
+    leaseSeconds: 30,
+    ttlSeconds: 86_400,
+    key(input) { return `notification:${input.message}` }
   },
   async handler(input, ctx) {
     await ctx.use(notificationDeliverySink).deliver(input.message)

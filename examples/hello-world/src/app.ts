@@ -2,7 +2,9 @@ import { app, provide, withProviders } from "@arc/core"
 import { createMemoryStorage } from "@arc/storage-memory"
 import { createMemoryQueue } from "@arc/queue-memory"
 import { provideQueue } from "@arc/queue"
-import { notifications, notificationsQueue, notificationJobsQueue, notificationDeliverySink, type NotificationMessage } from "./notifications.js"
+import { provideIdempotencyStore } from "@arc/idempotency"
+import { createMemoryIdempotencyStore } from "@arc/idempotency-memory"
+import { notifications, notificationsQueue, notificationJobsQueue, notificationDeliverySink, notificationIdempotency, type NotificationMessage } from "./notifications.js"
 import { files, filesStorage } from "./files.js"
 import { auditSink, type AuditSink, userRepository, type User, type UserRepository, users } from "./users.js"
 
@@ -41,6 +43,7 @@ export const application = app({
 
 export const notificationQueueMemory = createMemoryQueue<NotificationMessage>()
 export const notificationJobQueueMemory = createMemoryQueue()
+export const notificationIdempotencyMemory = createMemoryIdempotencyStore()
 
 // Local/reference composition.
 export default withProviders(application, [
@@ -49,5 +52,6 @@ export default withProviders(application, [
   provide(filesStorage, createMemoryStorage()),
   provideQueue(notificationsQueue, notificationQueueMemory),
   provideQueue(notificationJobsQueue, notificationJobQueueMemory),
+  provideIdempotencyStore(notificationIdempotency, notificationIdempotencyMemory),
   provide(notificationDeliverySink, { async deliver(message: string) { deliveredNotifications.push(message) } })
 ])

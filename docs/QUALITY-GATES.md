@@ -21,7 +21,7 @@ Every change must preserve:
 13. No portability claim until at least two implementations exercise the abstraction.
 14. No exactly-once/idempotency claim without durable enforcement.
 
-## v0.4 verified matrix
+## v0.5 verified matrix
 
 | Area | Memory / portable | Cloudflare-shaped adapter | Real platform |
 |---|---:|---:|---:|
@@ -31,8 +31,9 @@ Every change must preserve:
 | Queue producer | ✅ | ✅ Queue shape | ⏳ real/local Queue |
 | Queue consumer | ✅ memory | ✅ per-message ack/retry shape | ⏳ real/local Queue |
 | Typed jobs/retry engine | ✅ | ✅ mapped to Queue consumer | ⏳ real/local Queue |
+| Durable idempotency | ✅ memory lease store | ✅ Durable Object structural adapter | ⏳ real workerd DO |
 | Semantic tracing | ✅ recording tracer | ✅ native custom-span shape | ⏳ workerd trace export |
-| Application Graph v2 | ✅ | n/a | n/a |
+| Application Graph v3 | ✅ | n/a | n/a |
 | CLI / agent output | ✅ | n/a | n/a |
 
 The middle column means the adapter is executed against a contract-faithful fake using the documented platform interface. It is intentionally not labeled a production integration test.
@@ -64,8 +65,10 @@ Before database support is called complete:
 
 Before calling jobs production-ready:
 
-- define and test a durable idempotency store contract;
-- enforce idempotency key state transitions rather than merely carrying metadata;
+- ✅ define and test a durable idempotency store contract;
+- ✅ enforce claim/lease/completion state transitions rather than merely carrying metadata;
+- execute the Durable Object implementation inside real workerd;
+- add claim heartbeat/extension for jobs that can exceed the configured lease;
 - propagate W3C trace context across producer/consumer boundaries;
 - test delayed retry boundaries and provider-specific limits;
 - validate DLQ configuration in a real/local provider integration;
