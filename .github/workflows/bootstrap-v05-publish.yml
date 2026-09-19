@@ -1,0 +1,75 @@
+name: Bootstrap v0.5 publish
+
+on:
+  push:
+    branches:
+      - feat/v0.5-durable-idempotency
+
+permissions:
+  contents: write
+
+jobs:
+  reconstruct-verify-publish:
+    if: ${{ github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Reconstruct source
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .arc-upload/part.* | base64 --decode > /tmp/arc-v05-diff.tgz
+          tar -xzf /tmp/arc-v05-diff.tgz
+          rm -f \
+            packages/storage-memory/src/index.d.ts \
+            packages/storage-memory/src/index.d.ts.map \
+            packages/storage-memory/src/index.js \
+            packages/storage-memory/src/index.js.map \
+            packages/storage/src/index.d.ts \
+            packages/storage/src/index.d.ts.map \
+            packages/storage/src/index.js \
+            packages/storage/src/index.js.map
+          rm -rf .arc-upload
+          rm -f .github/workflows/ci.yml
+
+      - name: Verify source
+        run: |
+          npm install
+          npm install --no-save typescript@5.8.3 wrangler@4.135.0
+          npm run verify
+
+      - name: Verify real workerd runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run build
+          ./node_modules/.bin/wrangler dev --config examples/hello-world/wrangler.jsonc --local --port 8787 > /tmp/arc-wrangler.log 2>&1 &
+          PID=$!
+          trap 'kill "$PID" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 30); do
+            if response=$(curl --fail --silent http://127.0.0.1:8787/users/123); then
+              echo "$response" | grep -q '"name":"Angel"'
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/arc-wrangler.log
+          exit 1
+
+      - name: Publish verified source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git reset -- .github/workflows/bootstrap-v05.yml .github/workflows/bootstrap-v05-publish.yml
+          git commit -m "feat: add durable job idempotency"
+          git push origin HEAD:feat/v0.5-durable-idempotency
