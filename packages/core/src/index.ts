@@ -112,6 +112,11 @@ export interface JobTransport {
   send(message: JobEnvelope, options?: { readonly delaySeconds?: number }): Promise<void>
 }
 
+export interface TraceContext {
+  readonly traceparent: string
+  readonly tracestate?: string
+}
+
 export interface JobEnvelope {
   readonly kind: "arc.job-message"
   readonly schemaVersion: 1
@@ -121,6 +126,7 @@ export interface JobEnvelope {
   readonly payload: unknown
   readonly createdAt: string
   readonly idempotencyKey?: string
+  readonly traceContext?: TraceContext
 }
 
 export type JobIdempotencyClaim =
@@ -151,6 +157,7 @@ export interface JobExecutionContext extends CapabilityResolver {
   readonly messageId: string
   readonly attempts: number
   readonly idempotencyKey?: string
+  readonly traceContext?: TraceContext
 }
 
 export interface JobDefinition<InputSchema extends StandardSchemaLike = StandardSchemaLike> {
@@ -566,6 +573,52 @@ export function inspect(application: AppDefinition): ApplicationGraph {
         hasInputSchema: Boolean(item.input)
       }))
     }))
+  }
+}
+
+export interface ModuleContext {
+  readonly schemaVersion: 1
+  readonly app: string
+  readonly module: ApplicationGraph["modules"][number]
+  readonly capabilities: ApplicationGraph["capabilities"]
+  readonly events: {
+    readonly consumes: Array<{ event: string; version: number; listener: string }>
+    readonly emits: Array<{ event: string; version: number; producer: string; producerKind: "endpoint" | "listener" }>
+  }
+  readonly jobs: {
+    readonly definitions: ApplicationGraph["modules"][number]["jobs"]
+    readonly dispatches: Array<{ job: string; version: number; producer: string; producerKind: "endpoint" | "listener" }>
+  }
+}
+
+export function inspectModuleContext(application: AppDefinition, moduleName: string): ModuleContext | undefined {
+  const graph = inspect(application)
+  const mod = graph.modules.find((item) => item.name === moduleName)
+  if (!mod) return undefined
+  const requiredNames = new Set([
+    ...mod.endpoints.flatMap((endpoint) => endpoint.requires),
+    ...mod.listeners.flatMap((listener) => listener.requires),
+    ...mod.jobs.flatMap((job) => [job.transport, ...job.requires])
+  ])
+  return {
+    schemaVersion: 1,
+    app: graph.name,
+    module: mod,
+    capabilities: graph.capabilities.filter((item) => requiredNames.has(item.name)),
+    events: {
+      consumes: mod.listeners.map((listener) => ({ event: listener.event, version: listener.version, listener: listener.name })),
+      emits: [
+        ...mod.endpoints.flatMap((endpoint) => endpoint.emits.map((event) => ({ ...event, producer: endpoint.name, producerKind: "endpoint" as const }))),
+        ...mod.listeners.flatMap((listener) => listener.emits.map((event) => ({ ...event, producer: listener.name, producerKind: "listener" as const })))
+      ]
+    },
+    jobs: {
+      definitions: mod.jobs,
+      dispatches: [
+        ...mod.endpoints.flatMap((endpoint) => endpoint.dispatches.map((job) => ({ ...job, producer: endpoint.name, producerKind: "endpoint" as const }))),
+        ...mod.listeners.flatMap((listener) => listener.dispatches.map((job) => ({ ...job, producer: listener.name, producerKind: "listener" as const })))
+      ]
+    }
   }
 }
 
