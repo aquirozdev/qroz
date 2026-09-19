@@ -1,0 +1,220 @@
+name: Sync v0.7 source
+
+on:
+  push:
+    branches:
+      - feat/v0.7-trace-mcp
+
+permissions:
+  contents: write
+
+jobs:
+  sync-verify-publish:
+    if: ${{ github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      - name: Apply reviewed v0.7 changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git apply .arc-sync/v07.patch
+          python - <<'PY'
+          from pathlib import Path
+
+          core = Path("packages/core/src/index.ts")
+          text = core.read_text()
+          if "export interface TraceContext" not in text:
+              text = text.replace(
+                  '''export interface JobTransport {
+            send(message: JobEnvelope, options?: { readonly delaySeconds?: number }): Promise<void>
+          }
+
+          export interface JobEnvelope {''',
+                  '''export interface JobTransport {
+            send(message: JobEnvelope, options?: { readonly delaySeconds?: number }): Promise<void>
+          }
+
+          export interface TraceContext {
+            readonly traceparent: string
+            readonly tracestate?: string
+          }
+
+          export interface JobEnvelope {'''
+              )
+              text = text.replace(
+                  '''  readonly createdAt: string
+            readonly idempotencyKey?: string
+          }
+
+          export type JobIdempotencyClaim''',
+                  '''  readonly createdAt: string
+            readonly idempotencyKey?: string
+            readonly traceContext?: TraceContext
+          }
+
+          export type JobIdempotencyClaim'''
+              )
+              text = text.replace(
+                  '''export interface JobExecutionContext extends CapabilityResolver {
+            readonly messageId: string
+            readonly attempts: number
+            readonly idempotencyKey?: string
+          }''',
+                  '''export interface JobExecutionContext extends CapabilityResolver {
+            readonly messageId: string
+            readonly attempts: number
+            readonly idempotencyKey?: string
+            readonly traceContext?: TraceContext
+          }'''
+              )
+          core.write_text(text)
+
+          runtime = Path("packages/runtime-web/src/index.ts")
+          text = runtime.read_text()
+          if "TRACEPARENT_PATTERN" not in text:
+              marker = '''export interface WebRuntimeOptions {
+            readonly onError?: (error: unknown) => void
+            readonly tracer?: ArcTracer
+          }'''
+              helper = '''const TRACEPARENT_PATTERN = /^00-[0-9a-f]{32}-[0-9a-f]{16}-[0-9a-f]{2}$/i
+
+          function requestTraceContext(request: Request): import("@arc/core").TraceContext | undefined {
+            const traceparent = request.headers.get("traceparent")
+            if (!traceparent || !TRACEPARENT_PATTERN.test(traceparent)) return undefined
+            const tracestate = request.headers.get("tracestate")
+            return { traceparent: traceparent.toLowerCase(), ...(tracestate ? { tracestate } : {}) }
+          }
+
+          ''' + marker
+              text = text.replace(marker, helper)
+              text = text.replace(
+                  '''        return await (async () => {
+            let built''',
+                  '''        return await (async () => {
+            const propagatedTraceContext = requestTraceContext(request)
+            let built'''
+              )
+              text = text.replace(
+                  '''              createdAt: new Date().toISOString(),
+                        ...(idempotencyKey ? { idempotencyKey } : {})
+                      }''',
+                  '''              createdAt: new Date().toISOString(),
+                        ...(idempotencyKey ? { idempotencyKey } : {}),
+                        ...(propagatedTraceContext ? { traceContext: propagatedTraceContext } : {})
+                      }'''
+              )
+          runtime.write_text(text)
+
+          jobs = Path("packages/jobs/src/index.ts")
+          text = jobs.read_text()
+          if "arc.trace.propagated" not in text:
+              text = text.replace(
+                  '''    typeof item.createdAt === "string" &&
+              "payload" in item''',
+                  '''    typeof item.createdAt === "string" &&
+              (item.traceContext === undefined || (
+                typeof item.traceContext === "object" && item.traceContext !== null &&
+                typeof (item.traceContext as Record<string, unknown>).traceparent === "string" &&
+                (((item.traceContext as Record<string, unknown>).tracestate === undefined) || typeof (item.traceContext as Record<string, unknown>).tracestate === "string")
+              )) &&
+              "payload" in item'''
+              )
+              text = text.replace(
+                  '''      "arc.job.attempts": options.attempts ?? 1,
+                  ...(idempotencyClaim ? { "arc.job.idempotent": true } : {})
+                }, async () => entry.definition.handler(input, {
+                  ...resolver,
+                  messageId: envelope.id,
+                  attempts: options.attempts ?? 1,
+                  ...(envelope.idempotencyKey ? { idempotencyKey: envelope.idempotencyKey } : {})
+                }))''',
+                  '''      "arc.job.attempts": options.attempts ?? 1,
+                  ...(idempotencyClaim ? { "arc.job.idempotent": true } : {}),
+                  ...(envelope.traceContext ? { "arc.trace.propagated": true } : {})
+                }, async () => entry.definition.handler(input, {
+                  ...resolver,
+                  messageId: envelope.id,
+                  attempts: options.attempts ?? 1,
+                  ...(envelope.idempotencyKey ? { idempotencyKey: envelope.idempotencyKey } : {}),
+                  ...(envelope.traceContext ? { traceContext: envelope.traceContext } : {})
+                }))'''
+              )
+          jobs.write_text(text)
+
+          tests = Path("examples/hello-world/test/jobs.test.mjs")
+          text = tests.read_text()
+          if "propagates W3C trace context" not in text:
+              anchor = '''  assert.deepEqual(deliveredNotifications, ["welcome"])
+          })
+
+          function schema(validate) {'''
+              block = '''  assert.deepEqual(deliveredNotifications, ["welcome"])
+          })
+
+          test("propagates W3C trace context into job envelopes and execution context", async () => {
+            notificationJobQueueMemory.drain()
+            const runtime = createMemoryRuntime(application)
+            const traceparent = "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01"
+            const tracestate = "vendor=value"
+            const response = await runtime.fetch(new Request("https://app.test/notification-jobs", {
+              method: "POST",
+              headers: {
+                "content-type": "application/json",
+                traceparent,
+                tracestate
+              },
+              body: JSON.stringify({ message: "trace-me" })
+            }))
+            assert.equal(response.status, 200)
+            const queued = notificationJobQueueMemory.messages[0].body
+            assert.deepEqual(queued.traceContext, { traceparent, tracestate })
+
+            let observed
+            const { definition } = fixture(async (_input, ctx) => { observed = ctx.traceContext })
+            const outcome = await executeJobEnvelope(definition, { ...envelope(), traceContext: { traceparent, tracestate } }, {
+              providers: [provideQueue(transport, createMemoryQueue()), provide(dependency, {})]
+            })
+            assert.equal(outcome.action, "ack")
+            assert.deepEqual(observed, { traceparent, tracestate })
+          })
+
+          function schema(validate) {'''
+              if anchor not in text:
+                  raise SystemExit("jobs.test.mjs anchor not found")
+              text = text.replace(anchor, block)
+          tests.write_text(text)
+          PY
+
+          rm -rf .arc-sync
+
+      - name: Verify portable suite
+        run: |
+          npm install
+          npm install --no-save typescript@5.8.3
+          npm run verify
+
+      - name: Verify official MCP v2 integration
+        run: |
+          cd integration/mcp
+          npm install
+          node test.mjs
+
+      - name: Publish verified v0.7 source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/sync-v07.yml
+          git add -A
+          git commit -m "feat: add trace propagation and read-only MCP v2"
+          git push origin HEAD:feat/v0.7-trace-mcp
