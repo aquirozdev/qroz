@@ -62,6 +62,24 @@ test("propagates W3C trace context into job envelopes and execution context", as
   assert.deepEqual(observed, { traceparent, tracestate })
 })
 
+test("rejects invalid W3C traceparent values instead of propagating them", async () => {
+  for (const traceparent of [
+    "00-00000000000000000000000000000000-00f067aa0ba902b7-01",
+    "00-4bf92f3577b34da6a3ce929d0e0e4736-0000000000000000-01",
+    "00-4BF92F3577B34DA6A3CE929D0E0E4736-00f067aa0ba902b7-01"
+  ]) {
+    notificationJobQueueMemory.drain()
+    const runtime = createMemoryRuntime(application)
+    const response = await runtime.fetch(new Request("https://app.test/notification-jobs", {
+      method: "POST",
+      headers: { "content-type": "application/json", traceparent },
+      body: JSON.stringify({ message: "invalid-trace" })
+    }))
+    assert.equal(response.status, 200)
+    assert.equal(notificationJobQueueMemory.messages[0].body.traceContext, undefined)
+  }
+})
+
 function schema(validate) {
   return { "~standard": { version: 1, vendor: "test", validate } }
 }
