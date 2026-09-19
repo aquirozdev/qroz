@@ -146,12 +146,14 @@ export async function executeJobEnvelope(
       "arc.job": entry.definition.name,
       "arc.job.version": entry.definition.version,
       "arc.job.attempts": options.attempts ?? 1,
-      ...(idempotencyClaim ? { "arc.job.idempotent": true } : {})
+      ...(idempotencyClaim ? { "arc.job.idempotent": true } : {}),
+      ...(envelope.traceContext ? { "arc.trace.propagated": true } : {})
     }, async () => entry.definition.handler(input, {
       ...resolver,
       messageId: envelope.id,
       attempts: options.attempts ?? 1,
-      ...(envelope.idempotencyKey ? { idempotencyKey: envelope.idempotencyKey } : {})
+      ...(envelope.idempotencyKey ? { idempotencyKey: envelope.idempotencyKey } : {}),
+      ...(envelope.traceContext ? { traceContext: envelope.traceContext } : {})
     }))
 
     if (idempotencyClaim) {
