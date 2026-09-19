@@ -1,5 +1,5 @@
 import { createCloudflareTracer, type CloudflareTracingLike } from "@arc/telemetry-cloudflare"
-import type { AppDefinition, MaybePromise, Provider } from "@arc/core"
+import { normalizeProviderSource, type AppDefinition, type MaybePromise, type ProviderSource } from "@arc/core"
 import { createWebRuntime, type WebExecutionContext } from "@arc/runtime-web"
 
 export interface CloudflareExecutionContextLike {
@@ -14,7 +14,7 @@ export interface CloudflareRuntimeContext<Env> extends WebExecutionContext {
 }
 
 export interface CloudflareWorkerOptions<Env> {
-  readonly providers?: (env: Env, executionCtx: CloudflareExecutionContextLike) => MaybePromise<readonly Provider<any>[]>
+  readonly providers?: (env: Env, executionCtx: CloudflareExecutionContextLike) => MaybePromise<ProviderSource>
   readonly onError?: (error: unknown) => void
 }
 
@@ -32,9 +32,15 @@ export function createCloudflareWorker<Env extends object = Record<string, unkno
 
   return {
     async fetch(request, env, executionCtx) {
-      const providers = await options.providers?.(env, executionCtx) ?? []
+      const scope = normalizeProviderSource(await options.providers?.(env, executionCtx))
       const tracer = executionCtx.tracing ? createCloudflareTracer(executionCtx.tracing) : undefined
-      return runtime.fetch(request, { env, executionCtx, providers, ...(tracer ? { tracer } : {}) })
+      return runtime.fetch(request, {
+        env,
+        executionCtx,
+        providers: scope.providers,
+        ...(scope.dispose ? { dispose: scope.dispose } : {}),
+        ...(tracer ? { tracer } : {})
+      })
     }
   }
 }

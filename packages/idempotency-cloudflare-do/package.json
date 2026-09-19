@@ -1,6 +1,6 @@
 {
   "name": "@arc/idempotency-cloudflare-do",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "type": "module",
   "dependencies": {
     "@arc/core": "file:../core"
@@ -9,6 +9,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./worker": {
+      "types": "./dist/worker.d.ts",
+      "default": "./dist/worker.js"
     }
   },
   "files": [

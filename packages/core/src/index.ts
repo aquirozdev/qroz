@@ -58,6 +58,28 @@ export function provide<T>(target: Capability<T>, value: T): Provider<T> {
   return Object.freeze({ kind: "arc.provider" as const, capability: target, value })
 }
 
+export interface ProviderScope {
+  readonly providers: readonly Provider<any>[]
+  readonly dispose?: () => MaybePromise<void>
+}
+
+export type ProviderSource = readonly Provider<any>[] | ProviderScope
+
+export function providerScope(
+  providers: readonly Provider<any>[],
+  dispose?: () => MaybePromise<void>
+): ProviderScope {
+  return Object.freeze({
+    providers: Object.freeze([...providers]),
+    ...(dispose ? { dispose } : {})
+  })
+}
+
+export function normalizeProviderSource(source: ProviderSource | undefined): ProviderScope {
+  if (!source) return { providers: [] }
+  return Array.isArray(source) ? { providers: source } : source as ProviderScope
+}
+
 export interface EventDefinition<Payload> {
   readonly kind: "arc.event"
   readonly name: string

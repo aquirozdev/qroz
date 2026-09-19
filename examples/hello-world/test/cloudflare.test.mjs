@@ -175,3 +175,38 @@ test("Cloudflare runtime awaits invocation-scoped async providers", async () => 
   assert.equal(response.status, 200)
   assert.deepEqual(await response.json(), { value: "ready" })
 })
+
+test("Cloudflare request provider scopes dispose after success and failure", async () => {
+  const { providerScope } = await import("@arc/core")
+  const disposable = capability("example.disposable")
+  const Output = object({ value: string() })
+  const success = endpoint({
+    method: "GET",
+    path: "/dispose-success",
+    requires: [disposable],
+    output: Output,
+    handler(ctx) { return { value: ctx.use(disposable) } }
+  })
+  const failure = endpoint({
+    method: "GET",
+    path: "/dispose-failure",
+    requires: [disposable],
+    output: Output,
+    handler() { throw new Error("boom") }
+  })
+  const definition = app({ name: "disposal", modules: [module({ name: "scope", endpoints: { success, failure } })] })
+  let disposed = 0
+  const worker = createCloudflareWorker(definition, {
+    providers() {
+      return providerScope([provide(disposable, "ready")], async () => { disposed += 1 })
+    }
+  })
+
+  const ok = await worker.fetch(new Request("https://example.test/dispose-success"), {}, executionContext())
+  assert.equal(ok.status, 200)
+  assert.equal(disposed, 1)
+
+  const failed = await worker.fetch(new Request("https://example.test/dispose-failure"), {}, executionContext())
+  assert.equal(failed.status, 500)
+  assert.equal(disposed, 2)
+})

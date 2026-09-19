@@ -240,3 +240,7 @@ docs/
 10. **Human DX = Agent DX.** Errors and tooling are deterministic and machine-readable.
 
 See `docs/IDEMPOTENCY.md`, `docs/QUALITY-GATES.md`, and `docs/ROADMAP.md` for the current guarantees and remaining gates.
+
+## v0.6 integration work
+
+Arc now has explicit invocation-scoped resource lifecycle through `ProviderScope`, a typed but ORM-transparent `@arc/database` capability, a real SQLite Durable Object host for idempotency, and CI gates for both `workerd` and PostgreSQL + Drizzle. See `docs/PROVIDER_LIFECYCLE.md` and `docs/DATABASE.md`.

@@ -1,5 +1,5 @@
 import { createCloudflareTracer, type CloudflareTracingLike } from "@arc/telemetry-cloudflare"
-import type { AppDefinition, JobEnvelope, MaybePromise, Provider } from "@arc/core"
+import { normalizeProviderSource, type AppDefinition, type JobEnvelope, type MaybePromise, type ProviderSource } from "@arc/core"
 import { executeJobEnvelope } from "@arc/jobs"
 
 export interface CloudflareQueueMessageLike<T = unknown> {
@@ -24,7 +24,7 @@ export interface CloudflareQueueExecutionContextLike {
 }
 
 export interface CloudflareJobConsumerOptions<Env> {
-  readonly providers?: (env: Env, executionCtx: CloudflareQueueExecutionContextLike) => MaybePromise<readonly Provider<any>[]>
+  readonly providers?: (env: Env, executionCtx: CloudflareQueueExecutionContextLike) => MaybePromise<ProviderSource>
   readonly onError?: (error: unknown) => void
 }
 
@@ -42,11 +42,12 @@ export function createCloudflareJobConsumer<Env extends object = Record<string, 
 ): CloudflareJobConsumerHandler<Env> {
   return {
     async queue(batch, env, executionCtx) {
-      const providers = await options.providers?.(env, executionCtx) ?? []
+      const scope = normalizeProviderSource(await options.providers?.(env, executionCtx))
       const tracer = executionCtx.tracing ? createCloudflareTracer(executionCtx.tracing) : undefined
+      try {
       for (const message of batch.messages) {
         const outcome = await executeJobEnvelope(application, message.body, {
-          providers,
+          providers: scope.providers,
           attempts: message.attempts,
           ...(options.onError ? { onError: options.onError } : {}),
           ...(tracer ? { tracer } : {})
@@ -58,6 +59,9 @@ export function createCloudflareJobConsumer<Env extends object = Record<string, 
           // so a malformed payload cannot consume the queue retry budget forever.
           message.ack()
         }
+      }
+      } finally {
+        await scope.dispose?.()
       }
     }
   }
