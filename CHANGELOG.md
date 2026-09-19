@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.7.0 - trace propagation and MCP read-only
+
+- propagate W3C `traceparent`/`tracestate` from HTTP requests into typed Job envelopes;
+- expose propagated trace context to Job handlers without claiming unsupported Cloudflare parent wiring;
+- move compact module context derivation into `@arc/core` so CLI and agents share one semantic implementation;
+- add official MCP v2 integration tests for `arc.inspect`, `arc.context`, and `arc.explain`;
+- document Cloudflare custom-span limitations and the read-only MCP security boundary.
+
+
 ## 0.6.0 - in progress
 
 - added `ProviderScope` with deterministic invocation disposal

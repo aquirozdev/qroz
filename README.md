@@ -244,3 +244,16 @@ See `docs/IDEMPOTENCY.md`, `docs/QUALITY-GATES.md`, and `docs/ROADMAP.md` for th
 ## v0.6 integration work
 
 Arc now has explicit invocation-scoped resource lifecycle through `ProviderScope`, a typed but ORM-transparent `@arc/database` capability, a real SQLite Durable Object host for idempotency, and CI gates for both `workerd` and PostgreSQL + Drizzle. See `docs/PROVIDER_LIFECYCLE.md` and `docs/DATABASE.md`.
+
+
+## v0.7 agent and trace integration
+
+Arc propagates valid W3C `traceparent` / `tracestate` values from HTTP requests into Job envelopes and exposes that context to the Job handler. This is deliberately a propagation contract, not an exactly-linked Cloudflare trace claim: Workers custom spans currently derive parents from async context and do not expose manual parent wiring/span IDs.
+
+The first MCP surface is read-only and uses the official MCP TypeScript SDK v2 over Web Standards:
+
+- `arc.inspect` — deterministic Application Graph;
+- `arc.context` — compact semantic context for one module;
+- `arc.explain` — structured ARC error-code explanation.
+
+Mutation tools remain out of scope until Arc has an explicit agent authorization/approval model.

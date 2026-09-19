@@ -1,28 +1,19 @@
-# Observability strategy
+# Observability
 
-Arc does not own a proprietary tracing backend.
+Arc provides semantic tracing while allowing each runtime to use its native tracing implementation.
 
-## Portable layer
+## Current spans
 
-`@arc/telemetry` defines a tiny `ArcTracer` contract and a recording tracer for tests/local tools.
+- `arc.endpoint`
+- `arc.listener`
+- `arc.job`
 
-Semantic spans currently include:
+Cloudflare maps these to native Workers custom spans so they nest with automatic platform instrumentation.
 
-- `arc.endpoint` with app/module/endpoint/method/route attributes;
-- `arc.listener` with app/module/listener/event/version attributes;
-- `arc.job` with app/module/job/version/attempt attributes.
+## Distributed propagation
 
-## Cloudflare
+Arc v0.7 propagates valid W3C `traceparent` and optional `tracestate` from incoming HTTP requests into typed Job envelopes and exposes the context to the Job handler.
 
-`@arc/telemetry-cloudflare` bridges Arc spans to Workers custom spans through `ExecutionContext.tracing`. Cloudflare continues to instrument fetches and bindings itself, so Arc does not duplicate those spans.
+This does **not** currently imply that a Cloudflare Queue consumer span becomes a direct child of the producer HTTP span. As of September 2026, Workers custom spans do not support manual parent-child wiring and do not expose span context IDs. Arc therefore preserves the interoperable context without fabricating a relationship the platform cannot currently express.
 
-`examples/hello-world/wrangler.jsonc` enables logs and traces.
-
-## Open items
-
-- W3C trace-context propagation in job envelopes and outbound adapters;
-- redaction policy for attributes/logs;
-- deployment/version identifiers;
-- standardized error/status attributes;
-- local trace viewer / Dev Console integration;
-- second runtime adapter validating the portable tracer abstraction.
+A future OpenTelemetry adapter (or future Workers API support) may consume the same propagated context to create true cross-boundary parent relationships.
