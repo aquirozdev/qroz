@@ -118,6 +118,7 @@ export interface ArcRuntime<ExecutionContext = undefined> {
 export interface WebExecutionContext {
   readonly providers?: readonly Provider<any>[]
   readonly tracer?: ArcTracer
+  readonly dispose?: () => import("@arc/core").MaybePromise<void>
 }
 
 export interface WebRuntimeOptions {
@@ -136,6 +137,8 @@ export function createWebRuntime<ExecutionContext extends WebExecutionContext = 
 
   return {
     async fetch(request: Request, context?: ExecutionContext): Promise<Response> {
+      try {
+        return await (async () => {
       let built
       try {
         built = buildApplication(application, { providers: context?.providers ?? [], allowMissingCapabilities: true })
@@ -307,6 +310,10 @@ export function createWebRuntime<ExecutionContext extends WebExecutionContext = 
           { error: "Internal Server Error" },
           { status: 500 }
         )
+      }
+        })()
+      } finally {
+        await context?.dispose?.()
       }
     }
   }

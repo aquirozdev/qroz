@@ -153,3 +153,22 @@ test("duplicate job name/version pairs fail at build time", async () => {
   })
   assert.throws(() => buildApplication(definition), (error) => error.code === "ARC1008")
 })
+
+test("Cloudflare job consumer disposes invocation provider scopes", async () => {
+  const { providerScope } = await import("@arc/core")
+  const { definition } = fixture(async () => {})
+  let disposed = 0
+  const providers = [provideQueue(transport, createMemoryQueue()), provide(dependency, {})]
+  const consumer = createCloudflareJobConsumer(definition, {
+    providers: () => providerScope(providers, async () => { disposed += 1 })
+  })
+  const decisions = []
+  const message = {
+    id: "scope", timestamp: new Date(), body: envelope(), attempts: 1,
+    ack() { decisions.push("ack") },
+    retry() { decisions.push("retry") }
+  }
+  await consumer.queue({ queue: "jobs", messages: [message], ackAll() {}, retryAll() {} }, {}, { waitUntil() {} })
+  assert.deepEqual(decisions, ["ack"])
+  assert.equal(disposed, 1)
+})

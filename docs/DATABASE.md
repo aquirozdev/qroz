@@ -1,50 +1,43 @@
-# Database integration decision log
+# Database architecture
 
-## Selected first production experiment
+Arc treats a database as a typed **capability**, not as an ORM owned by the framework.
 
-- PostgreSQL;
-- Drizzle ORM;
-- `pg` / node-postgres;
-- Cloudflare Hyperdrive for Workers;
-- application-specific repository capabilities remain the domain-facing ports.
+## Why
 
-## Current Cloudflare constraints confirmed in September 2026
-
-Cloudflare recommends node-postgres for Hyperdrive and requires a sufficiently recent `pg` version. Drizzle is supported on top of the node-postgres client.
-
-A database client must be created **inside each Worker invocation**. Do not keep a global Client/Pool across requests. Hyperdrive maintains the origin-side pool; the Worker-side client is invocation-scoped and is garbage collected at the end of the invocation. Cloudflare documents that explicit `client.end()` is not required for this case.
-
-For Workers compatibility dates `2026-08-04` and later, Node compatibility is enabled by default for new/current projects unless explicitly disabled.
-
-## Architectural consequence already implemented
-
-v0.4 made runtime provider factories async and invocation-scoped. This is required so a Cloudflare adapter can eventually do:
+The framework needs to know that an endpoint/job depends on a database so the Application Graph, deployment planner, tests and future IAM/tooling can reason about it. It does **not** need to replace the query API chosen by the application.
 
 ```ts
-providers: async (env) => {
-  const client = new Client({ connectionString: env.HYPERDRIVE.connectionString })
-  await client.connect()
-  const db = drizzle(client)
-  return [provide(usersRepository, drizzleUsersRepository(db))]
-}
+const db = database<MyDrizzleDatabase>("users.database", ["query", "transaction"])
 ```
 
-The core does not need to know about `pg`, Hyperdrive or Drizzle.
+Application code can then call the Drizzle client directly after `ctx.use(db)`.
 
-## Gate still blocked in this execution environment
+## Invocation lifecycle
 
-The npm registry is still unreachable from the build container, so `drizzle-orm`, `pg`, Wrangler and the Cloudflare Vitest plugin cannot be installed here. We therefore do **not** claim that the database/workerd integration has been executed.
+Serverless database clients frequently have invocation-specific lifecycle. Arc v0.6 introduces `ProviderScope`:
 
-## Next executable DB slice
+```ts
+providerScope(
+  [provideDatabase(databaseCapability, drizzleClient)],
+  async () => client.end()
+)
+```
 
-When npm connectivity is available:
+Runtime adapters guarantee the disposer runs in `finally`, including failed requests and queue batches.
 
-1. install `drizzle-orm`, `pg`, `drizzle-kit`, Wrangler and Cloudflare test tooling;
-2. define a tiny users table;
-3. run PostgreSQL integration tests against a real Postgres instance;
-4. implement the user repository with Drizzle;
-5. run the same application through Hyperdrive/workerd;
-6. record query spans and migration behavior;
-7. decide what, if anything, belongs in an `@arc/database-*` package only after that evidence exists.
+This matches Cloudflare Hyperdrive's current recommendation for node-postgres: create a fresh `pg.Client` per request/invocation; Hyperdrive owns the underlying connection pool.
 
-Arc will not introduce a generic database god-object or custom ORM to make this phase look complete.
+## Verification levels
+
+1. **Portable contract** — database is visible as `resourceType: database` in the Application Graph.
+2. **PostgreSQL integration** — GitHub Actions runs PostgreSQL 18, `pg`, and Drizzle against a real Arc endpoint and verifies client disposal.
+3. **Hyperdrive integration** — still requires a Cloudflare account/configuration and remains a deployment integration gate; it is not claimed by the local PostgreSQL test.
+
+## Selected initial stack
+
+- PostgreSQL 18
+- `pg` 8.23.0
+- Drizzle ORM 0.45.2
+- Hyperdrive as the first Cloudflare production connection adapter
+
+The core remains ORM-agnostic and vendor-agnostic.

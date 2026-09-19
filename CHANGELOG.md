@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.6.0 - in progress
+
+- added `ProviderScope` with deterministic invocation disposal
+- HTTP and Cloudflare queue runtimes now dispose invocation resources in `finally`
+- added `@arc/database` as an ORM-transparent database capability
+- added real PostgreSQL 18 + pg + Drizzle integration gate
+- added a real Cloudflare Durable Object host for idempotency
+- added a SQLite Durable Object workerd integration smoke test
+
 ## v0.5.0 — durable idempotency and CI gates
 
 - added first-class lease-based job idempotency policy;

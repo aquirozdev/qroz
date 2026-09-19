@@ -74,6 +74,9 @@
       ],
       "@arc/idempotency-cloudflare-do": [
         "packages/idempotency-cloudflare-do/src/index.ts"
+      ],
+      "@arc/database": [
+        "packages/database/src/index.ts"
       ]
     }
   }
