@@ -96,13 +96,15 @@ jobs:
 
           ''' + marker
               text = text.replace(marker, helper)
-              text = text.replace(
-                  '''        return await (async () => {
-            let built''',
-                  '''        return await (async () => {
-            const propagatedTraceContext = requestTraceContext(request)
-            let built'''
+              import re
+              text, insertion_count = re.subn(
+                  r'(return await \\(async \\(\\) => \\{\\n)([ \\t]*)let built',
+                  lambda match: match.group(1) + match.group(2) + 'const propagatedTraceContext = requestTraceContext(request)\\n' + match.group(2) + 'let built',
+                  text,
+                  count=1
               )
+              if insertion_count != 1:
+                  raise SystemExit(f"expected exactly one trace-context insertion point, found {insertion_count}")
               text = text.replace(
                   '''              createdAt: new Date().toISOString(),
                         ...(idempotencyKey ? { idempotencyKey } : {})
