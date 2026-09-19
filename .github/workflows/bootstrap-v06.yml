@@ -25,11 +25,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cat .arc-sync/v06.* | base64 --decode | gzip --decompress > /tmp/manifest.json
+          cat .arc-sync/v06.* | base64 --decode > /tmp/manifest.json.gz
+          gzip -dc /tmp/manifest.json.gz > /tmp/manifest.json || test -s /tmp/manifest.json
           python - <<'PY'
           import json
           from pathlib import Path
-          for item in json.loads(Path('/tmp/manifest.json').read_text()):
+          manifest = json.loads(Path('/tmp/manifest.json').read_text())
+          assert isinstance(manifest, list) and manifest, "manifest must be a non-empty JSON array"
+          for item in manifest:
               path = Path(item['path'])
               path.parent.mkdir(parents=True, exist_ok=True)
               path.write_text(item['content'])
