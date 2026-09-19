@@ -96,15 +96,14 @@ jobs:
 
           ''' + marker
               text = text.replace(marker, helper)
-              import re
-              text, insertion_count = re.subn(
-                  r'(return await \\(async \\(\\) => \\{\\n)([ \\t]*)let built',
-                  lambda match: match.group(1) + match.group(2) + 'const propagatedTraceContext = requestTraceContext(request)\\n' + match.group(2) + 'let built',
-                  text,
-                  count=1
+              insertion_needle = "return await (async () => {\\n      let built"
+              if text.count(insertion_needle) != 1:
+                  raise SystemExit(f"expected exactly one trace-context insertion point, found {text.count(insertion_needle)}")
+              text = text.replace(
+                  insertion_needle,
+                  "return await (async () => {\\n      const propagatedTraceContext = requestTraceContext(request)\\n      let built",
+                  1
               )
-              if insertion_count != 1:
-                  raise SystemExit(f"expected exactly one trace-context insertion point, found {insertion_count}")
               text = text.replace(
                   '''              createdAt: new Date().toISOString(),
                         ...(idempotencyKey ? { idempotencyKey } : {})
