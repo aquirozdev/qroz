@@ -59,6 +59,11 @@ export function isJobEnvelope(value: unknown): value is JobEnvelope {
     typeof item.job === "string" &&
     Number.isInteger(item.version) &&
     typeof item.createdAt === "string" &&
+    (item.traceContext === undefined || (
+      typeof item.traceContext === "object" && item.traceContext !== null &&
+      typeof (item.traceContext as Record<string, unknown>).traceparent === "string" &&
+      (((item.traceContext as Record<string, unknown>).tracestate === undefined) || typeof (item.traceContext as Record<string, unknown>).tracestate === "string")
+    )) &&
     "payload" in item
 }
 
