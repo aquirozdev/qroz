@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - "feat/**"
+      - "fix/**"
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Typecheck and test
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - run: npm install
+      - name: Pin verified TypeScript toolchain
+        run: npm install --no-save typescript@5.8.3
+      - run: npm run verify
+
+  workerd-smoke:
+    name: Cloudflare workerd smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - run: npm install
+      - name: Install integration toolchain
+        run: npm install --no-save typescript@5.8.3 wrangler@4.135.0
+      - run: npm run build
+      - name: Execute example in workerd
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./node_modules/.bin/wrangler dev \
+            --config examples/hello-world/wrangler.jsonc \
+            --local \
+            --port 8787 > /tmp/arc-wrangler.log 2>&1 &
+          PID=$!
+          trap 'kill "$PID" 2>/dev/null || true' EXIT
+
+          for attempt in $(seq 1 30); do
+            if response=$(curl --fail --silent http://127.0.0.1:8787/users/123); then
+              echo "$response" | grep -q '"name":"Angel"'
+              exit 0
+            fi
+            sleep 1
+          done
+
+          cat /tmp/arc-wrangler.log
+          exit 1
