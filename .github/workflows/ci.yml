@@ -29,7 +29,7 @@ jobs:
   workerd-smoke:
     name: Cloudflare workerd smoke
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -39,7 +39,7 @@ jobs:
       - name: Install integration toolchain
         run: npm install --no-save typescript@5.8.3 wrangler@4.135.0
       - run: npm run build
-      - name: Execute example in workerd
+      - name: Execute portable app in workerd
         shell: bash
         run: |
           set -euo pipefail
@@ -49,7 +49,6 @@ jobs:
             --port 8787 > /tmp/arc-wrangler.log 2>&1 &
           PID=$!
           trap 'kill "$PID" 2>/dev/null || true' EXIT
-
           for attempt in $(seq 1 30); do
             if response=$(curl --fail --silent http://127.0.0.1:8787/users/123); then
               echo "$response" | grep -q '"name":"Angel"'
@@ -57,6 +56,62 @@ jobs:
             fi
             sleep 1
           done
-
           cat /tmp/arc-wrangler.log
           exit 1
+
+      - name: Execute SQLite Durable Object idempotency in workerd
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./node_modules/.bin/wrangler dev \
+            --config examples/hello-world/wrangler.idempotency.jsonc \
+            --local \
+            --port 8788 > /tmp/arc-do.log 2>&1 &
+          PID=$!
+          trap 'kill "$PID" 2>/dev/null || true' EXIT
+          key="ci-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          for attempt in $(seq 1 30); do
+            if response=$(curl --fail --silent "http://127.0.0.1:8788/idempotency?key=${key}"); then
+              echo "$response" | grep -q '"completed":true'
+              echo "$response" | grep -q '"state":"completed"'
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/arc-do.log
+          exit 1
+
+  postgres-drizzle:
+    name: PostgreSQL 18 + Drizzle + pg
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: arc
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d arc"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/arc
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npm install --no-save typescript@5.8.3
+      - run: npm run build
+      - name: Install pinned database integration dependencies
+        working-directory: integration/postgres
+        run: npm install
+      - name: Execute Arc through real PostgreSQL and Drizzle
+        working-directory: integration/postgres
+        run: node test.mjs
