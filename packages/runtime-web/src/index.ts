@@ -121,13 +121,18 @@ export interface WebExecutionContext {
   readonly dispose?: () => import("@arc/core").MaybePromise<void>
 }
 
-const TRACEPARENT_PATTERN = /^00-[0-9a-f]{32}-[0-9a-f]{16}-[0-9a-f]{2}$/i
+const TRACEPARENT_PATTERN = /^00-([0-9a-f]{32})-([0-9a-f]{16})-([0-9a-f]{2})$/
 
 function requestTraceContext(request: Request): import("@arc/core").TraceContext | undefined {
   const traceparent = request.headers.get("traceparent")
-  if (!traceparent || !TRACEPARENT_PATTERN.test(traceparent)) return undefined
+  if (!traceparent) return undefined
+  const match = TRACEPARENT_PATTERN.exec(traceparent)
+  if (!match) return undefined
+  const traceId = match[1]!
+  const parentId = match[2]!
+  if (traceId === "00000000000000000000000000000000" || parentId === "0000000000000000") return undefined
   const tracestate = request.headers.get("tracestate")
-  return { traceparent: traceparent.toLowerCase(), ...(tracestate ? { tracestate } : {}) }
+  return { traceparent, ...(tracestate ? { tracestate } : {}) }
 }
 
 export interface WebRuntimeOptions {
