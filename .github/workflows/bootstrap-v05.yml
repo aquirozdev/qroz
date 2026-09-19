@@ -82,4 +82,6 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
           git commit -m "feat: add durable job idempotency"
+          git fetch origin feat/v0.5-durable-idempotency
+          git rebase origin/feat/v0.5-durable-idempotency
           git push origin HEAD:feat/v0.5-durable-idempotency
