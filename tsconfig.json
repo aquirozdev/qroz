@@ -74,6 +74,9 @@
       "path": "./examples/taskboard"
     },
     {
+      "path": "./examples/saas"
+    },
+    {
       "path": "./packages/jobs"
     },
     {
