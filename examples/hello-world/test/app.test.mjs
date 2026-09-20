@@ -330,5 +330,118 @@ test("enforces declarative endpoint authentication and permissions", async () =>
   assert.deepEqual(await allowed.json(), { principal: "user-1" })
 
   const graphEndpoint = inspect(securedApp).modules[0].endpoints[0]
-  assert.deepEqual(graphEndpoint.auth, { required: true, permissions: ["users.read"] })
+  assert.deepEqual(graphEndpoint.auth, { required: true, permissions: ["users.read"], policies: [] })
+})
+
+
+test("evaluates named endpoint policies against validated input", async () => {
+  const Params = object({ id: string({ min: 1 }) })
+  const Output = object({ owner: string() })
+
+  const ownAccount = endpoint({
+    method: "GET",
+    path: "/accounts/:id",
+    auth: {
+      policies: [{
+        name: "accounts.owner",
+        evaluate({ principal, input }) {
+          return principal.id === input.params.id
+        }
+      }]
+    },
+    input: { params: Params },
+    output: Output,
+    handler(ctx) {
+      return { owner: ctx.input.params.id }
+    }
+  })
+
+  const policyApp = app({
+    name: "policy",
+    modules: [module({ name: "accounts", endpoints: { ownAccount } })]
+  })
+
+  const anonymous = await createTestRuntime(policyApp).fetch(new Request("https://app.test/accounts/user-1"))
+  assert.equal(anonymous.status, 401)
+
+  const denied = await createTestRuntime(policyApp, {
+    context: { principal: { id: "user-2" } }
+  }).fetch(new Request("https://app.test/accounts/user-1"))
+  assert.equal(denied.status, 403)
+  assert.deepEqual(await denied.json(), {
+    error: "Permission denied",
+    code: "ARC3002",
+    policy: "accounts.owner"
+  })
+
+  const allowed = await createTestRuntime(policyApp, {
+    context: { principal: { id: "user-1" } }
+  }).fetch(new Request("https://app.test/accounts/user-1"))
+  assert.equal(allowed.status, 200)
+  assert.deepEqual(await allowed.json(), { owner: "user-1" })
+
+  assert.deepEqual(inspect(policyApp).modules[0].endpoints[0].auth, {
+    required: true,
+    permissions: [],
+    policies: ["accounts.owner"]
+  })
+})
+
+test("authenticates portable HTTP principals through bearer and cookie mechanisms", async () => {
+  const {
+    authenticateWith,
+    bearerAuthenticator,
+    composeAuthenticators,
+    cookieSessionAuthenticator
+  } = await import("@arc/auth")
+
+  const Output = object({ principal: string() })
+  const me = endpoint({
+    method: "GET",
+    path: "/me",
+    auth: { required: true },
+    output: Output,
+    handler(ctx) {
+      return { principal: ctx.principal.id }
+    }
+  })
+  const authApp = app({
+    name: "auth-mechanisms",
+    modules: [module({ name: "identity", endpoints: { me } })]
+  })
+
+  const authenticate = authenticateWith(composeAuthenticators(
+    bearerAuthenticator({
+      verify(token) {
+        return token === "service-token"
+          ? { id: "service-1", type: "service", permissions: ["service.read"] }
+          : undefined
+      }
+    }),
+    cookieSessionAuthenticator({
+      cookie: "arc_session",
+      resolve(session) {
+        return session === "session-123"
+          ? { id: "user-123", type: "user" }
+          : undefined
+      }
+    })
+  ))
+
+  const bearer = await createTestRuntime(authApp, { authenticate }).fetch(new Request("https://app.test/me", {
+    headers: { authorization: "Bearer service-token" }
+  }))
+  assert.equal(bearer.status, 200)
+  assert.deepEqual(await bearer.json(), { principal: "service-1" })
+
+  const cookie = await createTestRuntime(authApp, { authenticate }).fetch(new Request("https://app.test/me", {
+    headers: { cookie: "other=x; arc_session=session-123" }
+  }))
+  assert.equal(cookie.status, 200)
+  assert.deepEqual(await cookie.json(), { principal: "user-123" })
+
+  const invalid = await createTestRuntime(authApp, { authenticate }).fetch(new Request("https://app.test/me", {
+    headers: { authorization: "Bearer invalid" }
+  }))
+  assert.equal(invalid.status, 401)
 })

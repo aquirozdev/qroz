@@ -5,6 +5,7 @@
   "type": "module",
   "dependencies": {
     "@arc/core": "file:../../packages/core",
+    "@arc/auth": "file:../../packages/auth",
     "@arc/testing": "file:../../packages/testing",
     "@arc/runtime-cloudflare": "file:../../packages/runtime-cloudflare",
     "@arc/runtime-aws": "file:../../packages/runtime-aws",

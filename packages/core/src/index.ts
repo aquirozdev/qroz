@@ -7,11 +7,6 @@ export interface Principal {
   readonly claims?: Readonly<Record<string, unknown>>
 }
 
-export interface EndpointAuthorization {
-  readonly required?: boolean
-  readonly permissions?: readonly string[]
-}
-
 export type StandardSchemaLike<Input = unknown, Output = Input> = {
   readonly "~standard": {
     readonly version: 1
@@ -32,6 +27,39 @@ type EmptySchema = undefined
 type ParamsOf<S extends StandardSchemaLike | EmptySchema> = S extends StandardSchemaLike ? InferOutput<S> : Record<string, never>
 type BodyOf<S extends StandardSchemaLike | EmptySchema> = S extends StandardSchemaLike ? InferOutput<S> : undefined
 type QueryOf<S extends StandardSchemaLike | EmptySchema> = S extends StandardSchemaLike ? InferOutput<S> : Record<string, never>
+
+export interface EndpointPolicyContext<
+  ParamsSchema extends StandardSchemaLike | EmptySchema = undefined,
+  BodySchema extends StandardSchemaLike | EmptySchema = undefined,
+  QuerySchema extends StandardSchemaLike | EmptySchema = undefined
+> {
+  readonly principal: Principal
+  readonly request: Request
+  readonly input: {
+    readonly params: ParamsOf<ParamsSchema>
+    readonly body: BodyOf<BodySchema>
+    readonly query: QueryOf<QuerySchema>
+  }
+}
+
+export interface EndpointPolicy<
+  ParamsSchema extends StandardSchemaLike | EmptySchema = undefined,
+  BodySchema extends StandardSchemaLike | EmptySchema = undefined,
+  QuerySchema extends StandardSchemaLike | EmptySchema = undefined
+> {
+  readonly name: string
+  readonly evaluate: (context: EndpointPolicyContext<ParamsSchema, BodySchema, QuerySchema>) => MaybePromise<boolean>
+}
+
+export interface EndpointAuthorization<
+  ParamsSchema extends StandardSchemaLike | EmptySchema = undefined,
+  BodySchema extends StandardSchemaLike | EmptySchema = undefined,
+  QuerySchema extends StandardSchemaLike | EmptySchema = undefined
+> {
+  readonly required?: boolean
+  readonly permissions?: readonly string[]
+  readonly policies?: readonly EndpointPolicy<ParamsSchema, BodySchema, QuerySchema>[]
+}
 
 export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "OPTIONS" | "HEAD"
 
@@ -299,7 +327,7 @@ export interface EndpointDefinition<
   readonly method: HttpMethod
   readonly path: string
   readonly status?: number
-  readonly auth?: EndpointAuthorization
+  readonly auth?: EndpointAuthorization<ParamsSchema, BodySchema, QuerySchema>
   readonly requires?: readonly CapabilityRequirement<any, any>[]
   readonly emits?: readonly EventDefinition<any>[]
   readonly dispatches?: readonly AnyJob[]
@@ -606,7 +634,7 @@ export function createCapabilityResolver(
 }
 
 export interface ApplicationGraph {
-  schemaVersion: 5
+  schemaVersion: 6
   name: string
   capabilities: Array<{
     name: string
@@ -624,7 +652,7 @@ export interface ApplicationGraph {
       method: HttpMethod
       path: string
       status: number
-      auth?: { required: boolean; permissions: string[] }
+      auth?: { required: boolean; permissions: string[]; policies: string[] }
       requires: string[]
       access: Array<{ capability: string; operations: string[] }>
       emits: Array<{ event: string; version: number }>
@@ -678,7 +706,7 @@ export function inspect(application: AppDefinition): ApplicationGraph {
   }
 
   return {
-    schemaVersion: 5,
+    schemaVersion: 6,
     name: application.name,
     capabilities: [...capabilities.values()].map((target) => ({
       name: target.name,
@@ -698,8 +726,9 @@ export function inspect(application: AppDefinition): ApplicationGraph {
         status: ep.status ?? 200,
         ...(ep.auth ? {
           auth: {
-            required: ep.auth.required ?? Boolean(ep.auth.permissions?.length),
-            permissions: [...(ep.auth.permissions ?? [])]
+            required: ep.auth.required ?? Boolean(ep.auth.permissions?.length || ep.auth.policies?.length),
+            permissions: [...(ep.auth.permissions ?? [])],
+            policies: (ep.auth.policies ?? []).map((policy) => policy.name)
           }
         } : {}),
         requires: (ep.requires ?? []).map((item) => requirementCapability(item).name),

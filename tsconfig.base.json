@@ -21,6 +21,9 @@
       "@arc/core": [
         "packages/core/src/index.ts"
       ],
+      "@arc/auth": [
+        "packages/auth/src/index.ts"
+      ],
       "@arc/runtime-web": [
         "packages/runtime-web/src/index.ts"
       ],

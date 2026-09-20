@@ -1,4 +1,4 @@
-import { normalizeProviderSource, type AppDefinition, type MaybePromise, type ProviderSource } from "@arc/core"
+import { normalizeProviderSource, type AppDefinition, type MaybePromise, type Principal, type ProviderSource } from "@arc/core"
 import { createWebRuntime, type WebExecutionContext } from "@arc/runtime-web"
 
 export interface ApiGatewayHttpApiV2Event {
@@ -45,6 +45,11 @@ export interface AwsLambdaOptions {
     event: ApiGatewayHttpApiV2Event,
     context: LambdaContextLike
   ) => MaybePromise<ProviderSource>
+  readonly authenticate?: (
+    request: Request,
+    event: ApiGatewayHttpApiV2Event,
+    context: LambdaContextLike
+  ) => MaybePromise<Principal | undefined>
   readonly onError?: (error: unknown) => void
 }
 
@@ -115,10 +120,13 @@ export function createAwsLambdaHandler(
 
   return async (event, context) => {
     const scope = normalizeProviderSource(await options.providers?.(event, context))
-    const response = await runtime.fetch(apiGatewayEventToRequest(event), {
+    const request = apiGatewayEventToRequest(event)
+    const principal = await options.authenticate?.(request, event, context)
+    const response = await runtime.fetch(request, {
       lambda: context,
       event,
       providers: scope.providers,
+      ...(principal ? { principal } : {}),
       ...(scope.dispose ? { dispose: scope.dispose } : {})
     })
     return responseToApiGatewayResult(response)

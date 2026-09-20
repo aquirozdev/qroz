@@ -210,3 +210,44 @@ test("Cloudflare request provider scopes dispose after success and failure", asy
   assert.equal(failed.status, 500)
   assert.equal(disposed, 2)
 })
+
+
+test("Cloudflare runtime resolves an authenticated principal per request", async () => {
+  const Output = object({ principal: string() })
+  const secured = endpoint({
+    method: "GET",
+    path: "/cloudflare-auth",
+    auth: { required: true },
+    output: Output,
+    handler(ctx) {
+      return { principal: ctx.principal.id }
+    }
+  })
+  const definition = app({
+    name: "cloudflare-auth",
+    modules: [module({ name: "auth", endpoints: { secured } })]
+  })
+  const worker = createCloudflareWorker(definition, {
+    authenticate(request) {
+      const principal = request.headers.get("x-test-principal")
+      return principal ? { id: principal, type: "test" } : undefined
+    }
+  })
+
+  const allowed = await worker.fetch(
+    new Request("https://app.test/cloudflare-auth", {
+      headers: { "x-test-principal": "cf-user" }
+    }),
+    {},
+    executionContext()
+  )
+  assert.equal(allowed.status, 200)
+  assert.deepEqual(await allowed.json(), { principal: "cf-user" })
+
+  const anonymous = await worker.fetch(
+    new Request("https://app.test/cloudflare-auth"),
+    {},
+    executionContext()
+  )
+  assert.equal(anonymous.status, 401)
+})

@@ -9,7 +9,8 @@ description: Current Arc packages and their responsibilities.
 
 | Package | Responsibility |
 | --- | --- |
-| `@arc/core` | DSL, capabilities, events/jobs metadata, graph, invariant errors |
+| `@arc/core` | DSL, capabilities, authorization policies, events/jobs metadata, graph, invariant errors |
+| `@arc/auth` | Portable HTTP authentication mechanisms and composition |
 | `@arc/runtime-web` | Portable Web Standards HTTP execution |
 | `@arc/runtime-memory` | Deterministic reference runtime |
 | `@arc/runtime-cloudflare` | Workers adapter and invocation providers |

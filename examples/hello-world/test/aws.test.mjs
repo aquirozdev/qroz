@@ -110,3 +110,54 @@ test("S3 adapter satisfies Arc storage contract", async () => {
     put: true, get: true, head: true, delete: true
   })
 })
+
+
+test("AWS runtime resolves an authenticated principal from the HTTP request", async () => {
+  const { app, endpoint, module } = await import("@arc/core")
+  const { object, string } = await import("../dist/schema.js")
+  const Output = object({ principal: string() })
+  const secured = endpoint({
+    method: "GET",
+    path: "/aws-auth",
+    auth: { required: true },
+    output: Output,
+    handler(ctx) {
+      return { principal: ctx.principal.id }
+    }
+  })
+  const definition = app({
+    name: "aws-auth",
+    modules: [module({ name: "auth", endpoints: { secured } })]
+  })
+
+  const handler = createAwsLambdaHandler(definition, {
+    authenticate(request) {
+      const principal = request.headers.get("x-test-principal")
+      return principal ? { id: principal, type: "test" } : undefined
+    }
+  })
+
+  const allowed = await handler({
+    version: "2.0",
+    rawPath: "/aws-auth",
+    rawQueryString: "",
+    headers: {
+      host: "example.test",
+      "x-forwarded-proto": "https",
+      "x-test-principal": "aws-user"
+    },
+    requestContext: { http: { method: "GET" } }
+  }, { awsRequestId: "req-auth" })
+
+  assert.equal(allowed.statusCode, 200)
+  assert.deepEqual(JSON.parse(allowed.body), { principal: "aws-user" })
+
+  const anonymous = await handler({
+    version: "2.0",
+    rawPath: "/aws-auth",
+    rawQueryString: "",
+    headers: { host: "example.test", "x-forwarded-proto": "https" },
+    requestContext: { http: { method: "GET" } }
+  }, { awsRequestId: "req-anon" })
+  assert.equal(anonymous.statusCode, 401)
+})
