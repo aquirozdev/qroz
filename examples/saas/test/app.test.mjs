@@ -1,9 +1,9 @@
 import test from "node:test"
 import assert from "node:assert/strict"
 
-import { app, buildApplication, inspect, module } from "@arc/core"
-import { planDeployment } from "@arc/deployment"
-import { createTestClient } from "@arc/testing"
+import { app, buildApplication, inspect, module } from "@qroz/core"
+import { planDeployment } from "@qroz/deployment"
+import { createTestClient } from "@qroz/testing"
 import application from "../dist/app.js"
 import {
   membershipRepository,

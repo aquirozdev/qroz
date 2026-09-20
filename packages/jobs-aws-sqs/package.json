@@ -1,10 +1,10 @@
 {
-  "name": "@arc/jobs-aws-sqs",
+  "name": "@qroz/jobs-aws-sqs",
   "version": "0.8.0",
   "type": "module",
   "dependencies": {
-    "@arc/core": "file:../core",
-    "@arc/jobs": "file:../jobs"
+    "@qroz/core": "file:../core",
+    "@qroz/jobs": "file:../jobs"
   },
   "exports": {
     ".": {

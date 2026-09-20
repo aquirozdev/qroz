@@ -49,10 +49,10 @@ test("deployment plan preserves operation-level resource access and job triggers
   ))
 })
 
-test("AWS IAM planner emits narrow S3/SQS/DynamoDB statements from Arc semantics", () => {
+test("AWS IAM planner emits narrow S3/SQS/DynamoDB statements from Qroz semantics", () => {
   const plan = planDeployment(application)
   const aws = planAwsIam(plan, {
-    "storage.files": { kind: "s3", bucketArn: "arn:aws:s3:::arc-files" },
+    "storage.files": { kind: "s3", bucketArn: "arn:aws:s3:::qroz-files" },
     "queue.notifications": { kind: "sqs", queueArn: "arn:aws:sqs:us-east-1:123456789012:notifications" },
     "queue.jobs.notifications": { kind: "sqs", queueArn: "arn:aws:sqs:us-east-1:123456789012:jobs" },
     "jobs.notifications.idempotency": { kind: "dynamodb", tableArn: "arn:aws:dynamodb:us-east-1:123456789012:table/idempotency" }
@@ -62,14 +62,14 @@ test("AWS IAM planner emits narrow S3/SQS/DynamoDB statements from Arc semantics
   assert.deepEqual(putFile.statements, [{
     Effect: "Allow",
     Action: ["s3:PutObject"],
-    Resource: "arn:aws:s3:::arc-files/*"
+    Resource: "arn:aws:s3:::qroz-files/*"
   }])
 
   const getFile = aws.surfaces.find((surface) => surface.surface === "endpoint:files.getFile")
   assert.deepEqual(getFile.statements, [{
     Effect: "Allow",
     Action: ["s3:GetObject"],
-    Resource: "arn:aws:s3:::arc-files/*"
+    Resource: "arn:aws:s3:::qroz-files/*"
   }])
 
   const dispatch = aws.surfaces.find((surface) => surface.surface === "endpoint:notifications.dispatchNotification")
@@ -92,7 +92,7 @@ test("AWS IAM planner emits narrow S3/SQS/DynamoDB statements from Arc semantics
 test("Cloudflare planner emits resource bindings and queue consumer triggers", () => {
   const plan = planDeployment(application)
   const cloudflare = planCloudflareBindings(plan, {
-    "storage.files": { kind: "r2", binding: "FILES", bucket: "arc-files" },
+    "storage.files": { kind: "r2", binding: "FILES", bucket: "qroz-files" },
     "queue.notifications": { kind: "queue", binding: "NOTIFICATIONS", queue: "notifications" },
     "queue.jobs.notifications": { kind: "queue", binding: "JOBS", queue: "jobs" },
     "jobs.notifications.idempotency": { kind: "durable-object", binding: "IDEMPOTENCY", className: "ArcIdempotency" }

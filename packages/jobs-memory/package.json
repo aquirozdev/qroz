@@ -1,11 +1,11 @@
 {
-  "name": "@arc/jobs-memory",
+  "name": "@qroz/jobs-memory",
   "version": "0.4.0",
   "type": "module",
   "dependencies": {
-    "@arc/core": "file:../core",
-    "@arc/jobs": "file:../jobs",
-    "@arc/queue-memory": "file:../queue-memory"
+    "@qroz/core": "file:../core",
+    "@qroz/jobs": "file:../jobs",
+    "@qroz/queue-memory": "file:../queue-memory"
   },
   "exports": {
     ".": {

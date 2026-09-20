@@ -7,7 +7,7 @@ description: Evidence-driven sequence optimized for exceptional DX, truthful app
 
 The roadmap is ordered by **user value and architectural risk**, not feature count.
 
-Arc has enough foundational primitives to prove the architecture. The next phase deliberately prioritizes product/DX depth before broadening the framework surface.
+Qroz has enough foundational primitives to prove the architecture. The next phase deliberately prioritizes product/DX depth before broadening the framework surface.
 
 ## Completed research milestones
 
@@ -67,7 +67,7 @@ In progress.
 
 The goal is **not** to build another Temporal/Inngest/Trigger.dev.
 
-Stabilize only the portable semantics needed by Arc applications:
+Stabilize only the portable semantics needed by Qroz applications:
 
 - task;
 - sleep/timer;
@@ -87,21 +87,21 @@ Required evidence:
 
 Compensation, child workflows, rich orchestration DSLs and advanced migration systems remain deferred until reference applications demonstrate demand.
 
-## v0.10.5 — Arc DX Preview
+## v0.10.5 — Qroz DX Preview
 
 This milestone is intentionally before broad deployment automation.
 
 ### First-run experience
 
 ```bash
-npm create arc@latest
+npm create qroz@latest
 cd app
-arc dev
+qroz dev
 ```
 
-should produce a useful local application and open Arc Studio without account, API key or mandatory Docker.
+should produce a useful local application and open Qroz Studio without account, API key or mandatory Docker.
 
-### Arc Studio
+### Qroz Studio
 
 Local-first visual projection of the Application Graph and execution data:
 
@@ -119,7 +119,7 @@ Studio must never become a second source of truth.
 
 ### Error experience
 
-Every stable Arc error should have:
+Every stable Qroz error should have:
 
 - short human explanation;
 - machine code;
@@ -157,7 +157,7 @@ It should explain:
 - security privilege expansion;
 - provider-specific consequences.
 
-Arc may export or integrate with external IaC. It does not need to become a full IaC engine.
+Qroz may export or integrate with external IaC. It does not need to become a full IaC engine.
 
 ## v0.12 — agent-native developer experience
 
@@ -191,8 +191,8 @@ Only after the local product is excellent:
 Do not prioritize:
 
 - a custom ORM;
-- an Arc identity provider;
-- an Arc LLM/agent SDK;
+- an Qroz identity provider;
+- an Qroz LLM/agent SDK;
 - a general-purpose IaC replacement;
 - every durable-workflow feature;
 - additional cloud providers before AWS + Cloudflare tell us something architecturally new;
@@ -204,7 +204,7 @@ Public package publication is now a separate track from full production readines
 
 Before the first public beta:
 
-- select the final project/package identity and replace the Arc codename;
+- select the final project/package identity and replace the Qroz codename;
 - choose and commit the repository license;
 - make every publishable package registry-safe and metadata-complete;
 - prove clean install/scaffold/dev/test from packed artifacts;
@@ -225,7 +225,7 @@ A 1.0 discussion begins only after:
 - security/auth models are coherent;
 - jobs/idempotency are production credible;
 - durable workflow scope is explicitly decided;
-- local Arc Studio and CLI explain the same application truthfully;
+- local Qroz Studio and CLI explain the same application truthfully;
 - canonical DX claims have reproducible browser evidence;
 - DX performance budgets are enforced;
 - semantic change/deployment review is credible;

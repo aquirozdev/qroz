@@ -4,7 +4,7 @@ Status: accepted
 
 ## Decision
 
-If Arc claims an effect is visible in the Application Graph, runtime code cannot silently bypass that declaration.
+If Qroz claims an effect is visible in the Application Graph, runtime code cannot silently bypass that declaration.
 
 Current invariants:
 
@@ -19,4 +19,4 @@ A graph used for agent context, IAM, semantic diff or deployment planning is dan
 
 ## Consequence
 
-Arc intentionally asks developers to declare architectural effects explicitly even when TypeScript could technically execute without that declaration.
+Qroz intentionally asks developers to declare architectural effects explicitly even when TypeScript could technically execute without that declaration.

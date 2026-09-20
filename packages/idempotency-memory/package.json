@@ -1,9 +1,9 @@
 {
-  "name": "@arc/idempotency-memory",
+  "name": "@qroz/idempotency-memory",
   "version": "0.5.0",
   "type": "module",
   "dependencies": {
-    "@arc/core": "file:../core"
+    "@qroz/core": "file:../core"
   },
   "exports": {
     ".": {

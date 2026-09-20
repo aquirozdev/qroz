@@ -1,9 +1,9 @@
 {
-  "name": "@arc/queue-sqs",
+  "name": "@qroz/queue-sqs",
   "version": "0.8.0",
   "type": "module",
   "dependencies": {
-    "@arc/queue": "file:../queue"
+    "@qroz/queue": "file:../queue"
   },
   "exports": {
     ".": {

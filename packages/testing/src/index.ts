@@ -1,5 +1,5 @@
-import type { AppDefinition } from "@arc/core"
-import { createMemoryRuntime, type ArcRuntime, type MemoryRuntimeOptions } from "@arc/runtime-memory"
+import type { AppDefinition } from "@qroz/core"
+import { createMemoryRuntime, type ArcRuntime, type MemoryRuntimeOptions } from "@qroz/runtime-memory"
 
 export function createTestRuntime(application: AppDefinition, options: MemoryRuntimeOptions = {}) {
   return createMemoryRuntime(application, options)

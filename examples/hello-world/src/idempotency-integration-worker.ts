@@ -1,5 +1,5 @@
-import { createDurableObjectIdempotencyStore, type DurableObjectNamespaceLike } from "@arc/idempotency-cloudflare-do"
-export { ArcIdempotencyDurableObject } from "@arc/idempotency-cloudflare-do/worker"
+import { createDurableObjectIdempotencyStore, type DurableObjectNamespaceLike } from "@qroz/idempotency-cloudflare-do"
+export { ArcIdempotencyDurableObject } from "@qroz/idempotency-cloudflare-do/worker"
 
 interface Env {
   IDEMPOTENCY: DurableObjectNamespaceLike

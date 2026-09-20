@@ -1,22 +1,22 @@
 ---
 title: Getting started
-description: The shortest path to understanding and using Arc.
+description: The shortest path to understanding and using Qroz.
 ---
 
 # Getting started
 
-Arc is a portable TypeScript application framework for serverless and distributed systems. It aims for Laravel-level application ergonomics while keeping runtime, cloud, ORM and infrastructure providers replaceable.
+Qroz is a portable TypeScript application framework for serverless and distributed systems. It aims for Laravel-level application ergonomics while keeping runtime, cloud, ORM and infrastructure providers replaceable.
 
 The intended first run is deliberately small:
 
 ```bash
-npm create arc@latest my-app
+npm create qroz@latest my-app
 cd my-app
 npm install
 npm run dev
 ```
 
-The generated dev command is source-first: Arc accepts `src/app.ts`, uses the application's own TypeScript project, watches emitted JavaScript internally and keeps Arc Studio on a stable local URL. Developers should not have to coordinate `dist/` paths or a second build watcher.
+The generated dev command is source-first: Qroz accepts `src/app.ts`, uses the application's own TypeScript project, watches emitted JavaScript internally and keeps Qroz Studio on a stable local URL. Developers should not have to coordinate `dist/` paths or a second build watcher.
 
 The intended first application shape is deliberately small:
 
@@ -59,7 +59,7 @@ export const createUser = endpoint({
 })
 ```
 
-Those declarations are executable application metadata. Arc uses them both to run the request and to build an Application Graph for tooling, agents, tests and future deployment planning.
+Those declarations are executable application metadata. Qroz uses them both to run the request and to build an Application Graph for tooling, agents, tests and future deployment planning.
 
 ## Learn in this order
 

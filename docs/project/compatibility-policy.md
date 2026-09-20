@@ -1,11 +1,11 @@
 ---
 title: Compatibility policy
-description: Pre-1.0 compatibility expectations for Arc APIs, graph schemas, envelopes, packages, and integrations.
+description: Pre-1.0 compatibility expectations for Qroz APIs, graph schemas, envelopes, packages, and integrations.
 ---
 
 # Compatibility policy
 
-Arc is currently pre-1.0 research software. Breaking changes are allowed, but must be intentional and documented.
+Qroz is currently pre-1.0 research software. Breaking changes are allowed, but must be intentional and documented.
 
 ## Public TypeScript API
 
@@ -26,7 +26,7 @@ Breaking graph changes require fixture updates, changelog notes and consumer upd
 
 Queued messages can outlive a deployment. Job name/version and envelope schema must therefore evolve more conservatively than ordinary internal code.
 
-Arc must not remove support for an old job version while messages of that version can still exist without an explicit migration/drain strategy.
+Qroz must not remove support for an old job version while messages of that version can still exist without an explicit migration/drain strategy.
 
 ## Platform adapters
 

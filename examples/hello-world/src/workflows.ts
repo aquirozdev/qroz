@@ -1,4 +1,4 @@
-import { module, workflow, workflowSleep, workflowSucceed, workflowTask } from "@arc/core"
+import { module, workflow, workflowSleep, workflowSucceed, workflowTask } from "@qroz/core"
 import { auditSink } from "./users.js"
 import { object, string } from "./schema.js"
 

@@ -5,9 +5,9 @@ import test from "node:test"
 
 const execFileAsync = promisify(execFile)
 
-test("arc diff exposes security, resource and deployment changes", async () => {
+test("qroz diff exposes security, resource and deployment changes", async () => {
   const { stdout, stderr } = await execFileAsync(process.execPath, [
-    "packages/cli/bin/arc.mjs",
+    "packages/cli/bin/qroz.mjs",
     "diff",
     "examples/taskboard/test/fixtures/change-before.mjs",
     "examples/taskboard/test/fixtures/change-after.mjs",
@@ -37,9 +37,9 @@ test("arc diff exposes security, resource and deployment changes", async () => {
   }])
 })
 
-test("arc diff human output calls out security and resource access explicitly", async () => {
+test("qroz diff human output calls out security and resource access explicitly", async () => {
   const { stdout, stderr } = await execFileAsync(process.execPath, [
-    "packages/cli/bin/arc.mjs",
+    "packages/cli/bin/qroz.mjs",
     "diff",
     "examples/taskboard/test/fixtures/change-before.mjs",
     "examples/taskboard/test/fixtures/change-after.mjs"

@@ -1,4 +1,4 @@
-import type { ObjectStorage, PutStorageOptions, StorageBody, StorageMetadata, StoredObject } from "@arc/storage"
+import type { ObjectStorage, PutStorageOptions, StorageBody, StorageMetadata, StoredObject } from "@qroz/storage"
 
 type MemoryEntry = {
   bytes: Uint8Array

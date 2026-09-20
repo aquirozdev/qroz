@@ -1,11 +1,11 @@
 ---
 title: Multi-agent compatibility
-description: How Arc keeps repository instructions, skills, and specialist agents compatible across Codex, Claude Code, OpenCode, and GitHub Copilot.
+description: How Qroz keeps repository instructions, skills, and specialist agents compatible across Codex, Claude Code, OpenCode, and GitHub Copilot.
 ---
 
 # Multi-agent compatibility
 
-Arc is intentionally not tied to one coding-agent vendor.
+Qroz is intentionally not tied to one coding-agent vendor.
 
 ## Canonical layers
 
@@ -17,7 +17,7 @@ Arc is intentionally not tied to one coding-agent vendor.
 - **OpenCode** V2 natively reads hierarchical `AGENTS.md`.
 - **Claude Code** still uses `CLAUDE.md` as its native project memory/instruction file.
 
-Arc therefore commits a generated **real file** `CLAUDE.md` whose body mirrors `AGENTS.md`. CI fails if it drifts.
+Qroz therefore commits a generated **real file** `CLAUDE.md` whose body mirrors `AGENTS.md`. CI fails if it drifts.
 
 We do not use a symlink or `@AGENTS.md` import as the compatibility mechanism. Git may materialize symlinks as plain files when `core.symlinks=false` on unsupported/configured filesystems, and Claude Code has had current issues around symlink/import behavior. A generated regular file is more boring and more portable.
 
@@ -47,7 +47,7 @@ GitHub Copilot-compatible mirrors live under:
 
 ### Specialist agents
 
-Agent configuration schemas are vendor-specific, so Arc does **not** pretend one file can describe all capabilities safely.
+Agent configuration schemas are vendor-specific, so Qroz does **not** pretend one file can describe all capabilities safely.
 
 Equivalent role adapters are committed for:
 
@@ -60,10 +60,10 @@ Equivalent role adapters are committed for:
 
 The shared roles are:
 
-- Arc Architect
-- Arc Implementer
-- Arc Reviewer
-- Arc Docs
+- Qroz Architect
+- Qroz Implementer
+- Qroz Reviewer
+- Qroz Docs
 
 The role intent is shared, while permissions/tool syntax stays native to each harness.
 
@@ -88,4 +88,4 @@ If a canonical instruction/skill changes, update its mirrors in the same PR. Fut
 
 ## Nested scope
 
-When Arc grows enough to need package-specific agent rules, add nested `AGENTS.md` files close to the relevant packages. Create corresponding nested Claude instructions only if Claude Code actually needs those scopes; avoid proliferating files preemptively.
+When Qroz grows enough to need package-specific agent rules, add nested `AGENTS.md` files close to the relevant packages. Create corresponding nested Claude instructions only if Claude Code actually needs those scopes; avoid proliferating files preemptively.

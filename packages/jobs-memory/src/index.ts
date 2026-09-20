@@ -1,6 +1,6 @@
-import type { AppDefinition, JobEnvelope, Provider } from "@arc/core"
-import { executeJobEnvelope, type JobExecutionOutcome } from "@arc/jobs"
-import type { MemoryQueue, MemoryQueuedMessage } from "@arc/queue-memory"
+import type { AppDefinition, JobEnvelope, Provider } from "@qroz/core"
+import { executeJobEnvelope, type JobExecutionOutcome } from "@qroz/jobs"
+import type { MemoryQueue, MemoryQueuedMessage } from "@qroz/queue-memory"
 
 export interface MemoryJobRun {
   readonly message: MemoryQueuedMessage<JobEnvelope>

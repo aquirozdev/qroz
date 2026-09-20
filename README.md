@@ -1,10 +1,10 @@
-# Arc — application framework for humans and agents
+# Qroz — application framework for humans and agents
 
-> **Research project / codename.** Arc is pre-1.0 and its public API may change.
+> **Research project / codename.** Qroz is pre-1.0 and its public API may change.
 
-Arc explores a TypeScript application framework that stays **simple at the beginning, explicit as applications grow, and understandable to both humans and coding agents**.
+Qroz explores a TypeScript application framework that stays **simple at the beginning, explicit as applications grow, and understandable to both humans and coding agents**.
 
-The product goal is not to win on routing benchmarks or reproduce every cloud primitive. Arc owns **application semantics**; providers own **infrastructure primitives**.
+The product goal is not to win on routing benchmarks or reproduce every cloud primitive. Qroz owns **application semantics**; providers own **infrastructure primitives**.
 
 ```ts
 export default app({
@@ -13,16 +13,16 @@ export default app({
 })
 ```
 
-From that application source Arc builds a truthful, machine-readable **Application Graph** used by runtime enforcement, tests, developer tooling, deployment planning, security analysis and agent context.
+From that application source Qroz builds a truthful, machine-readable **Application Graph** used by runtime enforcement, tests, developer tooling, deployment planning, security analysis and agent context.
 
 ## Product direction
 
-Arc is optimizing for a developer experience with five properties:
+Qroz is optimizing for a developer experience with five properties:
 
 - **simple like a minimal Web framework** for small applications;
 - **productive like a batteries-included framework** without mandatory decorators or ceremony;
 - **structured as the application grows** without requiring an architectural rewrite;
-- **visual and explainable** through a local-first Arc Studio and deterministic CLI;
+- **visual and explainable** through a local-first Qroz Studio and deterministic CLI;
 - **transparent rather than magical**: important behavior must be explainable from source, graph, trace or deployment plan.
 
 The current priority is therefore **product/DX depth**, not framework surface-area growth.
@@ -31,7 +31,7 @@ Near-term work focuses on:
 
 1. finish authorization decision semantics and security foundations;
 2. keep a deliberately small portable durable-workflow subset with real provider evidence;
-3. make `arc dev`, errors, inspection, testing and Arc Studio exceptional;
+3. make `qroz dev`, errors, inspection, testing and Qroz Studio exceptional;
 4. turn deployment/security changes into reviewable semantic diffs;
 5. expose the same application intelligence safely to coding agents.
 
@@ -55,9 +55,9 @@ Today the repository includes:
 
 ## Product rule
 
-**Arc owns semantics. Providers own primitives.**
+**Qroz owns semantics. Providers own primitives.**
 
-Arc should not build its own ORM, identity provider, LLM SDK, general-purpose IaC engine or workflow engine when existing tools can implement Arc capabilities. Arc should make those tools coherent through one application model.
+Qroz should not build its own ORM, identity provider, LLM SDK, general-purpose IaC engine or workflow engine when existing tools can implement Qroz capabilities. Qroz should make those tools coherent through one application model.
 
 ## Documentation
 

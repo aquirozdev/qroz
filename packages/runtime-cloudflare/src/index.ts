@@ -1,6 +1,6 @@
-import { createCloudflareTracer, type CloudflareTracingLike } from "@arc/telemetry-cloudflare"
-import { normalizeProviderSource, type AppDefinition, type MaybePromise, type Principal, type ProviderSource } from "@arc/core"
-import { createWebRuntime, type WebExecutionContext } from "@arc/runtime-web"
+import { createCloudflareTracer, type CloudflareTracingLike } from "@qroz/telemetry-cloudflare"
+import { normalizeProviderSource, type AppDefinition, type MaybePromise, type Principal, type ProviderSource } from "@qroz/core"
+import { createWebRuntime, type WebExecutionContext } from "@qroz/runtime-web"
 
 export interface CloudflareExecutionContextLike {
   waitUntil(promise: Promise<unknown>): void

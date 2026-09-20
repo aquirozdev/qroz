@@ -1,11 +1,11 @@
 ---
 title: Production readiness
-description: Evidence Arc must collect before claiming broad production readiness.
+description: Evidence Qroz must collect before claiming broad production readiness.
 ---
 
 # Production readiness
 
-Arc is **not currently production-ready**. Production readiness is demonstrated by representative applications and failure-path evidence; package count, API surface or one large demo are not sufficient.
+Qroz is **not currently production-ready**. Production readiness is demonstrated by representative applications and failure-path evidence; package count, API surface or one large demo are not sufficient.
 
 The external baseline is [Production readiness research baseline](../research/2026-09-production-readiness-baseline.md). The executable product corpus is [Reference applications](./reference-applications.md).
 
@@ -75,7 +75,7 @@ Deterministic inspect/context/plan/diff/explain, read-only MCP, authenticated to
 
 ## Framework-level gates
 
-Arc may call a capability **production-ready** only when:
+Qroz may call a capability **production-ready** only when:
 
 - the public application-facing API is represented by an outside-in reference example;
 - graph semantics are explicit and versioned;
@@ -87,7 +87,7 @@ Arc may call a capability **production-ready** only when:
 - failures are diagnosable through telemetry;
 - CLI/agent output is deterministic and secret-safe.
 
-Arc may describe the **framework as broadly production-ready** only when all Tier 1 reference applications pass their required gates on Cloudflare and AWS, except where a scenario intentionally proves a provider-specific primitive.
+Qroz may describe the **framework as broadly production-ready** only when all Tier 1 reference applications pass their required gates on Cloudflare and AWS, except where a scenario intentionally proves a provider-specific primitive.
 
 ## Tiers
 
@@ -119,4 +119,4 @@ The corpus complements, rather than replaces, these requirements:
 
 ## Anti-goal
 
-The corpus does not imply Arc should build every subsystem itself. Prefer standards and adapters: Standard Schema, PostgreSQL/Drizzle, OpenTelemetry, Web Standards, provider queues/storage/workflows and official SDKs. Arc should own application semantics, graph integrity, contracts and portability — not recreate the ecosystem.
+The corpus does not imply Qroz should build every subsystem itself. Prefer standards and adapters: Standard Schema, PostgreSQL/Drizzle, OpenTelemetry, Web Standards, provider queues/storage/workflows and official SDKs. Qroz should own application semantics, graph integrity, contracts and portability — not recreate the ecosystem.

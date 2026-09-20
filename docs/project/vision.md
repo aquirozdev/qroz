@@ -1,15 +1,15 @@
 ---
 title: Product vision
-description: Arc's current product thesis: exceptional developer experience backed by truthful application semantics.
+description: Qroz's current product thesis: exceptional developer experience backed by truthful application semantics.
 ---
 
 # Product vision
 
-Arc explores a **TypeScript application framework for humans and AI agents** whose primary product is a coherent developer experience backed by a truthful semantic model.
+Qroz explores a **TypeScript application framework for humans and AI agents** whose primary product is a coherent developer experience backed by a truthful semantic model.
 
 It is not “Laravel rewritten in TypeScript”, another routing framework, another cloud abstraction layer, or another workflow engine.
 
-Arc's thesis is:
+Qroz's thesis is:
 
 > Developers should be able to start with almost no ceremony, grow into distributed systems without changing architectural frameworks, and always understand what their application does, depends on, can access and will change when deployed.
 
@@ -23,7 +23,7 @@ The TypeScript backend ecosystem repeatedly forces developers to choose between:
 - platform engineering systems that understand infrastructure but not enough application intent;
 - AI coding tools that can generate changes faster than teams can understand their architectural, security and deployment consequences.
 
-Arc should make those trade-offs less necessary.
+Qroz should make those trade-offs less necessary.
 
 ## Product promise
 
@@ -75,7 +75,7 @@ The Application Graph is valuable only because execution and tooling remain trut
 
 ## Differentiation
 
-Arc should not compete on “we also have routes, auth, queues and workflows.”
+Qroz should not compete on “we also have routes, auth, queues and workflows.”
 
 The differentiation is the combination of:
 
@@ -88,7 +88,7 @@ The differentiation is the combination of:
 
 ## Experience target
 
-Arc should feel:
+Qroz should feel:
 
 - minimal when the application is minimal;
 - batteries-included when common production behavior is needed;
@@ -108,17 +108,17 @@ Any important behavior should be explainable by at least one of four artifacts:
 3. execution trace;
 4. deployment/change plan.
 
-If important state exists outside those surfaces, Arc should treat it as architectural debt.
+If important state exists outside those surfaces, Qroz should treat it as architectural debt.
 
 ## Provider rule
 
-**Arc owns semantics. Providers own primitives.**
+**Qroz owns semantics. Providers own primitives.**
 
-Arc integrates existing databases, auth providers, cloud resources, AI SDKs, infrastructure tools and durable engines through capabilities/adapters. Provider-native escape hatches remain first-class.
+Qroz integrates existing databases, auth providers, cloud resources, AI SDKs, infrastructure tools and durable engines through capabilities/adapters. Provider-native escape hatches remain first-class.
 
 ## Long-term outcome
 
-A developer should be able to open an unfamiliar Arc application and quickly answer:
+A developer should be able to open an unfamiliar Qroz application and quickly answer:
 
 - what does this application expose?
 - which modules depend on each other?

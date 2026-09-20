@@ -1,6 +1,6 @@
 ---
 title: September 2026 platform baseline
-description: Primary external facts used to update Arc's roadmap and architecture in September 2026.
+description: Primary external facts used to update Qroz's roadmap and architecture in September 2026.
 ---
 
 # September 2026 platform baseline
@@ -11,7 +11,7 @@ Research date: **2026-09-19**.
 
 The Minimum Common Web API draft dated 31 July 2026 describes the first edition of an Ecma standard for a curated subset of Web Platform APIs in server runtimes, adopted by the Ecma General Assembly in December 2025.
 
-Arc implication: Web-standard `Request`, `Response`, `Headers`, URL and streams remain the correct portable runtime boundary.
+Qroz implication: Web-standard `Request`, `Response`, `Headers`, URL and streams remain the correct portable runtime boundary.
 
 Source: https://min-common-api.proposal.wintertc.org/
 
@@ -19,7 +19,7 @@ Source: https://min-common-api.proposal.wintertc.org/
 
 Standard Schema V1 is a common validator interface. The project also defines Standard JSON Schema V1 for entities capable of producing JSON Schema.
 
-Arc implication: keep validation provider-neutral and use Standard JSON Schema opportunistically for generated contracts rather than adding Zod-specific conversion logic.
+Qroz implication: keep validation provider-neutral and use Standard JSON Schema opportunistically for generated contracts rather than adding Zod-specific conversion logic.
 
 Sources:
 - https://standardschema.dev/schema
@@ -29,7 +29,7 @@ Sources:
 
 OpenAPI 3.2.1 was published on 2026-09-10. OpenAPI 3.2 uses a JSON Schema 2020-12-based dialect. JSON Schema's current published version remains Draft 2020-12.
 
-Arc implication: future HTTP contract generation should target OpenAPI 3.2.x and must distinguish schemas that can be faithfully converted from opaque Standard Schema validators.
+Qroz implication: future HTTP contract generation should target OpenAPI 3.2.x and must distinguish schemas that can be faithfully converted from opaque Standard Schema validators.
 
 Sources:
 - https://spec.openapis.org/oas/v3.2.1.html
@@ -39,7 +39,7 @@ Sources:
 
 AsyncAPI 3.1.0 was released in January 2026 and describes message-driven APIs independently of transport.
 
-Arc implication: evaluate AsyncAPI as an export/documentation format for public event/message boundaries; do not make it Arc's internal job/event model.
+Qroz implication: evaluate AsyncAPI as an export/documentation format for public event/message boundaries; do not make it Qroz's internal job/event model.
 
 Sources:
 - https://www.asyncapi.com/blog/release-notes-3.1.0
@@ -49,7 +49,7 @@ Sources:
 
 W3C Trace Context standardizes `traceparent` and `tracestate` propagation. The recommendation also explicitly warns against putting personally identifiable information into `tracestate`.
 
-Arc implication: v0.7 propagation stays standards-compatible and agent/telemetry code must treat trace state as opaque tracing data, not an application metadata carrier.
+Qroz implication: v0.7 propagation stays standards-compatible and agent/telemetry code must treat trace state as opaque tracing data, not an application metadata carrier.
 
 Source: https://www.w3.org/TR/trace-context/
 
@@ -57,7 +57,7 @@ Source: https://www.w3.org/TR/trace-context/
 
 The official TypeScript SDK v2 is the stable line implementing the 2026-07-28 MCP specification. Its server package provides Web-standard HTTP integration through `createMcpHandler()`.
 
-Arc implication: MCP remains an adapter over Arc semantics; no custom protocol implementation is justified.
+Qroz implication: MCP remains an adapter over Qroz semantics; no custom protocol implementation is justified.
 
 Sources:
 - https://ts.sdk.modelcontextprotocol.io/v2/
@@ -67,7 +67,7 @@ Sources:
 
 SQLite-backed Durable Objects are GA and Cloudflare recommends SQLite storage for new Durable Object classes.
 
-Arc implication: SQLite DO remains a credible Cloudflare implementation of coordinated job idempotency state.
+Qroz implication: SQLite DO remains a credible Cloudflare implementation of coordinated job idempotency state.
 
 Source: https://developers.cloudflare.com/durable-objects/
 
@@ -75,7 +75,7 @@ Source: https://developers.cloudflare.com/durable-objects/
 
 Workers automatically traces platform operations and exposes custom spans through Workers tracing APIs.
 
-Arc implication: keep a portable semantic tracer and use native tracing bridges rather than shipping an embedded tracing backend.
+Qroz implication: keep a portable semantic tracer and use native tracing bridges rather than shipping an embedded tracing backend.
 
 Source: https://developers.cloudflare.com/workers/observability/traces/custom-spans/
 
@@ -83,7 +83,7 @@ Source: https://developers.cloudflare.com/workers/observability/traces/custom-sp
 
 OpenTelemetry Semantic Conventions are at 1.44.0. HTTP server/client spans and database client spans are stable; messaging conventions remain in development.
 
-Arc implication: use stable HTTP/DB naming where appropriate. Keep Arc messaging/job attributes namespaced/versionable until messaging semantic conventions settle.
+Qroz implication: use stable HTTP/DB naming where appropriate. Keep Qroz messaging/job attributes namespaced/versionable until messaging semantic conventions settle.
 
 Sources:
 - https://opentelemetry.io/docs/specs/semconv/
@@ -95,7 +95,7 @@ Sources:
 
 AWS Lambda currently lists managed Node.js 24 on Amazon Linux 2023 and Node.js 26 as an upcoming November 2026 runtime target. Lambda SQS integrations support partial batch failure reporting. AWS Powertools documents that partial failure handling reduces duplicate processing but does not guarantee exactly-once execution.
 
-Arc implication: design the AWS adapter for modern AL2023 runtimes and map Arc per-message outcomes to SQS partial batch responses while retaining idempotency.
+Qroz implication: design the AWS adapter for modern AL2023 runtimes and map Qroz per-message outcomes to SQS partial batch responses while retaining idempotency.
 
 Sources:
 - https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html
@@ -105,7 +105,7 @@ Sources:
 
 npm trusted publishing uses OIDC and can automatically generate provenance in supported public publishing workflows. npm currently documents that provenance is not generated when publishing from private repositories.
 
-Arc implication: do not design public release provenance around the current private-repository state without revisiting this constraint.
+Qroz implication: do not design public release provenance around the current private-repository state without revisiting this constraint.
 
 Source: https://docs.npmjs.com/trusted-publishers/
 
@@ -113,7 +113,7 @@ Source: https://docs.npmjs.com/trusted-publishers/
 
 Astro Starlight currently provides navigation, search, i18n, SEO, accessibility-oriented defaults and Markdown/MDX/Markdoc support. VitePress remains a strong lightweight alternative with local full-text search.
 
-Arc implication: keep Markdown canonical and target Starlight first, preserving reversibility.
+Qroz implication: keep Markdown canonical and target Starlight first, preserving reversibility.
 
 Sources:
 - https://starlight.astro.build/
@@ -123,7 +123,7 @@ Sources:
 
 Encore continues to derive an Application Model through static analysis and uses it across local infrastructure, previews, deployment and observability. Hono continues to demonstrate a Web Standards cross-runtime HTTP model. Effect Platform continues to provide typed abstract platform services with runtime-specific layers.
 
-Arc implication: do not compete by rebuilding their strongest lower-level primitives. Differentiate through explicit application semantics, portable capabilities, truthful distributed behavior and human+agent DX.
+Qroz implication: do not compete by rebuilding their strongest lower-level primitives. Differentiate through explicit application semantics, portable capabilities, truthful distributed behavior and human+agent DX.
 
 Sources:
 - https://encore.dev/docs/understanding-encore

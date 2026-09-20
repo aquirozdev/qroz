@@ -1,9 +1,9 @@
 {
-  "name": "@arc/deployment-aws",
+  "name": "@qroz/deployment-aws",
   "version": "0.9.0",
   "type": "module",
   "dependencies": {
-    "@arc/deployment": "file:../deployment"
+    "@qroz/deployment": "file:../deployment"
   },
   "exports": {
     ".": {

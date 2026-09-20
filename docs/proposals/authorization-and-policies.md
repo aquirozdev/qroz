@@ -28,7 +28,7 @@ export const updatePost = endpoint({
 })
 ```
 
-HTTP runtimes can resolve identity through a portable `authenticate(request) -> Principal | undefined` hook. The `@arc/auth` package currently demonstrates bearer-credential and cookie-session mechanisms with application-supplied verification/resolution.
+HTTP runtimes can resolve identity through a portable `authenticate(request) -> Principal | undefined` hook. The `@qroz/auth` package currently demonstrates bearer-credential and cookie-session mechanisms with application-supplied verification/resolution.
 
 ## Model candidates
 
@@ -63,7 +63,7 @@ The same capability vocabulary may later authorize mutating MCP tools, but end-u
 - missing identity returns ARC3001 / HTTP 401 for protected endpoints;
 - permission or policy denial returns ARC3002 / HTTP 403;
 - named policies evaluate after route/query/body validation and are represented in the Application Graph;
-- bearer and cookie-session mechanisms exercise two HTTP credential shapes without coupling Arc to a specific identity vendor;
+- bearer and cookie-session mechanisms exercise two HTTP credential shapes without coupling Qroz to a specific identity vendor;
 - Cloudflare and AWS HTTP adapters can resolve principals per invocation;
 - HTTP runtimes can emit structured allow/deny decisions for authentication, permissions and policies without copying arbitrary principal claims into the audit record.
 

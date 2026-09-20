@@ -1,6 +1,6 @@
 ---
 title: Repository security automation
-description: GitHub Actions, dependency updates, secrets and future security gates for Arc.
+description: GitHub Actions, dependency updates, secrets and future security gates for Qroz.
 ---
 
 # Repository security automation
@@ -54,4 +54,4 @@ Do not add a workflow that pretends these checks are active if the private repos
 
 ## Vulnerability handling
 
-Follow `SECURITY.md`. If Arc becomes public, enable GitHub private vulnerability reporting and security advisories before announcing production support.
+Follow `SECURITY.md`. If Qroz becomes public, enable GitHub private vulnerability reporting and security advisories before announcing production support.

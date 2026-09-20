@@ -1,8 +1,8 @@
 import test from "node:test"
 import assert from "node:assert/strict"
-import { probeStorageContract, readStorageText } from "@arc/storage"
-import { createMemoryStorage } from "@arc/storage-memory"
-import { createR2Storage } from "@arc/storage-r2"
+import { probeStorageContract, readStorageText } from "@qroz/storage"
+import { createMemoryStorage } from "@qroz/storage-memory"
+import { createR2Storage } from "@qroz/storage-r2"
 
 function fakeR2() {
   const objects = new Map()

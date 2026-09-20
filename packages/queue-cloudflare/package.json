@@ -1,9 +1,9 @@
 {
-  "name": "@arc/queue-cloudflare",
+  "name": "@qroz/queue-cloudflare",
   "version": "0.4.0",
   "type": "module",
   "dependencies": {
-    "@arc/queue": "file:../queue"
+    "@qroz/queue": "file:../queue"
   },
   "exports": {
     ".": {

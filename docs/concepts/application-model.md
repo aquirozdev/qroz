@@ -1,11 +1,11 @@
 ---
 title: Application Model
-description: Arc's semantic model of an application and the Application Graph derived from it.
+description: Qroz's semantic model of an application and the Application Graph derived from it.
 ---
 
 # Application Model
 
-The Application Model is Arc's central abstraction. The runtime, CLI, agents and future deployment tooling consume the same semantic definitions instead of reconstructing architecture independently.
+The Application Model is Qroz's central abstraction. The runtime, CLI, agents and future deployment tooling consume the same semantic definitions instead of reconstructing architecture independently.
 
 ## Current primitives
 
@@ -40,4 +40,4 @@ Future consumers include IAM generation, deployment planning, LSP navigation, pr
 
 ## Static analysis later
 
-Arc currently derives the graph from explicit runtime objects. Static compilation may be added later only after the model stabilizes. The compiler is an optimization and tooling layer, not the source of semantics.
+Qroz currently derives the graph from explicit runtime objects. Static compilation may be added later only after the model stabilizes. The compiler is an optimization and tooling layer, not the source of semantics.

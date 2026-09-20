@@ -1,12 +1,12 @@
 import test from "node:test"
 import assert from "node:assert/strict"
-import { app, job, module } from "@arc/core"
-import { queue, provideQueue } from "@arc/queue"
-import { createMemoryQueue } from "@arc/queue-memory"
-import { idempotencyStore, provideIdempotencyStore } from "@arc/idempotency"
-import { createMemoryIdempotencyStore } from "@arc/idempotency-memory"
-import { ArcIdempotencyDurableObjectLogic, createDurableObjectIdempotencyStore } from "@arc/idempotency-cloudflare-do"
-import { executeJobEnvelope } from "@arc/jobs"
+import { app, job, module } from "@qroz/core"
+import { queue, provideQueue } from "@qroz/queue"
+import { createMemoryQueue } from "@qroz/queue-memory"
+import { idempotencyStore, provideIdempotencyStore } from "@qroz/idempotency"
+import { createMemoryIdempotencyStore } from "@qroz/idempotency-memory"
+import { ArcIdempotencyDurableObjectLogic, createDurableObjectIdempotencyStore } from "@qroz/idempotency-cloudflare-do"
+import { executeJobEnvelope } from "@qroz/jobs"
 
 function schema(validate) {
   return { "~standard": { version: 1, vendor: "test", validate } }
@@ -37,7 +37,7 @@ function definition(handler, store = dedupe) {
 
 function envelope(id = "message-1", payload = "same") {
   return {
-    kind: "arc.job-message",
+    kind: "qroz.job-message",
     schemaVersion: 1,
     id,
     job: "idempotency.task",

@@ -1,4 +1,4 @@
-import { noopTracer, type ArcTracer } from "@arc/telemetry"
+import { noopTracer, type ArcTracer } from "@qroz/telemetry"
 import {
   ArcError,
   ValidationError,
@@ -10,7 +10,7 @@ import {
   type AppDefinition,
   type JobEnvelope,
   type Provider
-} from "@arc/core"
+} from "@qroz/core"
 
 export class NonRetryableJobError extends Error {
   constructor(message: string, options?: ErrorOptions) {
@@ -54,7 +54,7 @@ export function compileJobRegistry(application: AppDefinition): ReadonlyMap<stri
 export function isJobEnvelope(value: unknown): value is JobEnvelope {
   if (!value || typeof value !== "object") return false
   const item = value as Record<string, unknown>
-  return item.kind === "arc.job-message" &&
+  return item.kind === "qroz.job-message" &&
     item.schemaVersion === 1 &&
     typeof item.id === "string" &&
     typeof item.job === "string" &&
@@ -119,7 +119,7 @@ export async function executeJobEnvelope(
   const resolver = createCapabilityResolver(built, allowedCapabilities, owner)
   for (const requirement of allowedCapabilities) resolver.use(requirementCapability(requirement))
 
-  let idempotencyClaim: { key: string; token: string; store: import("@arc/core").JobIdempotencyStore } | undefined
+  let idempotencyClaim: { key: string; token: string; store: import("@qroz/core").JobIdempotencyStore } | undefined
   if (idempotency) {
     const store = resolver.use(idempotency.store)
     const key = envelope.idempotencyKey ?? idempotency.key(input)
@@ -141,14 +141,14 @@ export async function executeJobEnvelope(
 
   try {
     const tracer = options.tracer ?? noopTracer
-    await tracer.enterSpan("arc.job", {
-      "arc.app": application.name,
-      "arc.module": entry.moduleName,
-      "arc.job": entry.definition.name,
-      "arc.job.version": entry.definition.version,
-      "arc.job.attempts": options.attempts ?? 1,
-      ...(idempotencyClaim ? { "arc.job.idempotent": true } : {}),
-      ...(envelope.traceContext ? { "arc.trace.propagated": true } : {})
+    await tracer.enterSpan("qroz.job", {
+      "qroz.app": application.name,
+      "qroz.module": entry.moduleName,
+      "qroz.job": entry.definition.name,
+      "qroz.job.version": entry.definition.version,
+      "qroz.job.attempts": options.attempts ?? 1,
+      ...(idempotencyClaim ? { "qroz.job.idempotent": true } : {}),
+      ...(envelope.traceContext ? { "qroz.trace.propagated": true } : {})
     }, async () => entry.definition.handler(input, {
       ...resolver,
       messageId: envelope.id,

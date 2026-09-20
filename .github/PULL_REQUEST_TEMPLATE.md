@@ -4,7 +4,7 @@
 
 ## User-facing change
 
-<!-- Show the final Arc API/behavior. Write "None" for internal-only changes. -->
+<!-- Show the final Qroz API/behavior. Write "None" for internal-only changes. -->
 
 ## Semantic / Application Graph impact
 

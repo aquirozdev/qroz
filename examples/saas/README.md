@@ -1,6 +1,6 @@
 # SaaS reference application
 
-This example is an executable specification for Arc's tenant/resource authorization model.
+This example is an executable specification for Qroz's tenant/resource authorization model.
 
 It proves that:
 

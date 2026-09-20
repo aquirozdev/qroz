@@ -1,5 +1,5 @@
 ---
-description: Maintain Arc canonical documentation and current research without duplication.
+description: Maintain Qroz canonical documentation and current research without duplication.
 mode: subagent
 ---
 

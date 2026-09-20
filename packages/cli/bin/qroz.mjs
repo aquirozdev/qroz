@@ -3,8 +3,8 @@ import { watch } from "node:fs"
 import { spawn } from "node:child_process"
 import { dirname, resolve } from "node:path"
 import { fileURLToPath, pathToFileURL } from "node:url"
-import { buildApplication, explainError, inspect, inspectModuleContext } from "@arc/core"
-import { planDeployment } from "@arc/deployment"
+import { buildApplication, explainError, inspect, inspectModuleContext } from "@qroz/core"
+import { planDeployment } from "@qroz/deployment"
 import { runDev } from "../lib/dev-server.mjs"
 import { prepareTypeScriptDev } from "../lib/typescript-dev.mjs"
 
@@ -38,7 +38,7 @@ const positional = parsed.positional
 
 function fail(message, code = 1) {
   if (json) console.error(JSON.stringify({ ok: false, error: message }))
-  else console.error(`arc: ${message}`)
+  else console.error(`qroz: ${message}`)
   process.exit(code)
 }
 
@@ -68,7 +68,7 @@ function reportError(error) {
 
   const descriptor = payload.code ? explainError(payload.code) : undefined
   if (!descriptor) {
-    console.error(`arc: ${payload.message}`)
+    console.error(`qroz: ${payload.message}`)
     process.exit(1)
   }
 
@@ -84,7 +84,7 @@ async function loadApplication(appPath) {
   const url = pathToFileURL(resolve(process.cwd(), appPath)).href
   const loaded = await import(url)
   const application = loaded.default
-  if (!application || application.kind !== "arc.app") fail(`module '${appPath}' default export is not an Arc application`)
+  if (!application || application.kind !== "qroz.app") fail(`module '${appPath}' default export is not an Qroz application`)
   return application
 }
 
@@ -152,7 +152,7 @@ async function runDevWatch(appPath, options) {
     restarting = true
     await stopChild(child)
     child = startDevChild(appPath, options, false)
-    if (!options.silent) console.log("arc: application reloaded")
+    if (!options.silent) console.log("qroz: application reloaded")
     restarting = false
     if (restartQueued) {
       restartQueued = false
@@ -170,9 +170,9 @@ async function runDevWatch(appPath, options) {
   })
 
   if (!options.silent) {
-    console.log(`arc: watching ${directory}`)
-    if (options.buildCommand) console.log("arc: TypeScript project watcher active")
-    else if (options.build) console.log(`arc: build watcher ${options.build}`)
+    console.log(`qroz: watching ${directory}`)
+    if (options.buildCommand) console.log("qroz: TypeScript project watcher active")
+    else if (options.build) console.log(`qroz: build watcher ${options.build}`)
   }
 
   await new Promise((resolveDone) => {
@@ -330,7 +330,7 @@ function printContext(context) {
 }
 
 if (command === "dev") {
-  if (positional.length !== 1) fail("usage: arc dev <app.ts|compiled-app.js> [--port <number>] [--no-open] [--watch] [--build <command>]")
+  if (positional.length !== 1) fail("usage: qroz dev <app.ts|compiled-app.js> [--port <number>] [--no-open] [--watch] [--build <command>]")
   try {
     let devAppPath = positional[0]
     let buildCommand
@@ -374,7 +374,7 @@ if (command === "dev") {
 
 if (command === "explain") {
   const code = positional[0]
-  if (!code || !/^ARC\d{4}$/.test(code)) fail("usage: arc explain <ARCxxxx> [--json]")
+  if (!code || !/^QROZ\d{4}$/.test(code)) fail("usage: qroz explain <ARCxxxx> [--json]")
   const descriptor = explainError(code)
   if (!descriptor) fail(`unknown error code '${code}'`)
   if (json) console.log(JSON.stringify(descriptor, null, 2))
@@ -383,7 +383,7 @@ if (command === "explain") {
 }
 
 if (command === "diff") {
-  if (positional.length !== 2) fail("usage: arc diff <before-app.js> <after-app.js> [--json]")
+  if (positional.length !== 2) fail("usage: qroz diff <before-app.js> <after-app.js> [--json]")
   try {
     const beforeApp = await loadApplication(positional[0])
     const afterApp = await loadApplication(positional[1])
@@ -440,7 +440,7 @@ if (command === "diff") {
 
 
 if (command === "plan") {
-  if (positional.length !== 1) fail("usage: arc plan <compiled-app.js> [--json]")
+  if (positional.length !== 1) fail("usage: qroz plan <compiled-app.js> [--json]")
   try {
     const application = await loadApplication(positional[0])
     buildApplication(application)
@@ -471,7 +471,7 @@ if (command === "plan") {
 }
 
 if (command === "context") {
-  if (positional.length !== 2) fail("usage: arc context <compiled-app.js> <module> [--json]")
+  if (positional.length !== 2) fail("usage: qroz context <compiled-app.js> <module> [--json]")
   try {
     const application = await loadApplication(positional[0])
     buildApplication(application)
@@ -485,7 +485,7 @@ if (command === "context") {
 }
 
 if (!command || positional.length !== 1 || !["inspect", "validate"].includes(command)) {
-  fail("usage: arc <inspect|validate|plan> <compiled-app.js> [--json] | arc dev <app.ts|app.js> [--port <number>] [--no-open] [--watch] [--build <command>] | arc context <app.js> <module> [--json] | arc diff <before.js> <after.js> [--json] | arc explain <ARCxxxx> [--json]")
+  fail("usage: qroz <inspect|validate|plan> <compiled-app.js> [--json] | qroz dev <app.ts|app.js> [--port <number>] [--no-open] [--watch] [--build <command>] | qroz context <app.js> <module> [--json] | qroz diff <before.js> <after.js> [--json] | qroz explain <ARCxxxx> [--json]")
 }
 
 try {

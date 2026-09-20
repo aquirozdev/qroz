@@ -1,6 +1,6 @@
 ---
 title: CLI reference
-description: Current deterministic Arc CLI commands for humans, CI and agents.
+description: Current deterministic Qroz CLI commands for humans, CI and agents.
 ---
 
 # CLI reference
@@ -8,22 +8,22 @@ description: Current deterministic Arc CLI commands for humans, CI and agents.
 Current commands:
 
 ```text
-arc dev <app.ts|app.js> [--watch] [--port <number>] [--no-open]
-arc inspect <app> [--json]
-arc validate <app> [--json]
-arc explain <ARCxxxx> [--json]
-arc context <app> <module> [--json]
-arc diff <before> <after> [--json]
-arc plan <app> [--json]
+qroz dev <app.ts|app.js> [--watch] [--port <number>] [--no-open]
+qroz inspect <app> [--json]
+qroz validate <app> [--json]
+qroz explain <ARCxxxx> [--json]
+qroz context <app> <module> [--json]
+qroz diff <before> <after> [--json]
+qroz plan <app> [--json]
 ```
 
 ## dev
 
-Runs the application and local Arc Studio.
+Runs the application and local Qroz Studio.
 
-When the entry is TypeScript, Arc uses the application's local TypeScript compiler and nearest `tsconfig.json`. Source-first mode currently requires explicit `compilerOptions.rootDir` and `compilerOptions.outDir` so Arc can map the source entry to emitted JavaScript without guessing.
+When the entry is TypeScript, Qroz uses the application's local TypeScript compiler and nearest `tsconfig.json`. Source-first mode currently requires explicit `compilerOptions.rootDir` and `compilerOptions.outDir` so Qroz can map the source entry to emitted JavaScript without guessing.
 
-With `--watch`, Arc watches the compiled module graph and restarts the isolated application process after TypeScript emits changes. This deliberately favors truthful full-module reload over partial ESM cache invalidation.
+With `--watch`, Qroz watches the compiled module graph and restarts the isolated application process after TypeScript emits changes. This deliberately favors truthful full-module reload over partial ESM cache invalidation.
 
 JavaScript entrypoints remain supported directly. `--build <command>` remains an escape hatch for custom build pipelines.
 
@@ -37,7 +37,7 @@ Builds/validates structural invariants and reports machine-readable framework er
 
 ## explain
 
-Returns the stable explanation/remediation metadata for an Arc framework error code.
+Returns the stable explanation/remediation metadata for an Qroz framework error code.
 
 ## context
 

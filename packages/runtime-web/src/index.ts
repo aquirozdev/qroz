@@ -1,4 +1,4 @@
-import { noopTracer, type ArcTracer } from "@arc/telemetry"
+import { noopTracer, type ArcTracer } from "@qroz/telemetry"
 import {
   type AnyEndpoint,
   type AnyListener,
@@ -15,7 +15,7 @@ import {
   createCapabilityResolver,
   requirementCapability,
   validateSchema
-} from "@arc/core"
+} from "@qroz/core"
 
 type CompiledRoute = {
   moduleName: string
@@ -128,12 +128,12 @@ export interface WebExecutionContext {
     context: { readonly request: Request; readonly module: string; readonly endpoint: string }
   ) => MaybePromise<boolean>
   readonly tracer?: ArcTracer
-  readonly dispose?: () => import("@arc/core").MaybePromise<void>
+  readonly dispose?: () => import("@qroz/core").MaybePromise<void>
 }
 
 const TRACEPARENT_PATTERN = /^00-([0-9a-f]{32})-([0-9a-f]{16})-([0-9a-f]{2})$/
 
-function requestTraceContext(request: Request): import("@arc/core").TraceContext | undefined {
+function requestTraceContext(request: Request): import("@qroz/core").TraceContext | undefined {
   const traceparent = request.headers.get("traceparent")
   if (!traceparent) return undefined
   const match = TRACEPARENT_PATTERN.exec(traceparent)
@@ -183,12 +183,12 @@ export function createWebRuntime<ExecutionContext extends WebExecutionContext = 
           const listenerEvents = createEventPublisher(item.listener.emits ?? [], owner)
           const listenerJobs = createJobPublisher(item.listener.dispatches ?? [], owner)
           const tracer = context?.tracer ?? options.tracer ?? noopTracer
-          await tracer.enterSpan("arc.listener", {
-            "arc.app": application.name,
-            "arc.module": item.moduleName,
-            "arc.listener": item.listenerName,
-            "arc.event": item.listener.event.name,
-            "arc.event.version": item.listener.event.version
+          await tracer.enterSpan("qroz.listener", {
+            "qroz.app": application.name,
+            "qroz.module": item.moduleName,
+            "qroz.listener": item.listenerName,
+            "qroz.event": item.listener.event.name,
+            "qroz.event.version": item.listener.event.version
           }, async () => {
             await item.listener.handler(payload, { ...resolver, events: listenerEvents, jobs: listenerJobs })
           })
@@ -240,7 +240,7 @@ export function createWebRuntime<ExecutionContext extends WebExecutionContext = 
             const id = dispatchOptions.id ?? crypto.randomUUID()
             const idempotencyKey = definition.idempotency?.key(validatedPayload)
             const message = {
-              kind: "arc.job-message" as const,
+              kind: "qroz.job-message" as const,
               schemaVersion: 1 as const,
               id,
               job: definition.name,
@@ -367,10 +367,10 @@ export function createWebRuntime<ExecutionContext extends WebExecutionContext = 
         )
         for (const requirement of endpoint.requires ?? []) resolver.use(requirementCapability(requirement))
         const tracer = context?.tracer ?? options.tracer ?? noopTracer
-        const output = await tracer.enterSpan("arc.endpoint", {
-          "arc.app": application.name,
-          "arc.module": matched.route.moduleName,
-          "arc.endpoint": matched.route.endpointName,
+        const output = await tracer.enterSpan("qroz.endpoint", {
+          "qroz.app": application.name,
+          "qroz.module": matched.route.moduleName,
+          "qroz.endpoint": matched.route.endpointName,
           "http.request.method": endpoint.method,
           "http.route": endpoint.path
         }, async () => endpoint.handler({

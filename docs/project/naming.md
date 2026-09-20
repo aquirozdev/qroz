@@ -1,21 +1,21 @@
 ---
 title: Naming decision
-description: Criteria and collision research for replacing the Arc codename before public package publication.
+description: Criteria and collision research for replacing the Qroz codename before public package publication.
 ---
 
 # Naming decision
 
 ## Decision status
 
-**Arc remains a repository codename until a final name is selected. Do not publish public packages under the current Arc identity.**
+**Qroz remains a repository codename until a final name is selected. Do not publish public packages under the current Qroz identity.**
 
-## Why Arc should change
+## Why Qroz should change
 
-“Arc” has unusually high collision risk in developer tooling:
+“Qroz” has unusually high collision risk in developer tooling:
 
-- Architect is an established serverless framework whose CLI is `arc` and whose documentation lives at `arc.codes`;
-- active agent-framework projects also use Arc/ARC branding;
-- “Arc” is broadly used across software products, making search and package discovery noisy.
+- Architect is an established serverless framework whose CLI is `qroz` and whose documentation lives at `qroz.codes`;
+- active agent-framework projects also use Qroz/QROZ branding;
+- “Qroz” is broadly used across software products, making search and package discovery noisy.
 
 The cost of renaming grows sharply after npm publication, documentation indexing and third-party integrations, so the right time is now.
 
@@ -34,9 +34,9 @@ The final name should:
 
 ## Rejected / high-collision candidates
 
-- **Arc** — conflicts directly with Architect's `arc` CLI and multiple Arc frameworks.
+- **Qroz** — conflicts directly with Architect's `qroz` CLI and multiple Qroz frameworks.
 - **Kora** — active Java/Kotlin backend framework, offline-first JS framework and Solana infrastructure.
-- **Lattice** — active software-semantics project very close to Arc's application-meaning thesis.
+- **Lattice** — active software-semantics project very close to Qroz's application-meaning thesis.
 - **Velora / Veyra** — active framework/product names.
 - **Anvil** — crowded developer-tooling name.
 - **Auron** — active Apache project and existing software brand.

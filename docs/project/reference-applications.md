@@ -1,11 +1,11 @@
 ---
 title: Reference applications
-description: Application-first production corpus that drives Arc capabilities, contracts and quality gates.
+description: Application-first production corpus that drives Qroz capabilities, contracts and quality gates.
 ---
 
 # Reference applications
 
-These applications are executable specifications for Arc. We design the final application API first, write acceptance and failure tests, then implement only the framework semantics needed to make the scenario truthful.
+These applications are executable specifications for Qroz. We design the final application API first, write acceptance and failure tests, then implement only the framework semantics needed to make the scenario truthful.
 
 Each reference app should eventually live under `examples/` with an explicit README, tests and provider evidence. A single app may exercise many capabilities, but each hard semantic should also have a focused contract test.
 
@@ -30,7 +30,7 @@ Example: notes, tasks or address book.
 
 Must prove params/query/body validation, create/read/update/delete, pagination, filtering/sorting, database lifecycle, transactions, conflict handling, migrations, auth, policies, testing and future OpenAPI/client generation.
 
-This is Arc's "can a normal developer be productive?" example.
+This is Qroz's "can a normal developer be productive?" example.
 
 ## 03 — Content/admin application
 
@@ -133,7 +133,7 @@ Must prove cron expressions, timezone semantics, overlap prevention, singleton b
 
 Must prove authenticated WebSocket upgrade, room identity, membership authorization, presence, fan-out, reconnect, state restoration after runtime eviction, backpressure/rate limits, connection telemetry and provider-native durable coordination.
 
-Cloudflare may use Durable Objects; AWS may require a different model. Arc must expose semantic differences rather than hide them.
+Cloudflare may use Durable Objects; AWS may require a different model. Qroz must expose semantic differences rather than hide them.
 
 ## 12 — Durable human-in-the-loop workflow
 
@@ -185,7 +185,7 @@ Example: IoT or analytics events.
 
 Must prove batch input, schema validation, buffering, backpressure, queue/stream partition semantics, ordering requirements, partial batch failure, poison-event isolation, throughput-oriented observability and graceful provider-limit behavior.
 
-This scenario determines whether Arc needs a distinct stream abstraction rather than pretending queues cover streams.
+This scenario determines whether Qroz needs a distinct stream abstraction rather than pretending queues cover streams.
 
 ## 17 — Global edge application
 
@@ -199,7 +199,7 @@ Example: application storing personal customer data.
 
 Must prove structured audit log, data export, deletion workflow, retention, encryption/provider integration, secret redaction, sensitive logging controls, access attribution and background cleanup.
 
-This is not a compliance certification; it proves Arc does not make common privacy/security operations structurally difficult.
+This is not a compliance certification; it proves Qroz does not make common privacy/security operations structurally difficult.
 
 ## 19 — AI agent / MCP application
 
@@ -245,7 +245,7 @@ Example: server-backed web application using secure session cookies and OAuth/OI
 
 Must prove cookie parsing/setting, Secure/HttpOnly/SameSite defaults, session rotation and logout/invalidation hooks, CSRF protection for cookie-authenticated mutations, OAuth callback/state/PKCE integration boundaries, redirects, flash-style short-lived state if supported and BFF access to upstream APIs without exposing backend credentials to browser JavaScript.
 
-Arc should provide safe primitives and adapter contracts rather than becoming an identity provider.
+Qroz should provide safe primitives and adapter contracts rather than becoming an identity provider.
 
 ## 22 — Streaming/SSE application
 
@@ -253,7 +253,7 @@ Example: AI chat response, build log or long-running progress feed over HTTP str
 
 Must prove Web Streams compatibility, cancellation when clients disconnect, backpressure, heartbeat/timeout behavior, trace continuity, auth before stream establishment, error behavior after headers are committed and provider/runtime parity where streaming is advertised.
 
-This prevents Arc's HTTP abstraction from being accidentally JSON-only.
+This prevents Qroz's HTTP abstraction from being accidentally JSON-only.
 
 ## Cross-cutting failure suite
 
@@ -302,7 +302,7 @@ Do not implement these applications in numerical order. Product experience now i
 
 1. CRUD + SaaS authorization and authorization-decision evidence;
 2. minimal durable workflow proof on two credible execution paths;
-3. **DX proof across apps 01, 02 and 04**: create → dev → test → inspect → diagnose in Arc Studio/CLI;
+3. **DX proof across apps 01, 02 and 04**: create → dev → test → inspect → diagnose in Qroz Studio/CLI;
 4. semantic deployment/security diff using app 20 as the change-lifecycle harness;
 5. webhook + request idempotency and transaction-aware effects;
 6. public API contracts/OpenAPI/SDK where they improve real developer workflows;
@@ -312,12 +312,12 @@ Do not implement these applications in numerical order. Product experience now i
 
 ### Cross-cutting DX acceptance
 
-Apps 01, 02 and 04 are also the canonical UX corpus. For each, Arc must prove:
+Apps 01, 02 and 04 are also the canonical UX corpus. For each, Qroz must prove:
 
 - a new developer can identify the application shape without reading framework internals;
 - the common path uses little ceremony;
 - invalid capability/auth/policy behavior produces actionable errors;
-- the CLI and Arc Studio explain the same semantics;
+- the CLI and Qroz Studio explain the same semantics;
 - source → graph → trace/decision → deployment impact is navigable;
 - representative editor/typecheck/dev-loop latency remains within published budgets.
 

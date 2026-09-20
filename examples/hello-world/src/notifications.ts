@@ -1,6 +1,6 @@
-import { access, capability, endpoint, job, module, type JobEnvelope } from "@arc/core"
-import { queue } from "@arc/queue"
-import { idempotencyStore } from "@arc/idempotency"
+import { access, capability, endpoint, job, module, type JobEnvelope } from "@qroz/core"
+import { queue } from "@qroz/queue"
+import { idempotencyStore } from "@qroz/idempotency"
 import { object, string } from "./schema.js"
 
 export interface NotificationMessage {

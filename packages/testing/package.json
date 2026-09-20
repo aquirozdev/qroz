@@ -1,10 +1,10 @@
 {
-  "name": "@arc/testing",
+  "name": "@qroz/testing",
   "version": "0.4.0",
   "type": "module",
   "dependencies": {
-    "@arc/core": "file:../core",
-    "@arc/runtime-memory": "file:../runtime-memory"
+    "@qroz/core": "file:../core",
+    "@qroz/runtime-memory": "file:../runtime-memory"
   },
   "exports": {
     ".": {

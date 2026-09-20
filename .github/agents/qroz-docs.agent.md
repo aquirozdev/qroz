@@ -1,6 +1,6 @@
 ---
-name: Arc Docs
-description: Maintains Arc's canonical documentation architecture, research baseline, reference pages, proposals, and future website-ready Markdown.
+name: Qroz Docs
+description: Maintains Qroz's canonical documentation architecture, research baseline, reference pages, proposals, and future website-ready Markdown.
 target: github-copilot
 ---
 

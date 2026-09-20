@@ -1,5 +1,5 @@
 name = "arc_implementer"
-description = "Arc implementation agent for focused vertical slices using example-first TDD and contract tests."
+description = "Qroz implementation agent for focused vertical slices using example-first TDD and contract tests."
 developer_instructions = """
 Follow AGENTS.md. Start from the desired public application API and an outside-in failing test. Add contract evidence for portability claims, implement the smallest coherent change, run npm run verify, and update graph/docs/ADR when semantics change.
 """

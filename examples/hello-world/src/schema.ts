@@ -1,4 +1,4 @@
-import type { StandardSchemaLike } from "@arc/core"
+import type { StandardSchemaLike } from "@qroz/core"
 
 type Issue = { message: string; path?: readonly unknown[] }
 
@@ -6,7 +6,7 @@ export function string(options: { min?: number } = {}): StandardSchemaLike<unkno
   return {
     "~standard": {
       version: 1,
-      vendor: "arc-example",
+      vendor: "qroz-example",
       validate(value) {
         const issues: Issue[] = []
         if (typeof value !== "string") issues.push({ message: "Expected string" })
@@ -23,7 +23,7 @@ export function object<const Shape extends Record<string, StandardSchemaLike<any
   return {
     "~standard": {
       version: 1,
-      vendor: "arc-example",
+      vendor: "qroz-example",
       async validate(value) {
         if (!value || typeof value !== "object" || Array.isArray(value)) {
           return { issues: [{ message: "Expected object" }] }

@@ -2,7 +2,7 @@ import test from "node:test"
 import assert from "node:assert/strict"
 import { execFileSync } from "node:child_process"
 
-const cli = "packages/cli/bin/arc.mjs"
+const cli = "packages/cli/bin/qroz.mjs"
 const app = "examples/hello-world/dist/app.js"
 
 test("CLI emits deterministic JSON application graph", () => {

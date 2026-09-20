@@ -1,4 +1,4 @@
-import { capability, endpoint, module } from "@arc/core"
+import { capability, endpoint, module } from "@qroz/core"
 import { boolean, object, string } from "./schema.js"
 
 export interface Task {

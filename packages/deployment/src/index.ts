@@ -4,7 +4,7 @@ import {
   requirementOperations,
   type AppDefinition,
   type CapabilityRequirement
-} from "@arc/core"
+} from "@qroz/core"
 
 export type ExecutionSurfaceKind = "endpoint" | "listener" | "job" | "workflow-task"
 
@@ -190,7 +190,7 @@ export function planDeployment(application: AppDefinition): DeploymentPlan {
 
     for (const [workflowName, workflow] of Object.entries(module.workflows ?? {})) {
       for (const [stateName, state] of Object.entries(workflow.states)) {
-        if (state.kind !== "arc.workflow-task") continue
+        if (state.kind !== "qroz.workflow-task") continue
         surfaces.push({
           id: `workflow-task:${module.name}.${workflowName}.${stateName}`,
           kind: "workflow-task",

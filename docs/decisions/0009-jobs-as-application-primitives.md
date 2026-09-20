@@ -4,7 +4,7 @@ Status: accepted in v0.4.
 
 ## Context
 
-Arc already modeled HTTP endpoints, capabilities and events semantically. Treating jobs as a queue helper would make the Application Graph blind to asynchronous work and would prevent reliable semantic diff, agent context, deployment planning and least-privilege resource derivation.
+Qroz already modeled HTTP endpoints, capabilities and events semantically. Treating jobs as a queue helper would make the Application Graph blind to asynchronous work and would prevent reliable semantic diff, agent context, deployment planning and least-privilege resource derivation.
 
 Cloudflare Queues exposes delivery attempts, per-message ack/retry, delayed retries and DLQ configuration. The platform is at-least-once, so job handlers must assume redelivery.
 

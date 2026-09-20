@@ -1,4 +1,4 @@
-import { capability, provide, type Capability, type JobIdempotencyStore, type Provider } from "@arc/core"
+import { capability, provide, type Capability, type JobIdempotencyStore, type Provider } from "@qroz/core"
 
 export type IdempotencyAccess = "claim" | "complete" | "release"
 

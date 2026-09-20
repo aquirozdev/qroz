@@ -1,11 +1,11 @@
 ---
 title: Release process
-description: Evidence-driven release workflow for Arc research releases and future packages.
+description: Evidence-driven release workflow for Qroz research releases and future packages.
 ---
 
 # Release process
 
-Arc is pre-1.0. Releases communicate research milestones, not compatibility guarantees.
+Qroz is pre-1.0. Releases communicate research milestones, not compatibility guarantees.
 
 ## Current branch flow
 
@@ -29,7 +29,7 @@ A changelog entry should separate:
 
 ## Future package release requirements
 
-Before broadly publishing `@arc/*` packages:
+Before broadly publishing `@qroz/*` packages:
 
 - consistent workspace package versioning;
 - release-note/changeset automation;
@@ -43,6 +43,6 @@ Before broadly publishing `@arc/*` packages:
 
 ### Provenance note
 
-npm trusted publishing can automatically generate provenance for supported GitHub/GitLab CI publishing, but npm currently documents that provenance is not generated from **private repositories**. Arc must therefore revisit repository visibility/release provenance before treating public package publishing as production-ready.
+npm trusted publishing can automatically generate provenance for supported GitHub/GitLab CI publishing, but npm currently documents that provenance is not generated from **private repositories**. Qroz must therefore revisit repository visibility/release provenance before treating public package publishing as production-ready.
 
 No long-lived npm automation token should be introduced merely to make early releases easier.

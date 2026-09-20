@@ -1,5 +1,5 @@
 {
-  "name": "@arc/integration-visual-evidence",
+  "name": "@qroz/integration-visual-evidence",
   "private": true,
   "type": "module",
   "scripts": {

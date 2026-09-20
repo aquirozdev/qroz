@@ -1,6 +1,6 @@
 ---
 title: Capability backlog from reference applications
-description: Risk-ordered framework capabilities derived from Arc's production reference corpus.
+description: Risk-ordered framework capabilities derived from Qroz's production reference corpus.
 ---
 
 # Capability backlog from reference applications
@@ -12,13 +12,13 @@ This is not a feature wishlist. Every item is justified by one or more [referenc
 
 The roadmap now deliberately interrupts feature expansion after the current security and minimal durable-execution work.
 
-Before broadening the capability list, Arc should prove an exceptional local product experience:
+Before broadening the capability list, Qroz should prove an exceptional local product experience:
 
-- `npm create arc@latest` → useful app with minimal choices;
-- `arc dev` → fast local runtime + Arc Studio with no hosted account required;
+- `npm create qroz@latest` → useful app with minimal choices;
+- `qroz dev` → fast local runtime + Qroz Studio with no hosted account required;
 - application/module/endpoint/resource graph exploration;
 - API request runner and test-client workflow;
-- actionable Arc errors with source ownership and safe fixes;
+- actionable Qroz errors with source ownership and safe fixes;
 - traces and authorization decisions connected to semantic owners;
 - representative DX/typecheck performance budgets;
 - semantic change/deployment/security diff.
@@ -77,7 +77,7 @@ Start with email contract + memory fake + two real/provider adapters before gene
 ### Browser/session security primitives
 Reference app: 21.
 
-Need cookies and session adapter contracts, CSRF primitive for cookie-authenticated mutations, and identity-provider integration boundaries. Arc must not become an OAuth authorization server.
+Need cookies and session adapter contracts, CSRF primitive for cookie-authenticated mutations, and identity-provider integration boundaries. Qroz must not become an OAuth authorization server.
 
 ## P2 — minimal distributed-system differentiators
 
@@ -126,7 +126,7 @@ Align semantic spans with OpenTelemetry HTTP/database/messaging/object-store con
 ### Preview/deployment lifecycle
 Reference app: 20.
 
-Build on the existing provider-neutral deployment plan: environment mapping, migrations, preview plans, compatibility warnings and safe staged rollout hooks. Arc should remain able to export to external IaC rather than necessarily becoming a full IaC engine.
+Build on the existing provider-neutral deployment plan: environment mapping, migrations, preview plans, compatibility warnings and safe staged rollout hooks. Qroz should remain able to export to external IaC rather than necessarily becoming a full IaC engine.
 
 ## P4 — agent-native production
 

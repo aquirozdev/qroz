@@ -38,13 +38,13 @@ Sources:
 
 ## GitHub Copilot
 
-Arc keeps GitHub-specific Copilot instructions/agents/skills under `.github/` while `AGENTS.md` remains the vendor-neutral repository contract.
+Qroz keeps GitHub-specific Copilot instructions/agents/skills under `.github/` while `AGENTS.md` remains the vendor-neutral repository contract.
 
 ## Symlinks
 
 Git documents that when `core.symlinks=false`, symbolic links are checked out as regular files containing the link text.
 
-Arc implication: do not use symlinks as the primary compatibility layer for critical agent instructions. Commit regular adapter files and verify synchronization in CI.
+Qroz implication: do not use symlinks as the primary compatibility layer for critical agent instructions. Commit regular adapter files and verify synchronization in CI.
 
 Source:
 - https://git-scm.com/docs/git-config#Documentation/git-config.txt-coresymlinks

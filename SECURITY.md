@@ -1,6 +1,6 @@
 # Security policy
 
-Arc is currently a research project and should not yet be treated as a production-hardened security boundary.
+Qroz is currently a research project and should not yet be treated as a production-hardened security boundary.
 
 ## Reporting
 
@@ -8,7 +8,7 @@ Do not publish suspected vulnerabilities in public issues. Use GitHub's private 
 
 ## Current security posture
 
-Arc is actively designing:
+Qroz is actively designing:
 
 - least-privilege execution-surface capabilities;
 - agent/MCP authorization boundaries;

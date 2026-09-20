@@ -10,7 +10,7 @@ import {
   type Provider,
   type WorkflowRetryPolicy,
   type WorkflowTaskState
-} from "@arc/core"
+} from "@qroz/core"
 
 export interface WorkflowClock {
   sleep(seconds: number): Promise<void>
@@ -141,11 +141,11 @@ export async function executeWorkflow(
       })
     }
 
-    if (state.kind === "arc.workflow-succeed") {
+    if (state.kind === "qroz.workflow-succeed") {
       return { workflowId, output: data, transitions }
     }
 
-    if (state.kind === "arc.workflow-sleep") {
+    if (state.kind === "qroz.workflow-sleep") {
       await clock.sleep(state.seconds)
       stateName = state.next
       continue
@@ -154,7 +154,7 @@ export async function executeWorkflow(
     const owner = `workflow:${workflow.name}@${workflow.version}.${stateName}`
     const resolver = createCapabilityResolver(built, state.requires ?? [], owner)
     for (const requirement of state.requires ?? []) {
-      const target = requirement.kind === "arc.capability-access" ? requirement.capability : requirement
+      const target = requirement.kind === "qroz.capability-access" ? requirement.capability : requirement
       resolver.use(target)
     }
 

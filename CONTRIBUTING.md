@@ -1,6 +1,6 @@
-# Contributing to Arc
+# Contributing to Qroz
 
-Arc is an early research framework. Contributions should strengthen its **developer experience, semantic model and evidence base** rather than maximize feature count.
+Qroz is an early research framework. Contributions should strengthen its **developer experience, semantic model and evidence base** rather than maximize feature count.
 
 ## Before changing framework behavior
 
@@ -37,7 +37,7 @@ A PR can be rejected for making the framework harder to understand or slower to 
 ## Product constraints
 
 - Code/Application Graph remain the semantic source of truth.
-- Arc Studio must not introduce dashboard-only application state.
+- Qroz Studio must not introduce dashboard-only application state.
 - New primitives require reference-application demand, not competitor parity.
 - Prefer integrations/adapters over replacing mature ecosystems.
 - Workflows remain deliberately scoped until real applications require broader semantics.
@@ -48,4 +48,4 @@ Follow `docs/project/documentation-strategy.md`. Prefer links over duplicated ex
 
 ## Compatibility
 
-Arc is pre-1.0. Breaking changes are possible, but accidental breaking changes are not acceptable. Changes to public APIs, graph schema or message envelopes must be explicit and documented.
+Qroz is pre-1.0. Breaking changes are possible, but accidental breaking changes are not acceptable. Changes to public APIs, graph schema or message envelopes must be explicit and documented.

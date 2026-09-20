@@ -1,11 +1,11 @@
 ---
 title: GitHub agents and repository instructions
-description: How Arc configures GitHub Copilot/custom agents without creating conflicting sources of truth.
+description: How Qroz configures GitHub Copilot/custom agents without creating conflicting sources of truth.
 ---
 
 # GitHub agents and repository instructions
 
-Arc uses GitHub's current repository customization layers deliberately.
+Qroz uses GitHub's current repository customization layers deliberately.
 
 ## Layering
 
@@ -19,16 +19,16 @@ Always-on GitHub Copilot repository context: workflow, invariants and required r
 
 ### `.github/instructions/*.instructions.md`
 
-Path-specific rules. Arc currently separates TypeScript and documentation rules so agents do not load irrelevant detail for every task.
+Path-specific rules. Qroz currently separates TypeScript and documentation rules so agents do not load irrelevant detail for every task.
 
 ### `.github/agents/*.agent.md`
 
 Specialist Copilot agents:
 
-- **Arc Architect** — design/research/ADR analysis;
-- **Arc Implementer** — focused vertical-slice implementation;
-- **Arc Reviewer** — semantic/portability/security review;
-- **Arc Docs** — canonical documentation/research maintenance.
+- **Qroz Architect** — design/research/ADR analysis;
+- **Qroz Implementer** — focused vertical-slice implementation;
+- **Qroz Reviewer** — semantic/portability/security review;
+- **Qroz Docs** — canonical documentation/research maintenance.
 
 ### `.github/skills/*/SKILL.md`
 
@@ -44,7 +44,7 @@ Current skills:
 
 GitHub Copilot also supports repository hooks under `.github/hooks/*.json` for lifecycle events such as `preToolUse` and `agentStop`.
 
-Arc deliberately does **not** enable hooks yet. Hooks are deterministic enforcement and should be introduced only for a concrete policy that cannot be expressed safely through CI/instructions—for example, denying a known class of destructive commands. A generic `agentStop → npm run verify` hook would be expensive and unreliable in sessions where dependencies/runtime services are not provisioned.
+Qroz deliberately does **not** enable hooks yet. Hooks are deterministic enforcement and should be introduced only for a concrete policy that cannot be expressed safely through CI/instructions—for example, denying a known class of destructive commands. A generic `agentStop → npm run verify` hook would be expensive and unreliable in sessions where dependencies/runtime services are not provisioned.
 
 CI remains the merge authority; agent hooks must never become a hidden substitute for repository quality gates.
 

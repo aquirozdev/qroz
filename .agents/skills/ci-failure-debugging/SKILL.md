@@ -1,6 +1,6 @@
 ---
 name: ci-failure-debugging
-description: Use when a GitHub Actions gate fails for Arc, especially TypeScript/tests, workerd, PostgreSQL/Drizzle, MCP, or documentation integrity.
+description: Use when a GitHub Actions gate fails for Qroz, especially TypeScript/tests, workerd, PostgreSQL/Drizzle, MCP, or documentation integrity.
 ---
 
 # CI failure debugging

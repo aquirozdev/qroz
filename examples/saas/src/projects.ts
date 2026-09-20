@@ -1,4 +1,4 @@
-import { access, capability, endpoint, module } from "@arc/core"
+import { access, capability, endpoint, module } from "@qroz/core"
 import { object, string } from "./schema.js"
 
 export interface Project {

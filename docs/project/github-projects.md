@@ -1,6 +1,6 @@
 ---
 title: GitHub Projects operating model
-description: Recommended Project fields, views, and automation for Arc's roadmap and agent-assisted development.
+description: Recommended Project fields, views, and automation for Qroz's roadmap and agent-assisted development.
 ---
 
 # GitHub Projects operating model
@@ -11,9 +11,9 @@ A Project should not become a second undocumented roadmap.
 
 ## Recommended project
 
-Name: **Arc Development**
+Name: **Qroz Development**
 
-Default repository: `aquirozdev/arc`.
+Default repository: `aquirozdev/qroz`.
 
 ## Fields
 
@@ -71,7 +71,7 @@ Before assigning an issue to a coding agent, make sure it contains:
 
 Agents should create PRs; they should not close roadmap issues merely because code was generated. CI + human review determine completion.
 
-For GitHub Copilot cloud agent specifically, assign an issue only after it is agent-ready. GitHub documents that the agent receives the issue title/body/comments that exist **at assignment time** and then opens a PR; follow-up instructions added later should be given on that pull request rather than relying on new issue comments. When assigning, choose the specialist Arc custom agent that matches the task where useful.
+For GitHub Copilot cloud agent specifically, assign an issue only after it is agent-ready. GitHub documents that the agent receives the issue title/body/comments that exist **at assignment time** and then opens a PR; follow-up instructions added later should be given on that pull request rather than relying on new issue comments. When assigning, choose the specialist Qroz custom agent that matches the task where useful.
 
 ## Automation
 

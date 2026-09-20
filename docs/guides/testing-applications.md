@@ -1,18 +1,18 @@
 ---
 title: Testing applications
-description: Outside-in TDD for Arc applications with the in-memory runtime and application test client.
+description: Outside-in TDD for Qroz applications with the in-memory runtime and application test client.
 ---
 
 # Testing applications
 
-Arc application tests should exercise the same public application definition that production runtimes execute.
+Qroz application tests should exercise the same public application definition that production runtimes execute.
 
 Use `createTestClient()` for concise HTTP-level acceptance tests:
 
 ```js
 import test from "node:test"
 import assert from "node:assert/strict"
-import { createTestClient } from "@arc/testing"
+import { createTestClient } from "@qroz/testing"
 import application from "../dist/app.js"
 
 test("creates a task", async () => {
@@ -31,7 +31,7 @@ test("creates a task", async () => {
 })
 ```
 
-The client runs against Arc's memory runtime. It is intentionally an HTTP boundary, not a handler shortcut, so routing, input validation, authorization, capability resolution, output validation and framework errors remain observable.
+The client runs against Qroz's memory runtime. It is intentionally an HTTP boundary, not a handler shortcut, so routing, input validation, authorization, capability resolution, output validation and framework errors remain observable.
 
 ## Development loop
 

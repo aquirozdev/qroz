@@ -5,7 +5,7 @@ description: The semantic differences between facts, asynchronous commands, tran
 
 # Events, jobs and workflows
 
-Arc keeps these concepts distinct because they answer different questions.
+Qroz keeps these concepts distinct because they answer different questions.
 
 ## Event
 
@@ -42,7 +42,7 @@ const SendWelcomeEmail = job({
 })
 ```
 
-Jobs have explicit retry and idempotency semantics. Arc models delivery as at-least-once and does not promise exactly-once side effects.
+Jobs have explicit retry and idempotency semantics. Qroz models delivery as at-least-once and does not promise exactly-once side effects.
 
 ## Queue
 
@@ -52,7 +52,7 @@ A queue is a transport resource. It is not the job itself. This distinction allo
 
 A workflow is a durable multi-step process whose orchestration must be inspectable independently from task implementation.
 
-Arc currently models an experimental portable subset: task states, durable sleeps, explicit transitions, terminal success, task capability requirements and bounded retry policies. A deterministic memory executor proves application semantics; AWS Step Functions and Cloudflare Workflows planners prove that this subset can be represented without hiding provider differences.
+Qroz currently models an experimental portable subset: task states, durable sleeps, explicit transitions, terminal success, task capability requirements and bounded retry policies. A deterministic memory executor proves application semantics; AWS Step Functions and Cloudflare Workflows planners prove that this subset can be represented without hiding provider differences.
 
 Compensation, portable choices, signals, cancellation and running-instance version migration remain research areas. Workflow semantics will not be stabilized until real durable execution is exercised against at least two engines.
 

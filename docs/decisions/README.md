@@ -1,6 +1,6 @@
 ---
 title: Architecture decisions
-description: Index and policy for Arc Architecture Decision Records.
+description: Index and policy for Qroz Architecture Decision Records.
 ---
 
 # Architecture Decision Records

@@ -7,7 +7,7 @@ description: Invocation scopes, ownership, disposal and serverless resource mana
 
 Serverless runtimes invalidate the assumption that every dependency should be a process-global singleton.
 
-Arc uses `ProviderScope` as the minimal lifecycle primitive.
+Qroz uses `ProviderScope` as the minimal lifecycle primitive.
 
 ```ts
 providerScope(
@@ -26,8 +26,8 @@ Queue consumers dispose once per invocation/batch scope rather than once per mes
 
 ## Database motivation
 
-Cloudflare Hyperdrive's node-postgres guidance creates the client within the Worker invocation. Arc therefore added provider lifecycle before stabilizing database integrations.
+Cloudflare Hyperdrive's node-postgres guidance creates the client within the Worker invocation. Qroz therefore added provider lifecycle before stabilizing database integrations.
 
 ## Future lifecycle questions
 
-The framework may eventually need narrower scopes for transactions, workflow steps or stream lifetimes. Additional phases should be introduced only when a real integration requires them; Arc does not start with an enterprise DI lifecycle taxonomy.
+The framework may eventually need narrower scopes for transactions, workflow steps or stream lifetimes. Additional phases should be introduced only when a real integration requires them; Qroz does not start with an enterprise DI lifecycle taxonomy.

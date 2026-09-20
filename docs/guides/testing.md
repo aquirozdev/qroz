@@ -1,11 +1,11 @@
 ---
-title: Testing Arc applications
+title: Testing Qroz applications
 description: Outside-in tests, shared contracts, platform gates, and what each level proves.
 ---
 
-# Testing Arc applications
+# Testing Qroz applications
 
-Arc uses multiple test levels because a unit test cannot prove runtime portability.
+Qroz uses multiple test levels because a unit test cannot prove runtime portability.
 
 ## 1. Outside-in application tests
 

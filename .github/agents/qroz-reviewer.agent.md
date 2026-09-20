@@ -1,6 +1,6 @@
 ---
-name: Arc Reviewer
-description: Reviews Arc pull requests for semantic-model drift, portability leaks, distributed-system correctness, test evidence, documentation accuracy, and agent/security risks.
+name: Qroz Reviewer
+description: Reviews Qroz pull requests for semantic-model drift, portability leaks, distributed-system correctness, test evidence, documentation accuracy, and agent/security risks.
 target: github-copilot
 ---
 

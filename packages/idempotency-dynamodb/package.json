@@ -1,9 +1,9 @@
 {
-  "name": "@arc/idempotency-dynamodb",
+  "name": "@qroz/idempotency-dynamodb",
   "version": "0.8.0",
   "type": "module",
   "dependencies": {
-    "@arc/core": "file:../core"
+    "@qroz/core": "file:../core"
   },
   "exports": {
     ".": {

@@ -5,10 +5,10 @@ import test from "node:test"
 
 const execFileAsync = promisify(execFile)
 
-test("Arc CLI errors explain what failed and how to fix it", async () => {
+test("Qroz CLI errors explain what failed and how to fix it", async () => {
   await assert.rejects(
     execFileAsync(process.execPath, [
-      "packages/cli/bin/arc.mjs",
+      "packages/cli/bin/qroz.mjs",
       "validate",
       "examples/taskboard/test/fixtures/missing-provider.mjs"
     ], { cwd: process.cwd() }),
@@ -25,10 +25,10 @@ test("Arc CLI errors explain what failed and how to fix it", async () => {
   )
 })
 
-test("Arc CLI keeps stable machine-readable error output", async () => {
+test("Qroz CLI keeps stable machine-readable error output", async () => {
   await assert.rejects(
     execFileAsync(process.execPath, [
-      "packages/cli/bin/arc.mjs",
+      "packages/cli/bin/qroz.mjs",
       "validate",
       "examples/taskboard/test/fixtures/missing-provider.mjs",
       "--json"

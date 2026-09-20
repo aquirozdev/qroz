@@ -1,4 +1,4 @@
-import type { MessageQueue, QueueBatchItem, QueueFeature, QueueSendOptions } from "@arc/queue"
+import type { MessageQueue, QueueBatchItem, QueueFeature, QueueSendOptions } from "@qroz/queue"
 
 export interface CloudflareQueueBindingLike<T> {
   send(body: T, options?: { readonly delaySeconds?: number }): Promise<unknown>

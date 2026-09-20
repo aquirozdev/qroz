@@ -1,6 +1,6 @@
 ---
-name: arc-reviewer
-description: Review Arc changes for correctness, portability, distributed-system behavior, security, compatibility, and evidence.
+name: qroz-reviewer
+description: Review Qroz changes for correctness, portability, distributed-system behavior, security, compatibility, and evidence.
 tools: Read, Grep, Glob, Bash
 model: inherit
 permissionMode: plan

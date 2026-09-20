@@ -1,5 +1,5 @@
 name: Architecture proposal
-description: Discuss a change that may affect multiple Arc packages, contracts, or provider boundaries.
+description: Discuss a change that may affect multiple Qroz packages, contracts, or provider boundaries.
 title: "[architecture] "
 body:
   - type: textarea

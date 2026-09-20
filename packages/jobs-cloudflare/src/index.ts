@@ -1,6 +1,6 @@
-import { createCloudflareTracer, type CloudflareTracingLike } from "@arc/telemetry-cloudflare"
-import { normalizeProviderSource, type AppDefinition, type JobEnvelope, type MaybePromise, type ProviderSource } from "@arc/core"
-import { executeJobEnvelope } from "@arc/jobs"
+import { createCloudflareTracer, type CloudflareTracingLike } from "@qroz/telemetry-cloudflare"
+import { normalizeProviderSource, type AppDefinition, type JobEnvelope, type MaybePromise, type ProviderSource } from "@qroz/core"
+import { executeJobEnvelope } from "@qroz/jobs"
 
 export interface CloudflareQueueMessageLike<T = unknown> {
   readonly id: string

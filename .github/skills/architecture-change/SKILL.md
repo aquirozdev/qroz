@@ -1,9 +1,9 @@
 ---
 name: architecture-change
-description: Use when adding or changing an Arc framework abstraction, runtime/resource contract, Application Graph field, job/event semantic, or cross-package architectural behavior.
+description: Use when adding or changing an Qroz framework abstraction, runtime/resource contract, Application Graph field, job/event semantic, or cross-package architectural behavior.
 ---
 
-# Arc architecture change workflow
+# Qroz architecture change workflow
 
 1. Read `docs/project/vision.md`, `docs/project/principles.md`, and relevant ADRs.
 2. Write the desired application-facing API before internal design.

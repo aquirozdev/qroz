@@ -1,10 +1,10 @@
 {
-  "name": "@arc/jobs",
+  "name": "@qroz/jobs",
   "version": "0.4.0",
   "type": "module",
   "dependencies": {
-    "@arc/core": "file:../core",
-    "@arc/telemetry": "file:../telemetry"
+    "@qroz/core": "file:../core",
+    "@qroz/telemetry": "file:../telemetry"
   },
   "exports": {
     ".": {

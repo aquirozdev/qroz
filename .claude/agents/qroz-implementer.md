@@ -1,6 +1,6 @@
 ---
-name: arc-implementer
-description: Implement focused Arc vertical slices using example-first API design, outside-in tests, contract tests, and canonical documentation.
+name: qroz-implementer
+description: Implement focused Qroz vertical slices using example-first API design, outside-in tests, contract tests, and canonical documentation.
 model: inherit
 skills:
   - architecture-change

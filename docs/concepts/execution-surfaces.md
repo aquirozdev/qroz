@@ -1,11 +1,11 @@
 ---
 title: Execution surfaces
-description: How Arc isolates HTTP, jobs, listeners and future workflow execution for least privilege.
+description: How Qroz isolates HTTP, jobs, listeners and future workflow execution for least privilege.
 ---
 
 # Execution surfaces
 
-A serverless application is not one process with one universal dependency container. Arc models independent execution surfaces.
+A serverless application is not one process with one universal dependency container. Qroz models independent execution surfaces.
 
 Current surfaces include:
 
@@ -30,7 +30,7 @@ Email job requires:
 
 The HTTP Worker should not receive mail credentials, and the queue consumer should not receive the users database unless it needs it.
 
-Arc therefore validates required providers against the **active surface**, not the entire application.
+Qroz therefore validates required providers against the **active surface**, not the entire application.
 
 ## Benefits
 

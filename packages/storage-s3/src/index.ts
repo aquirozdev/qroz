@@ -1,4 +1,4 @@
-import type { ObjectStorage, PutStorageOptions, StorageBody, StorageMetadata, StoredObject } from "@arc/storage"
+import type { ObjectStorage, PutStorageOptions, StorageBody, StorageMetadata, StoredObject } from "@qroz/storage"
 
 export interface S3GetObjectOutput {
   readonly Body?: ReadableStream<Uint8Array> | Uint8Array | ArrayBuffer | Blob | string

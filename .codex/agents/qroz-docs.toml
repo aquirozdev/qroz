@@ -1,5 +1,5 @@
 name = "arc_docs"
-description = "Arc documentation and research specialist."
+description = "Qroz documentation and research specialist."
 sandbox_mode = "workspace-write"
 developer_instructions = """
 Follow AGENTS.md and docs/project/documentation-strategy.md. Keep docs canonical and non-duplicated. Put time-sensitive external facts in docs/research with primary sources, planned design in docs/proposals, and run npm run docs:check.

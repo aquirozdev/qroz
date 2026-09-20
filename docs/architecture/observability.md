@@ -1,15 +1,15 @@
 ---
 title: Observability architecture
-description: Arc's semantic telemetry model, W3C trace propagation, and platform-native instrumentation strategy.
+description: Qroz's semantic telemetry model, W3C trace propagation, and platform-native instrumentation strategy.
 ---
 
 # Observability architecture
 
-Arc does not ship a proprietary telemetry backend. It emits portable semantic information and integrates with platform-native tracing or OpenTelemetry pipelines.
+Qroz does not ship a proprietary telemetry backend. It emits portable semantic information and integrates with platform-native tracing or OpenTelemetry pipelines.
 
 ## Current model
 
-Arc defines semantic spans for:
+Qroz defines semantic spans for:
 
 - endpoints;
 - listeners;
@@ -25,13 +25,13 @@ Propagation and span parenting are different guarantees. A platform adapter must
 
 ## OpenTelemetry conventions
 
-Arc should align with stable OpenTelemetry semantic conventions where possible:
+Qroz should align with stable OpenTelemetry semantic conventions where possible:
 
 - HTTP spans are stable;
 - database client spans are stable;
 - messaging conventions are still in development as of September 2026.
 
-Therefore Arc-specific messaging attributes should remain namespaced and versionable rather than prematurely freezing unstable OpenTelemetry keys.
+Therefore Qroz-specific messaging attributes should remain namespaced and versionable rather than prematurely freezing unstable OpenTelemetry keys.
 
 ## Cardinality and privacy
 

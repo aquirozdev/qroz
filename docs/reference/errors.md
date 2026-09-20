@@ -1,11 +1,11 @@
 ---
 title: Framework errors
-description: Current ARC error-code catalog and stability rules.
+description: Current QROZ error-code catalog and stability rules.
 ---
 
 # Framework errors
 
-Arc uses stable machine-readable error codes so CLI, tests, documentation and agents can reason about framework invariants without parsing prose.
+Qroz uses stable machine-readable error codes so CLI, tests, documentation and agents can reason about framework invariants without parsing prose.
 
 | Code | Meaning | Typical remediation |
 | --- | --- | --- |
@@ -25,7 +25,7 @@ Arc uses stable machine-readable error codes so CLI, tests, documentation and ag
 Use:
 
 ```bash
-arc explain ARC1005 --json
+qroz explain ARC1005 --json
 ```
 
 ## Stability

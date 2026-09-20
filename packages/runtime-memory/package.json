@@ -1,10 +1,10 @@
 {
-  "name": "@arc/runtime-memory",
+  "name": "@qroz/runtime-memory",
   "version": "0.4.0",
   "type": "module",
   "dependencies": {
-    "@arc/core": "file:../core",
-    "@arc/runtime-web": "file:../runtime-web"
+    "@qroz/core": "file:../core",
+    "@qroz/runtime-web": "file:../runtime-web"
   },
   "exports": {
     ".": {

@@ -20,20 +20,20 @@ async function availablePort() {
 async function waitForServer(url, child, diagnostics = () => "") {
   const deadline = Date.now() + 8_000
   while (Date.now() < deadline) {
-    if (child.exitCode !== null) throw new Error(`arc dev exited early with code ${child.exitCode}: ${diagnostics()}`)
+    if (child.exitCode !== null) throw new Error(`qroz dev exited early with code ${child.exitCode}: ${diagnostics()}`)
     try {
       const response = await fetch(url)
       if (response.ok) return response
     } catch {}
     await new Promise((resolve) => setTimeout(resolve, 50))
   }
-  throw new Error("arc dev did not become ready")
+  throw new Error("qroz dev did not become ready")
 }
 
-test("arc dev serves the application and Studio from the same Application Graph", { timeout: 12_000 }, async () => {
+test("qroz dev serves the application and Studio from the same Application Graph", { timeout: 12_000 }, async () => {
   const port = await availablePort()
   const child = spawn(process.execPath, [
-    "packages/cli/bin/arc.mjs",
+    "packages/cli/bin/qroz.mjs",
     "dev",
     "examples/taskboard/dist/app.js",
     "--port",
@@ -56,13 +56,13 @@ test("arc dev serves the application and Studio from the same Application Graph"
 
     const studio = await fetch(`http://127.0.0.1:${port}/__arc/`)
     assert.equal(studio.status, 200)
-    assert.match(await studio.text(), /Arc Studio/)
+    assert.match(await studio.text(), /Qroz Studio/)
 
     const application = await fetch(`http://127.0.0.1:${port}/tasks/task-1`)
     assert.equal(application.status, 200)
     assert.deepEqual(await application.json(), {
       id: "task-1",
-      title: "Ship the first Arc app",
+      title: "Ship the first Qroz app",
       completed: false
     })
 
@@ -72,8 +72,8 @@ test("arc dev serves the application and Studio from the same Application Graph"
     assert.equal(requests.at(-1)?.status, 200)
 
     const traces = await fetch(`http://127.0.0.1:${port}/__arc/api/traces`).then((response) => response.json())
-    assert.equal(traces.at(-1)?.name, "arc.endpoint")
-    assert.equal(traces.at(-1)?.attributes?.["arc.endpoint"], "getTask")
+    assert.equal(traces.at(-1)?.name, "qroz.endpoint")
+    assert.equal(traces.at(-1)?.attributes?.["qroz.endpoint"], "getTask")
     assert.equal(traces.at(-1)?.requestId, requests.at(-1)?.id)
   } finally {
     child.kill("SIGTERM")
@@ -87,10 +87,10 @@ test("arc dev serves the application and Studio from the same Application Graph"
 })
 
 
-test("arc dev records authorization denials without exposing principal claims", { timeout: 12_000 }, async () => {
+test("qroz dev records authorization denials without exposing principal claims", { timeout: 12_000 }, async () => {
   const port = await availablePort()
   const child = spawn(process.execPath, [
-    "packages/cli/bin/arc.mjs",
+    "packages/cli/bin/qroz.mjs",
     "dev",
     "examples/saas/dist/app.js",
     "--port",
@@ -132,19 +132,19 @@ test("arc dev records authorization denials without exposing principal claims", 
 })
 
 
-test("arc dev --watch reloads the full compiled module graph", { timeout: 15_000 }, async () => {
-  const root = await mkdtemp(join(process.cwd(), ".arc-watch-"))
+test("qroz dev --watch reloads the full compiled module graph", { timeout: 15_000 }, async () => {
+  const root = await mkdtemp(join(process.cwd(), ".qroz-watch-"))
   const appPath = join(root, "app.mjs")
   const messagePath = join(root, "message.mjs")
   const port = await availablePort()
 
-  const appSource = `import { app, endpoint, module } from "@arc/core"
+  const appSource = `import { app, endpoint, module } from "@qroz/core"
 import { message } from "./message.mjs"
 
 const Output = {
   "~standard": {
     version: 1,
-    vendor: "arc-watch-test",
+    vendor: "qroz-watch-test",
     validate(value) { return { value } }
   }
 }
@@ -166,7 +166,7 @@ export default app({
   await writeFile(messagePath, 'export const message = "one"\n', "utf8")
 
   const child = spawn(process.execPath, [
-    "packages/cli/bin/arc.mjs",
+    "packages/cli/bin/qroz.mjs",
     "dev",
     appPath,
     "--watch",
@@ -185,7 +185,7 @@ export default app({
   async function waitForMessage(expected) {
     const deadline = Date.now() + 8_000
     while (Date.now() < deadline) {
-      if (child.exitCode !== null) throw new Error(`arc dev --watch exited early: ${stderr}`)
+      if (child.exitCode !== null) throw new Error(`qroz dev --watch exited early: ${stderr}`)
       try {
         const response = await fetch(`http://127.0.0.1:${port}/version`)
         if (response.ok && (await response.json()).message === expected) return
@@ -212,8 +212,8 @@ export default app({
 })
 
 
-test("arc dev watches a TypeScript source entry without exposing dist plumbing", { timeout: 20_000 }, async () => {
-  const root = await mkdtemp(join(process.cwd(), ".arc-source-"))
+test("qroz dev watches a TypeScript source entry without exposing dist plumbing", { timeout: 20_000 }, async () => {
+  const root = await mkdtemp(join(process.cwd(), ".qroz-source-"))
   const sourceDir = join(root, "src")
   const appPath = join(sourceDir, "app.ts")
   const messagePath = join(sourceDir, "message.ts")
@@ -234,13 +234,13 @@ test("arc dev watches a TypeScript source entry without exposing dist plumbing",
   }, null, 2), "utf8")
 
   await writeFile(messagePath, 'export const message = "one"\n', "utf8")
-  await writeFile(appPath, `import { app, endpoint, module } from "@arc/core"
+  await writeFile(appPath, `import { app, endpoint, module } from "@qroz/core"
 import { message } from "./message.js"
 
 const Output = {
   "~standard": {
     version: 1 as const,
-    vendor: "arc-source-first-test",
+    vendor: "qroz-source-first-test",
     validate(value: unknown) {
       return { value: value as { message: string } }
     }
@@ -263,7 +263,7 @@ export default app({
 `, "utf8")
 
   const child = spawn(process.execPath, [
-    "packages/cli/bin/arc.mjs",
+    "packages/cli/bin/qroz.mjs",
     "dev",
     appPath,
     "--watch",
@@ -282,7 +282,7 @@ export default app({
   async function waitForMessage(expected) {
     const deadline = Date.now() + 10_000
     while (Date.now() < deadline) {
-      if (child.exitCode !== null) throw new Error(`source-first arc dev exited early: ${stderr}`)
+      if (child.exitCode !== null) throw new Error(`source-first qroz dev exited early: ${stderr}`)
       try {
         const response = await fetch(`http://127.0.0.1:${port}/version`)
         if (response.ok && (await response.json()).message === expected) return

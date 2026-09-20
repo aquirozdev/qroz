@@ -1,4 +1,4 @@
-import { access, app, capability, endpoint, module, provide, withProviders } from "@arc/core"
+import { access, app, capability, endpoint, module, provide, withProviders } from "@qroz/core"
 
 const store = capability("review.store", {
   kind: "resource",
@@ -12,7 +12,7 @@ const store = capability("review.store", {
 const output = {
   "~standard": {
     version: 1,
-    vendor: "arc-diff-fixture",
+    vendor: "qroz-diff-fixture",
     validate(value) {
       return { value }
     }

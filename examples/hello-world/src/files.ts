@@ -1,5 +1,5 @@
-import { access, endpoint, module } from "@arc/core"
-import { readStorageText, storage } from "@arc/storage"
+import { access, endpoint, module } from "@qroz/core"
+import { readStorageText, storage } from "@qroz/storage"
 import { object, string } from "./schema.js"
 
 export const filesStorage = storage("files")

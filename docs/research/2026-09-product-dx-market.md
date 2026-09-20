@@ -1,11 +1,11 @@
 ---
 title: Product and developer-experience market direction — September 2026
-description: Time-stamped external research behind Arc's shift from feature breadth toward exceptional DX and application intelligence.
+description: Time-stamped external research behind Qroz's shift from feature breadth toward exceptional DX and application intelligence.
 ---
 
 # Product and developer-experience market direction — September 2026
 
-This document records time-sensitive evidence. It does **not** define stable Arc contracts; those belong in `docs/project/`.
+This document records time-sensitive evidence. It does **not** define stable Qroz contracts; those belong in `docs/project/`.
 
 ## Research question
 
@@ -29,7 +29,7 @@ Observed patterns across current products:
 - cloud platforms provide powerful primitives but developers still navigate provider-specific configuration, dashboards and deployment semantics;
 - application-model platforms demonstrate the value of architecture visualization and local developer dashboards.
 
-Arc should combine low ceremony with explicit semantics rather than imitate any one product.
+Qroz should combine low ceremony with explicit semantics rather than imitate any one product.
 
 ### DX is commercially valuable
 
@@ -56,7 +56,7 @@ Useful external baselines:
 
 ### Durable execution is important but not a unique market
 
-AWS, Cloudflare, Inngest, Trigger.dev, Temporal and others continue to invest in durable workflows. Arc needs enough durable semantics to support real applications and preserve its graph/runtime model, but building the richest workflow engine would move the project into a mature specialist category.
+AWS, Cloudflare, Inngest, Trigger.dev, Temporal and others continue to invest in durable workflows. Qroz needs enough durable semantics to support real applications and preserve its graph/runtime model, but building the richest workflow engine would move the project into a mature specialist category.
 
 Useful external baselines:
 
@@ -79,7 +79,7 @@ Useful external baselines:
 
 ## Competitive experience target
 
-Arc should aim to be:
+Qroz should aim to be:
 
 - as easy to start as a minimal Web framework;
 - as productive for ordinary application work as a batteries-included framework;
@@ -87,4 +87,4 @@ Arc should aim to be:
 - as visually polished and immediate as modern deployment platforms;
 - more transparent about application/security/deployment semantics than any of those categories individually.
 
-This target is intentionally ambitious. The next milestones should test whether Arc can achieve it before the project expands significantly further.
+This target is intentionally ambitious. The next milestones should test whether Qroz can achieve it before the project expands significantly further.

@@ -1,6 +1,6 @@
 # Instructions for coding agents
 
-Arc is developed from the desired application experience inward. Optimize for **small, truthful semantics and exceptional DX**, not framework surface area.
+Qroz is developed from the desired application experience inward. Optimize for **small, truthful semantics and exceptional DX**, not framework surface area.
 
 ## Read first
 
@@ -30,8 +30,8 @@ Before a substantial change, read:
 
 Do not:
 
-- introduce decorators/reflection into `@arc/core`;
-- import AWS/Cloudflare/Node vendor APIs into `@arc/core`;
+- introduce decorators/reflection into `@qroz/core`;
+- import AWS/Cloudflare/Node vendor APIs into `@qroz/core`;
 - bypass `requires`, `emits`, authorization or runtime enforcement;
 - weaken TypeScript strictness;
 - label a one-provider abstraction portable;
@@ -62,13 +62,13 @@ Prefer:
 
 ## Product direction
 
-**Arc owns semantics. Providers own primitives.**
+**Qroz owns semantics. Providers own primitives.**
 
 The near-term priority is:
 
 1. security/authorization semantics;
 2. a deliberately small durable-execution subset;
-3. Arc DX Preview: `arc dev`, Arc Studio, beautiful errors, fast inspection/testing;
+3. Qroz DX Preview: `qroz dev`, Qroz Studio, beautiful errors, fast inspection/testing;
 4. semantic deployment/security diffs;
 5. agent-native interfaces over the same Application Graph.
 

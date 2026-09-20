@@ -1,11 +1,11 @@
 ---
 title: Non-goals
-description: What Arc deliberately does not intend to own.
+description: What Qroz deliberately does not intend to own.
 ---
 
 # Non-goals
 
-Arc is not trying to own every layer of the stack.
+Qroz is not trying to own every layer of the stack.
 
 It is not intended to become:
 
@@ -22,4 +22,4 @@ It is not intended to become:
 - an Express-compatibility layer;
 - a decorator/reflection-heavy dependency injection framework.
 
-Arc may integrate with these categories, generate inputs for them, or provide thin adapters where that improves application DX.
+Qroz may integrate with these categories, generate inputs for them, or provide thin adapters where that improves application DX.

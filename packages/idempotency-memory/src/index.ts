@@ -1,4 +1,4 @@
-import type { JobIdempotencyClaim, JobIdempotencyStore } from "@arc/core"
+import type { JobIdempotencyClaim, JobIdempotencyStore } from "@qroz/core"
 
 interface Entry {
   state: "processing" | "completed"

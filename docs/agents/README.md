@@ -1,28 +1,28 @@
 ---
 title: Agents and machine DX
-description: How Arc makes application architecture discoverable and safe for coding and operational agents.
+description: How Qroz makes application architecture discoverable and safe for coding and operational agents.
 ---
 
 # Agents and machine DX
 
-Arc treats machine usability as a first-class form of developer experience.
+Qroz treats machine usability as a first-class form of developer experience.
 
 The goal is not to make an AI agent omnipotent. The goal is to make architecture explicit enough that tools do not need to infer fundamental facts by scanning an entire repository.
 
 ## Existing machine surfaces
 
 - deterministic Application Graph;
-- `arc inspect --json`;
-- `arc context --json`;
-- `arc diff --json`;
-- `arc explain --json`;
+- `qroz inspect --json`;
+- `qroz context --json`;
+- `qroz diff --json`;
+- `qroz explain --json`;
 - read-only MCP v2 integration;
 - stable framework error codes;
 - repository instructions and reusable skills compatible with Codex, Claude Code, OpenCode, and GitHub Copilot.
 
 ## Repository agent compatibility
 
-See [multi-agent compatibility](./multi-agent-compatibility.md) for the canonical `AGENTS.md`, Claude adapter, shared skills, specialist agents, and why Arc does not rely on symlinks.
+See [multi-agent compatibility](./multi-agent-compatibility.md) for the canonical `AGENTS.md`, Claude adapter, shared skills, specialist agents, and why Qroz does not rely on symlinks.
 
 GitHub-specific agent workflows are documented in [GitHub agents and repository instructions](./github-copilot.md).
 

@@ -30,7 +30,7 @@ const probe = endpoint({
   async handler(ctx) {
     const databaseClient = ctx.use(postgres)
     await databaseClient.execute(sql`create table if not exists arc_probe (id serial primary key, value text not null)`)
-    await databaseClient.execute(sql`insert into arc_probe (value) values ('arc-v0.6')`)
+    await databaseClient.execute(sql`insert into arc_probe (value) values ('qroz-v0.6')`)
     const result = await databaseClient.execute(sql`select value from arc_probe order by id desc limit 1`)
     return { value: result.rows[0]?.value }
   }
@@ -42,7 +42,7 @@ const definition = app({
 })
 const runtime = createWebRuntime(definition)
 let disposed = false
-const response = await runtime.fetch(new Request("http://arc.test/database-probe", { method: "POST" }), {
+const response = await runtime.fetch(new Request("http://qroz.test/database-probe", { method: "POST" }), {
   ...providerScope([provideDatabase(postgres, db)], async () => {
     await client.end()
     disposed = true
@@ -50,7 +50,7 @@ const response = await runtime.fetch(new Request("http://arc.test/database-probe
 })
 
 assert.equal(response.status, 200)
-assert.deepEqual(await response.json(), { value: "arc-v0.6" })
+assert.deepEqual(await response.json(), { value: "qroz-v0.6" })
 assert.equal(disposed, true)
 await assert.rejects(() => client.query("select 1"))
-console.log("Arc PostgreSQL + Drizzle integration passed")
+console.log("Qroz PostgreSQL + Drizzle integration passed")
