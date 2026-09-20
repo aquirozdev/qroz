@@ -39,6 +39,7 @@ Every change preserves:
 | Job trace propagation | verified | envelope propagation verified | envelope portable; AWS span linkage planned |
 | Operation-level resource access | verified | binding plan verified | IAM plan verified |
 | Endpoint authorization foundations | verified | runtime-neutral contract | runtime-neutral contract |
+| Workflow graph/execution | memory verified | provider plan contract | Step Functions compile contract |
 | MCP | official v2 integration | Web Standards compatible | runtime-neutral |
 
 ## Before production claims
