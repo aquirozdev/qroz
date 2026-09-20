@@ -114,7 +114,6 @@ try {
   await run("npm", ["install", "--ignore-scripts", "--no-audit", "--no-fund", ...tarballs], { cwd: consumerRoot })
 
   await writeFile(join(consumerRoot, "app.mjs"), `import { app, endpoint, module } from "@arc/core"
-import { createTestClient } from "@arc/testing"
 
 const Output = {
   "~standard": {
@@ -137,6 +136,10 @@ const application = app({
 })
 
 export default application
+`, "utf8")
+
+  await writeFile(join(consumerRoot, "consumer.mjs"), `import application from "./app.mjs"
+import { createTestClient } from "@arc/testing"
 
 const response = await createTestClient(application).get("/health")
 if (response.status !== 200) throw new Error(\`unexpected status \${response.status}\`)
@@ -145,7 +148,15 @@ if (body.ok !== true) throw new Error(\`unexpected body \${JSON.stringify(body)}
 console.log("packed consumer request ok")
 `, "utf8")
 
-  const appRun = await run(process.execPath, ["app.mjs"], { cwd: consumerRoot })
+  await writeFile(join(evidenceRoot, "packed-consumer.json"), JSON.stringify({
+    generatedAt: new Date().toISOString(),
+    node: process.version,
+    platform: process.platform,
+    packages: packed,
+    consumer: { status: "packed" }
+  }, null, 2) + "\n")
+
+  const appRun = await run(process.execPath, ["consumer.mjs"], { cwd: consumerRoot })
 
   const cliPath = join(consumerRoot, "node_modules", "@arc", "cli", "bin", "arc.mjs")
   const cliRun = await run(process.execPath, [cliPath, "validate", "app.mjs", "--json"], { cwd: consumerRoot })
