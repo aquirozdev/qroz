@@ -7,6 +7,17 @@ description: The shortest path to understanding and using Arc.
 
 Arc is a portable TypeScript application framework for serverless and distributed systems. It aims for Laravel-level application ergonomics while keeping runtime, cloud, ORM and infrastructure providers replaceable.
 
+The intended first run is deliberately small:
+
+```bash
+npm create arc@latest my-app
+cd my-app
+npm install
+npm run dev
+```
+
+The generated dev command is source-first: Arc accepts `src/app.ts`, uses the application's own TypeScript project, watches emitted JavaScript internally and keeps Arc Studio on a stable local URL. Developers should not have to coordinate `dist/` paths or a second build watcher.
+
 The intended first application shape is deliberately small:
 
 ```ts

@@ -26,7 +26,7 @@ export default defineConfig({
     }
   ],
   webServer: {
-    command: "node ../../packages/cli/bin/arc.mjs dev ../../examples/taskboard/dist/app.js --port 4010 --no-open",
+    command: "node ../../packages/cli/bin/arc.mjs dev ../../examples/taskboard/src/app.ts --port 4010 --no-open",
     url: "http://127.0.0.1:4010/__arc/",
     reuseExistingServer: false,
     timeout: 20_000

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict"
 import { spawn } from "node:child_process"
 import { createServer } from "node:net"
-import { mkdtemp, rm, writeFile } from "node:fs/promises"
+import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises"
 import { join } from "node:path"
 import test from "node:test"
 
@@ -193,6 +193,103 @@ export default app({
       await new Promise((resolve) => setTimeout(resolve, 75))
     }
     throw new Error(`timed out waiting for watched value '${expected}'`)
+  }
+
+  try {
+    await waitForMessage("one")
+    await writeFile(messagePath, 'export const message = "two"\n', "utf8")
+    await waitForMessage("two")
+  } finally {
+    child.kill("SIGTERM")
+    await Promise.race([
+      new Promise((resolve) => child.once("exit", resolve)),
+      new Promise((resolve) => setTimeout(resolve, 1_500))
+    ])
+    await rm(root, { recursive: true, force: true })
+  }
+
+  assert.equal(stderr, "")
+})
+
+
+test("arc dev watches a TypeScript source entry without exposing dist plumbing", { timeout: 20_000 }, async () => {
+  const root = await mkdtemp(join(process.cwd(), ".arc-source-"))
+  const sourceDir = join(root, "src")
+  const appPath = join(sourceDir, "app.ts")
+  const messagePath = join(sourceDir, "message.ts")
+  const port = await availablePort()
+
+  await mkdir(sourceDir, { recursive: true })
+  await writeFile(join(root, "tsconfig.json"), JSON.stringify({
+    compilerOptions: {
+      target: "ES2022",
+      module: "NodeNext",
+      moduleResolution: "NodeNext",
+      strict: true,
+      rootDir: "src",
+      outDir: "dist",
+      skipLibCheck: true
+    },
+    include: ["src/**/*.ts"]
+  }, null, 2), "utf8")
+
+  await writeFile(messagePath, 'export const message = "one"\n', "utf8")
+  await writeFile(appPath, `import { app, endpoint, module } from "@arc/core"
+import { message } from "./message.js"
+
+const Output = {
+  "~standard": {
+    version: 1 as const,
+    vendor: "arc-source-first-test",
+    validate(value: unknown) {
+      return { value: value as { message: string } }
+    }
+  }
+}
+
+const version = endpoint({
+  method: "GET",
+  path: "/version",
+  output: Output,
+  handler() {
+    return { message }
+  }
+})
+
+export default app({
+  name: "source-first",
+  modules: [module({ name: "system", endpoints: { version } })]
+})
+`, "utf8")
+
+  const child = spawn(process.execPath, [
+    "packages/cli/bin/arc.mjs",
+    "dev",
+    appPath,
+    "--watch",
+    "--port",
+    String(port),
+    "--no-open"
+  ], {
+    cwd: process.cwd(),
+    stdio: ["ignore", "pipe", "pipe"]
+  })
+
+  let stderr = ""
+  child.stderr.setEncoding("utf8")
+  child.stderr.on("data", (chunk) => { stderr += chunk })
+
+  async function waitForMessage(expected) {
+    const deadline = Date.now() + 10_000
+    while (Date.now() < deadline) {
+      if (child.exitCode !== null) throw new Error(`source-first arc dev exited early: ${stderr}`)
+      try {
+        const response = await fetch(`http://127.0.0.1:${port}/version`)
+        if (response.ok && (await response.json()).message === expected) return
+      } catch {}
+      await new Promise((resolve) => setTimeout(resolve, 75))
+    }
+    throw new Error(`timed out waiting for TypeScript source value '${expected}': ${stderr}`)
   }
 
   try {
