@@ -136,6 +136,8 @@ const application = app({
   modules: [module({ name: "system", endpoints: { health } })]
 })
 
+export default application
+
 const response = await createTestClient(application).get("/health")
 if (response.status !== 200) throw new Error(\`unexpected status \${response.status}\`)
 const body = await response.json()
