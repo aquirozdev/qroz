@@ -7,6 +7,7 @@ import {
   type JobDefinition,
   type Provider,
   type Principal,
+  type AuthorizationDecision,
   type MaybePromise,
   ArcError,
   ValidationError,
@@ -148,6 +149,7 @@ export interface WebRuntimeOptions<ExecutionContext extends WebExecutionContext 
   readonly onError?: (error: unknown) => void
   readonly tracer?: ArcTracer
   readonly authenticate?: (request: Request, context?: ExecutionContext) => MaybePromise<Principal | undefined>
+  readonly onAuthorizationDecision?: (decision: AuthorizationDecision) => MaybePromise<void>
 }
 
 export function createWebRuntime<ExecutionContext extends WebExecutionContext = WebExecutionContext>(
@@ -287,10 +289,32 @@ export function createWebRuntime<ExecutionContext extends WebExecutionContext = 
         const declaredPermissions = endpoint.auth?.permissions ?? []
         const declaredPolicies = endpoint.auth?.policies ?? []
         const authenticationRequired = endpoint.auth?.required ?? (declaredPermissions.length > 0 || declaredPolicies.length > 0)
+        const decisionBase = {
+          app: application.name,
+          module: matched.route.moduleName,
+          endpoint: matched.route.endpointName
+        } as const
+        const decisionPrincipal = principal
+          ? { id: principal.id, ...(principal.type ? { type: principal.type } : {}) }
+          : undefined
+
         if (authenticationRequired && !principal) {
+          await options.onAuthorizationDecision?.({
+            ...decisionBase,
+            kind: "authentication",
+            outcome: "deny"
+          })
           return Response.json({ error: "Authentication required", code: "ARC3001" }, { status: 401 })
         }
         if (principal) {
+          if (authenticationRequired) {
+            await options.onAuthorizationDecision?.({
+              ...decisionBase,
+              kind: "authentication",
+              outcome: "allow",
+              ...(decisionPrincipal ? { principal: decisionPrincipal } : {})
+            })
+          }
           for (const permission of declaredPermissions) {
             const allowed = context?.authorize
               ? await context.authorize(principal, permission, {
@@ -299,6 +323,13 @@ export function createWebRuntime<ExecutionContext extends WebExecutionContext = 
                   endpoint: matched.route.endpointName
                 })
               : principal.permissions?.includes(permission) ?? false
+            await options.onAuthorizationDecision?.({
+              ...decisionBase,
+              kind: "permission",
+              outcome: allowed ? "allow" : "deny",
+              ...(decisionPrincipal ? { principal: decisionPrincipal } : {}),
+              permission
+            })
             if (!allowed) {
               return Response.json({ error: "Permission denied", code: "ARC3002", permission }, { status: 403 })
             }
@@ -315,6 +346,13 @@ export function createWebRuntime<ExecutionContext extends WebExecutionContext = 
               request,
               input: { params, body, query },
               ...policyResolver
+            })
+            await options.onAuthorizationDecision?.({
+              ...decisionBase,
+              kind: "policy",
+              outcome: allowed ? "allow" : "deny",
+              ...(decisionPrincipal ? { principal: decisionPrincipal } : {}),
+              policy: policy.name
             })
             if (!allowed) {
               return Response.json({ error: "Permission denied", code: "ARC3002", policy: policy.name }, { status: 403 })

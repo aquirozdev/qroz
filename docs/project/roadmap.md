@@ -53,11 +53,13 @@ Current application/user authorization slice:
 - bearer and cookie-session authentication mechanisms;
 - Cloudflare/AWS per-invocation identity resolution;
 - runtime 401/403 enforcement;
+- audit-friendly structured authorization decisions with principal claim redaction;
 - graph representation.
 
 Still open in v0.9:
 - real external authentication provider integrations;
 - richer policy composition/resource authorization where justified;
+- durable authorization audit sinks/export adapters;
 - principal propagation into jobs/events where justified;
 - agent authorization foundations;
 - known-overgranting policy tests beyond current resource contracts;
