@@ -57,6 +57,77 @@ test("tenant member with permission can mutate the resource", async () => {
   })
 })
 
+test("emits audit-friendly authorization decisions without copying principal claims", async () => {
+  const decisions = []
+  const response = await createTestClient(application, {
+    context: {
+      principal: {
+        id: "user-a",
+        type: "user",
+        permissions: ["projects.update"],
+        claims: { tenant: "tenant-a", secretLikeClaim: "do-not-copy" }
+      }
+    },
+    onAuthorizationDecision(decision) {
+      decisions.push(decision)
+    }
+  }).patch("/projects/project-a", {
+    json: { name: "Audited rename" }
+  })
+
+  assert.equal(response.status, 200)
+  assert.deepEqual(decisions, [
+    {
+      kind: "authentication",
+      outcome: "allow",
+      app: "saas-reference",
+      module: "projects",
+      endpoint: "renameProject",
+      principal: { id: "user-a", type: "user" }
+    },
+    {
+      kind: "permission",
+      outcome: "allow",
+      app: "saas-reference",
+      module: "projects",
+      endpoint: "renameProject",
+      principal: { id: "user-a", type: "user" },
+      permission: "projects.update"
+    },
+    {
+      kind: "policy",
+      outcome: "allow",
+      app: "saas-reference",
+      module: "projects",
+      endpoint: "renameProject",
+      principal: { id: "user-a", type: "user" },
+      policy: "projects.member"
+    }
+  ])
+})
+
+test("records the denied policy that blocked a cross-tenant mutation", async () => {
+  const decisions = []
+  const response = await createTestClient(application, {
+    context: {
+      principal: {
+        id: "user-b",
+        permissions: ["projects.update"]
+      }
+    },
+    onAuthorizationDecision(decision) {
+      decisions.push(decision)
+    }
+  }).patch("/projects/project-a", {
+    json: { name: "Blocked" }
+  })
+
+  assert.equal(response.status, 403)
+  assert.equal(decisions.at(-1)?.kind, "policy")
+  assert.equal(decisions.at(-1)?.outcome, "deny")
+  assert.equal(decisions.at(-1)?.policy, "projects.member")
+})
+
 test("Application Graph includes policy capabilities in the endpoint surface", () => {
   const graph = inspect(application)
   const endpoint = graph.modules
