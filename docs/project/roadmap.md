@@ -67,7 +67,27 @@ Cloud IAM and end-user authorization must remain separate concepts even if they 
 
 ## v0.10 — durable workflows
 
-Prototype against at least two engines among Cloudflare Workflows, AWS Step Functions and Temporal. Investigate durable steps, timers, retries, compensation, versioning, replay constraints, cancellation and observability.
+In progress.
+
+Implemented research slice:
+- declarative versioned workflow graph;
+- task, sleep and succeed states;
+- deterministic memory executor;
+- bounded retry/backoff semantics;
+- workflow-task capability and deployment surfaces;
+- Application Graph representation;
+- AWS Step Functions compilation for the supported subset;
+- Cloudflare Workflows planning for the supported subset.
+
+Still required:
+- real durable execution integration gates for at least two engines;
+- portable choices/branching;
+- cancellation;
+- compensation/sagas;
+- signals/external events;
+- child workflows;
+- running-instance version/migration model;
+- workflow tracing and operator controls.
 
 ## v0.11 — deployment model
 
