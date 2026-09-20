@@ -7,10 +7,12 @@
   },
   "dependencies": {
     "@arc/core": "file:../core",
-    "@arc/deployment": "file:../deployment"
+    "@arc/deployment": "file:../deployment",
+    "@arc/runtime-web": "file:../runtime-web"
   },
   "files": [
-    "bin"
+    "bin",
+    "lib"
   ],
   "scripts": {
     "build": "node --check bin/arc.mjs"

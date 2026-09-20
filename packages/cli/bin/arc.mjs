@@ -3,11 +3,35 @@ import { resolve } from "node:path"
 import { pathToFileURL } from "node:url"
 import { buildApplication, explainError, inspect, inspectModuleContext } from "@arc/core"
 import { planDeployment } from "@arc/deployment"
+import { runDev } from "../lib/dev-server.mjs"
 
 const args = process.argv.slice(2)
 const command = args[0]
-const json = args.includes("--json")
-const positional = args.slice(1).filter((arg) => arg !== "--json")
+
+function parseCommandArgs(values) {
+  const positional = []
+  const flags = new Set()
+  const options = new Map()
+  for (let index = 0; index < values.length; index += 1) {
+    const value = values[index]
+    if (!value.startsWith("--")) {
+      positional.push(value)
+      continue
+    }
+    const next = values[index + 1]
+    if (next !== undefined && !next.startsWith("--")) {
+      options.set(value, next)
+      index += 1
+    } else {
+      flags.add(value)
+    }
+  }
+  return { positional, flags, options }
+}
+
+const parsed = parseCommandArgs(args.slice(1))
+const json = parsed.flags.has("--json")
+const positional = parsed.positional
 
 function fail(message, code = 1) {
   if (json) console.error(JSON.stringify({ ok: false, error: message }))
@@ -62,6 +86,24 @@ function printContext(context) {
   for (const item of context.events.emits) console.log(`EMITS    ${item.event}@${item.version} <= ${item.producerKind}:${item.producer}`)
   for (const item of context.jobs.definitions) console.log(`JOB      ${item.job}@${item.version} -> ${item.transport}`)
   for (const item of context.jobs.dispatches) console.log(`DISPATCH ${item.job}@${item.version} <= ${item.producerKind}:${item.producer}`)
+}
+
+if (command === "dev") {
+  if (positional.length !== 1) fail("usage: arc dev <compiled-app.js> [--port <number>] [--no-open]")
+  try {
+    const application = await loadApplication(positional[0])
+    buildApplication(application)
+    await runDev(application, {
+      port: parsed.options.get("--port"),
+      open: !parsed.flags.has("--no-open")
+    })
+    await new Promise(() => {})
+  } catch (error) {
+    const payload = error && typeof error === "object" && "toJSON" in error ? error.toJSON() : { message: error instanceof Error ? error.message : String(error) }
+    if (json) console.error(JSON.stringify({ ok: false, error: payload }))
+    else console.error(`arc: ${payload.code ? `${payload.code} ` : ""}${payload.message}`)
+    process.exit(1)
+  }
 }
 
 if (command === "explain") {
@@ -155,7 +197,7 @@ if (command === "context") {
 }
 
 if (!command || positional.length !== 1 || !["inspect", "validate"].includes(command)) {
-  fail("usage: arc <inspect|validate|plan> <compiled-app.js> [--json] | arc context <app.js> <module> [--json] | arc diff <before.js> <after.js> [--json] | arc explain <ARCxxxx> [--json]")
+  fail("usage: arc <inspect|validate|plan> <compiled-app.js> [--json] | arc dev <app.js> [--port <number>] [--no-open] | arc context <app.js> <module> [--json] | arc diff <before.js> <after.js> [--json] | arc explain <ARCxxxx> [--json]")
 }
 
 try {
