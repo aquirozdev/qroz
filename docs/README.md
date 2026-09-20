@@ -17,7 +17,7 @@ This directory is the canonical product and engineering knowledge base for Arc. 
 - [Testing applications](./guides/testing-applications.md) — outside-in TDD with the in-memory runtime.
 - [Roadmap](./project/roadmap.md) — current sequence, including the Arc DX Preview milestone.
 - [Current status](./project/status.md) — what is implemented and verified today.
-- [Production readiness](./project/production-readiness.md) — evidence gates before Arc can make production claims.
+- [Public beta readiness](./project/public-beta-readiness.md) — package, release, compatibility and first-run gates before publication.\n- [Production readiness](./project/production-readiness.md) — evidence gates before Arc can make production claims.\n- [Naming decision](./project/naming.md) — why Arc remains a codename before public publication.\n- [Visual evidence](./project/visual-evidence.md) — reproducible browser evidence for DX claims.
 - [Reference applications](./project/reference-applications.md) — executable product corpus from simple CRUD to workflows, realtime and agents.
 - [Capability backlog](./project/capability-backlog.md) — risk-ordered implementation work derived from the corpus.
 

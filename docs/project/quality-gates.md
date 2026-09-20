@@ -36,7 +36,8 @@ Public API work must also preserve:
 - **local-first operation** — core dev/test/inspect workflows require no hosted account;
 - **CLI/UI semantic parity** — Arc Studio consumes the same underlying model;
 - **type-system scalability** — representative large applications remain responsive in editor/typecheck;
-- **feedback performance** — DX latency budgets are measured and regressions are treated as bugs;\n- **visual evidence** — browser-facing DX claims have reproducible journeys with screenshots, video and traces where useful.
+- **feedback performance** — DX latency budgets are measured and regressions are treated as bugs;
+- **visual evidence** — browser-facing DX claims have reproducible journeys with screenshots, video and traces where useful.
 
 ## DX benchmark suite required before stabilization
 
@@ -75,7 +76,13 @@ Exact budgets may change after measurement; publishing and regression-testing th
 
 Resource/platform claims require representative failure-path testing: timeout, duplicate delivery, retries, malformed input, disposal, partial batch failure and provider limits where applicable.
 
-Security-sensitive features require denial-path, cross-tenant/authority escalation and secret-redaction tests.\n\nBrowser-facing product claims use the [visual product evidence](./visual-evidence.md) process so reviewable UX artifacts come from executable scenarios rather than manual mockups.
+Security-sensitive features require denial-path, cross-tenant/authority escalation and secret-redaction tests.
+
+Browser-facing product claims use the [visual product evidence](./visual-evidence.md) process so reviewable UX artifacts come from executable scenarios rather than manual mockups.
+
+## Before public package publication
+
+Run `npm run release:check` and satisfy [Public beta readiness](./public-beta-readiness.md). Publication additionally requires clean-tarball installation evidence and a trusted-publishing release path.
 
 ## Before 1.0
 
