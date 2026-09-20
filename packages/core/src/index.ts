@@ -209,7 +209,7 @@ export interface JobIdempotencyStore {
 }
 
 export interface JobIdempotencyPolicy<InputSchema extends StandardSchemaLike = StandardSchemaLike> {
-  readonly store: Capability<JobIdempotencyStore>
+  readonly store: Capability<JobIdempotencyStore, any>
   readonly key: (input: InferOutput<InputSchema>) => string
   readonly leaseSeconds?: number
   readonly ttlSeconds?: number
