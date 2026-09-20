@@ -93,7 +93,7 @@ export function createDynamoDbIdempotencyStore(
 ): JobIdempotencyStore {
   const keyAttribute = options.keyAttribute ?? "id"
   const now = options.now ?? Date.now
-  const tokenFactory = options.token ?? crypto.randomUUID
+  const tokenFactory = options.token ?? (() => crypto.randomUUID())
   const storageKey = (key: string) => `${options.keyPrefix ?? "arc#"}${key}`
   const keyOf = (key: string) => ({ [keyAttribute]: storageKey(key) })
 
