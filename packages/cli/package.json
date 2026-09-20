@@ -8,7 +8,8 @@
   "dependencies": {
     "@arc/core": "file:../core",
     "@arc/deployment": "file:../deployment",
-    "@arc/runtime-web": "file:../runtime-web"
+    "@arc/runtime-web": "file:../runtime-web",
+    "@arc/telemetry": "file:../telemetry"
   },
   "files": [
     "bin",
