@@ -11,7 +11,7 @@ export default app({
 })
 ```
 
-## Current research line — v0.8
+## Current research line — v0.9
 
 Implemented and exercised today:
 
@@ -34,7 +34,7 @@ Implemented and exercised today:
 - deterministic CLI tools: inspect, validate, explain, context and semantic diff;
 - official MCP v2 read-only integration.
 
-The next architectural priority is **operation-level resource access/grants**, so the Application Graph can distinguish reads/writes/publishes and later produce honest least-privilege IAM/deployment plans.
+The current architectural priority is **application/user authorization foundations** on top of operation-level resource grants, while keeping end-user permissions separate from cloud IAM.
 
 ## Documentation
 
