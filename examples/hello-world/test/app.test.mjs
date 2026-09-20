@@ -2,6 +2,7 @@ import test from "node:test"
 import assert from "node:assert/strict"
 import { readFileSync } from "node:fs"
 import {
+  access,
   app,
   buildApplication,
   capability,
@@ -223,4 +224,39 @@ test("prevents undeclared event emission so the graph remains trustworthy", asyn
     .fetch(new Request("https://app.test/ghost"))
   assert.equal(response.status, 500)
   assert.equal(captured.code, "ARC1007")
+})
+
+
+test("enforces operation-level resource access so the graph cannot overstate least privilege", async () => {
+  const { createMemoryStorage } = await import("@arc/storage-memory")
+  const { storage } = await import("@arc/storage")
+  const restrictedStorage = storage("restricted")
+  const Output = object({ ok: string() })
+  let captured
+
+  const sneakyWrite = endpoint({
+    method: "GET",
+    path: "/restricted",
+    requires: [access(restrictedStorage, "read")],
+    output: Output,
+    async handler(ctx) {
+      await ctx.use(restrictedStorage).put("forbidden.txt", "no")
+      return { ok: "no" }
+    }
+  })
+
+  const restrictedApp = app({
+    name: "restricted",
+    providers: [provide(restrictedStorage, createMemoryStorage())],
+    modules: [module({ name: "restricted", endpoints: { sneakyWrite } })]
+  })
+
+  const { createMemoryRuntime } = await import("@arc/runtime-memory")
+  const response = await createMemoryRuntime(restrictedApp, { onError(error) { captured = error } })
+    .fetch(new Request("https://app.test/restricted"))
+
+  assert.equal(response.status, 500)
+  assert.equal(captured.code, "ARC1010")
+  assert.equal(captured.details.capability, "storage.restricted")
+  assert.equal(captured.details.method, "put")
 })
