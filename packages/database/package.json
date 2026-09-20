@@ -1,9 +1,9 @@
 {
   "name": "@arc/database",
-  "version": "0.6.0",
+  "version": "0.1.0-beta.0",
   "type": "module",
   "dependencies": {
-    "@arc/core": "file:../core"
+    "@arc/core": "0.1.0-beta.0"
   },
   "exports": {
     ".": {
@@ -11,6 +11,33 @@
       "default": "./dist/index.js"
     }
   },
-  "files": ["dist"],
-  "scripts": { "build": "tsc -b" }
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "description": "Portable database capability contracts for Arc.",
+  "keywords": [
+    "typescript",
+    "backend",
+    "serverless",
+    "application-framework",
+    "developer-tools"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aquirozdev/arc.git",
+    "directory": "packages/database"
+  },
+  "bugs": {
+    "url": "https://github.com/aquirozdev/arc/issues"
+  },
+  "homepage": "https://github.com/aquirozdev/arc#readme",
+  "engines": {
+    "node": ">=22.14.0 <25"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }
