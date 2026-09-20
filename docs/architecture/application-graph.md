@@ -16,7 +16,8 @@ It currently represents:
 - event definitions, producers and listeners;
 - job definitions, transports, retry and idempotency metadata;
 - declared job producers;
-- endpoint authentication and permission requirements.
+- endpoint authentication, permissions and named policies;
+- workflow definitions, durable states, transitions, retry metadata and task dependencies.
 
 ## What it is not
 
@@ -32,7 +33,7 @@ Those artifacts may be **derived** from it.
 
 ## Integrity
 
-Graph metadata is useful only if application code cannot bypass it. Arc therefore enforces declared `requires`, `emits` and `dispatches`.
+Graph metadata is useful only if application code cannot bypass it. Arc therefore enforces declared `requires`, `emits` and `dispatches`, validates workflow transitions before execution, and restricts workflow-task capability access through the same resolver used by other execution surfaces.
 
 ## Schema evolution
 

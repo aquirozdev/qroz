@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 6,
+  "schemaVersion": 7,
   "name": "example",
   "capabilities": [
     {
@@ -169,7 +169,8 @@
           "access": []
         }
       ],
-      "jobs": []
+      "jobs": [],
+      "workflows": []
     },
     {
       "name": "files",
@@ -222,7 +223,8 @@
         }
       ],
       "listeners": [],
-      "jobs": []
+      "jobs": [],
+      "workflows": []
     },
     {
       "name": "notifications",
@@ -292,6 +294,60 @@
           },
           "hasInputSchema": true,
           "access": []
+        }
+      ],
+      "workflows": []
+    },
+    {
+      "name": "workflow-examples",
+      "endpoints": [],
+      "listeners": [],
+      "jobs": [],
+      "workflows": [
+        {
+          "name": "WelcomeUser",
+          "workflow": "users.welcome",
+          "version": 1,
+          "start": "prepare",
+          "hasInputSchema": true,
+          "states": [
+            {
+              "name": "prepare",
+              "kind": "task",
+              "next": "settle",
+              "requires": [],
+              "access": []
+            },
+            {
+              "name": "settle",
+              "kind": "sleep",
+              "seconds": 2,
+              "next": "audit",
+              "requires": [],
+              "access": []
+            },
+            {
+              "name": "audit",
+              "kind": "task",
+              "next": "done",
+              "retry": {
+                "maxAttempts": 3,
+                "strategy": "exponential",
+                "delaySeconds": 1,
+                "maxDelaySeconds": 5
+              },
+              "requires": [
+                "audit.sink"
+              ],
+              "access": []
+            },
+            {
+              "name": "done",
+              "kind": "succeed",
+              "requires": [],
+              "access": []
+            }
+          ]
         }
       ]
     }

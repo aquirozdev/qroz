@@ -8,6 +8,15 @@
       "path": "./packages/auth"
     },
     {
+      "path": "./packages/workflows"
+    },
+    {
+      "path": "./packages/workflows-aws"
+    },
+    {
+      "path": "./packages/workflows-cloudflare"
+    },
+    {
       "path": "./packages/runtime-web"
     },
     {

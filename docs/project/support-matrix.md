@@ -22,8 +22,8 @@ Legend:
 | Semantic tracing | Verified recording tracer | Contract/native bridge | Planned OTel/ADOT bridge |
 | W3C job trace propagation | Verified | Verified envelope path | Envelope path portable; AWS span linkage pending |
 | MCP v2 read-only | Verified CI | Web-compatible | Runtime-neutral |
-| Durable workflows | Planned | Planned Cloudflare Workflows | Planned Step Functions |
-| Auth/policies | Planned | Planned adapter | Planned adapter |
-| IAM/deployment planning | Planned | Planned bindings plan | Planned least-privilege IAM |
+| Durable workflows | Memory executor verified | Contract plan for Cloudflare Workflows subset | ASL compile contract for Step Functions subset |
+| Auth/policies | Verified portable semantics | Per-invocation principal contract | Per-invocation principal contract |
+| IAM/deployment planning | Provider-neutral plan verified | Binding plan verified | Least-privilege IAM plan verified |
 
 **Floci evidence is emulator evidence**, not production AWS equivalence. Real-cloud tests remain optional until a behavior cannot be established locally.

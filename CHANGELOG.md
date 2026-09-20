@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased
+
+- Application Graph v4: operation-level resource access and runtime enforcement;
+- provider-neutral deployment plan with AWS IAM and Cloudflare binding derivation;
+- Application Graph v5: endpoint principal and permission authorization;
+- Application Graph v6: named contextual endpoint policies;
+- add portable HTTP authentication composition and `@arc/auth`;
+- Application Graph v7: declarative workflow states, transitions and task dependencies;
+- add deterministic workflow memory execution with bounded retries;
+- add AWS Step Functions compiler and Cloudflare Workflows planner for the experimental portable workflow subset;
+- include workflow tasks as deployment execution surfaces.
+
 ## 0.8.0 - second-cloud portability proof
 
 - add API Gateway HTTP API v2 → Web Request/Response runtime adapter;

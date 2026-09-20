@@ -11,7 +11,7 @@ export default app({
 })
 ```
 
-## Current research line — v0.9
+## Current research line — v0.10
 
 Implemented and exercised today:
 
@@ -32,9 +32,11 @@ Implemented and exercised today:
 - PostgreSQL 18 + Drizzle + pg integration in CI;
 - semantic tracing and W3C job-envelope trace propagation;
 - deterministic CLI tools: inspect, validate, explain, context and semantic diff;
-- official MCP v2 read-only integration.
+- official MCP v2 read-only integration;
+- endpoint principals, permissions, named contextual policies and portable HTTP authentication composition;
+- experimental workflow graph with deterministic memory execution, AWS Step Functions compilation and Cloudflare Workflows planning.
 
-The current architectural priority is **application/user authorization foundations** on top of operation-level resource grants, while keeping end-user permissions separate from cloud IAM.
+The current architectural priority is **durable workflow semantics**: preserve an inspectable portable workflow graph while proving real provider execution without pretending provider-specific behavior is identical.
 
 ## Documentation
 

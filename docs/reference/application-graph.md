@@ -11,7 +11,11 @@ Current graph lineage has evolved as features were added:
 
 - schema v1: modules/endpoints/resources/events;
 - schema v2: jobs and dispatch relationships;
-- schema v3: durable idempotency metadata.
+- schema v3: durable idempotency metadata;
+- schema v4: operation-level resource access;
+- schema v5: endpoint principal/permission authorization metadata;
+- schema v6: named contextual authorization policies;
+- schema v7: workflow definitions, states, transitions and task dependencies.
 
 Consumers must inspect `schemaVersion` rather than assume fields by Arc package version.
 
