@@ -74,9 +74,10 @@ export function prepareTypeScriptDev(appPath, cwd = process.cwd()) {
     throw new Error(`TypeScript application entry '${appPath}' is outside compilerOptions.rootDir '${rootDir}'`)
   }
 
-  const built = runCompiler(tscPath, ["-p", tsconfigPath, "--pretty", "false"], { cwd })
+  const built = runCompiler(tscPath, ["-p", tsconfigPath, "--pretty", "false"], { cwd, capture: true })
   if (built.status !== 0) {
-    throw new Error(`TypeScript build failed for '${appPath}'`)
+    const diagnostic = (built.stdout || built.stderr || "").trim()
+    throw new Error(`TypeScript build failed for '${appPath}'${diagnostic ? `:\n${diagnostic}` : ""}`)
   }
 
   const compiledRelative = sourceRelative.replace(/\.(?:cts|mts|tsx|ts)$/, emittedExtension(sourcePath))
