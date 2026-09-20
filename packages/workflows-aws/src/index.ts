@@ -15,7 +15,7 @@ function retry(policy: WorkflowRetryPolicy): Record<string, unknown>[] {
   return [{
     ErrorEquals: ["States.ALL"],
     IntervalSeconds: interval,
-    MaxAttempts: policy.maxAttempts,
+    MaxAttempts: Math.max(0, policy.maxAttempts - 1),
     ...(policy.strategy === "exponential" ? { BackoffRate: 2 } : {}),
     ...(policy.maxDelaySeconds === undefined ? {} : { MaxDelaySeconds: policy.maxDelaySeconds })
   }]
