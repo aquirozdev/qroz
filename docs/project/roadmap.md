@@ -208,7 +208,7 @@ A 1.0 discussion begins only after:
 - security/auth models are coherent;
 - jobs/idempotency are production credible;
 - durable workflow scope is explicitly decided;
-- local Arc Studio and CLI explain the same application truthfully;
+- local Arc Studio and CLI explain the same application truthfully;\n- canonical DX claims have reproducible browser evidence;
 - DX performance budgets are enforced;
 - semantic change/deployment review is credible;
 - public docs and release process are mature;
