@@ -17,6 +17,7 @@
     "verify": "npm run clean && npm run typecheck && npm test && npm run docs:check && npm run agents:check",
     "inspect": "npm run build && node packages/cli/bin/arc.mjs inspect examples/hello-world/dist/app.js",
     "inspect:json": "npm run build && node packages/cli/bin/arc.mjs inspect examples/hello-world/dist/app.js --json",
-    "release:check": "node scripts/check-release-readiness.mjs"
+    "release:check": "node scripts/check-release-readiness.mjs",
+    "pack:check": "npm run build && node scripts/test-packed-consumer.mjs"
   }
 }
