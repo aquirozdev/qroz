@@ -14,7 +14,7 @@ test("Arc CLI errors explain what failed and how to fix it", async () => {
     ], { cwd: process.cwd() }),
     (error) => {
       assert.match(error.stderr, /ARC1004 — Missing capability provider/)
-      assert.match(error.stderr, /Capability 'example\.database' has no configured provider/)
+      assert.match(error.stderr, /requires capability 'example\.database', but no provider is configured/)
       assert.match(error.stderr, /Context\n\s+capability: example\.database/)
       assert.match(error.stderr, /How to fix/)
       assert.match(error.stderr, /Provide the required capability/)
