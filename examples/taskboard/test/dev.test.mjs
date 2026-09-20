@@ -113,6 +113,10 @@ test("arc dev records authorization denials without exposing principal claims", 
     assert.equal(decisions.at(-1)?.outcome, "deny")
     assert.equal("claims" in (decisions.at(-1)?.principal ?? {}), false)
 
+    const plan = await fetch(`http://127.0.0.1:${port}/__arc/api/plan`).then((response) => response.json())
+    const renameSurface = plan.surfaces.find((surface) => surface.id === "endpoint:projects.renameProject")
+    assert.deepEqual(renameSurface?.resourceAccess.find((item) => item.capability === "tenants.memberships")?.operations, ["read"])
+
     const explanation = await fetch(`http://127.0.0.1:${port}/__arc/api/explain?code=ARC3001`).then((response) => response.json())
     assert.equal(explanation.code, "ARC3001")
     assert.equal(typeof explanation.remediation, "string")
