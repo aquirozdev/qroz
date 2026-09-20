@@ -5,7 +5,7 @@ description: Current implementation and verification state of Arc.
 
 # Current status
 
-Current repository version: **v0.9 development line**.
+Current repository version: **v0.10 development line**.
 
 ## Implemented and verified
 
@@ -28,13 +28,16 @@ Current repository version: **v0.9 development line**.
 - PostgreSQL 18 + Drizzle + pg integration;
 - semantic tracing contract and Cloudflare custom spans;
 - W3C trace context through job envelopes;
-- deterministic Application Graph schema v5 with operation-level resource access and endpoint authorization metadata;
+- deterministic Application Graph schema v7 with operation-level resource access, authorization policies and workflow state graphs;
 - provider-neutral deployment plans plus AWS IAM and Cloudflare binding planners;
 - runtime-enforced resource operation grants;
 - portable endpoint principal/permission authorization foundations;
 - named contextual endpoint policies over validated input;
 - portable request authentication hook with bearer and cookie-session mechanisms;
 - Cloudflare and AWS per-invocation principal resolution;
+- experimental workflow graph with task/sleep/succeed states, memory execution and bounded retries;
+- workflow task execution surfaces in deployment planning;
+- AWS Step Functions and Cloudflare Workflows planning for the supported workflow subset;
 - CLI inspect/validate/explain/context/diff/plan;
 - read-only MCP v2.
 
@@ -51,7 +54,7 @@ This is strong portability evidence, not a claim that a local emulator reproduce
 - Hyperdrive itself remains a deployment integration gate;
 - AWS tracing bridge remains open;
 - deployment planners are reviewable plans, not yet an infrastructure apply engine;
-- durable workflows remain planned;
+- workflow provider planning exists, but real durable execution against Cloudflare Workflows and Step Functions is still required before portability claims stabilize;
 - pre-1.0 APIs and graph schemas may change.
 
 See [roadmap](./roadmap.md) and [quality gates](./quality-gates.md).
