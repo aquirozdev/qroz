@@ -184,6 +184,41 @@ jobs:
         working-directory: integration/mcp
         run: node test.mjs
 
+
+  visual-evidence:
+    name: Arc Studio visual evidence
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 22
+      - run: npm install
+      - name: Pin verified TypeScript toolchain
+        run: npm install --no-save typescript@5.8.3
+      - run: npm run build
+      - name: Install pinned visual evidence dependencies
+        working-directory: integration/visual-evidence
+        run: npm install
+      - name: Install Chromium
+        working-directory: integration/visual-evidence
+        run: npx playwright install --with-deps chromium
+      - name: Execute Arc Studio browser journey
+        working-directory: integration/visual-evidence
+        run: npm test
+      - name: Upload visual product evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: arc-studio-visual-evidence
+          path: |
+            integration/visual-evidence/evidence
+            integration/visual-evidence/test-results
+            integration/visual-evidence/playwright-report
+          if-no-files-found: error
+          retention-days: 14
+
   aws-sdk-floci:
     name: AWS SDK v3 + Floci
     runs-on: ubuntu-latest

@@ -85,7 +85,7 @@ document.getElementById("runner-send").addEventListener("click",async()=>{
   const text=await response.text();
   let parsed;
   try{parsed=JSON.parse(text)}catch{parsed=undefined}
-  output.textContent=method+" "+path+" → "+response.status+"\n\n"+(parsed?JSON.stringify(parsed,null,2):text||"(empty response)");
+  output.textContent=method+" "+path+" → "+response.status+"\\n\\n"+(parsed?JSON.stringify(parsed,null,2):text||"(empty response)");
   if(parsed?.code) await explain(parsed.code);
   await loadActivity();
  }catch(error){output.textContent=String(error)}
