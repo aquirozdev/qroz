@@ -52,6 +52,8 @@ Create representative small, medium and large reference applications and track a
 | Studio semantic refresh | visually immediate |
 | editor diagnostics | no multi-second pauses caused by whole-app inference |
 
+Initial executable budgets are enforced by `npm run dx:performance` across synthetic applications scaled by modules/endpoints plus a real CLI inspect path. The JSON report is retained as CI evidence.
+
 Exact budgets may change after measurement; publishing and regression-testing them is the invariant.
 
 ## Current evidence matrix
