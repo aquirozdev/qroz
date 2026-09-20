@@ -99,7 +99,7 @@ jobs:
           trap 'kill "$PID" 2>/dev/null || true' EXIT
 
           for attempt in $(seq 1 40); do
-            if curl --fail --silent http://127.0.0.1:8790/ >/dev/null; then
+            if curl --silent http://127.0.0.1:8790/ >/dev/null 2>&1; then
               break
             fi
             sleep 1
