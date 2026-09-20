@@ -15,7 +15,8 @@ It currently represents:
 - resource metadata/features;
 - event definitions, producers and listeners;
 - job definitions, transports, retry and idempotency metadata;
-- declared job producers.
+- declared job producers;
+- endpoint authentication and permission requirements.
 
 ## What it is not
 
