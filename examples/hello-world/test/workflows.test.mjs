@@ -2,6 +2,7 @@ import test from "node:test"
 import assert from "node:assert/strict"
 
 import {
+  access,
   app,
   buildApplication,
   inspect,
@@ -13,6 +14,8 @@ import {
 import { executeWorkflow } from "@arc/workflows"
 import { compileAwsStateMachine } from "@arc/workflows-aws"
 import { planCloudflareWorkflow } from "@arc/workflows-cloudflare"
+import { planDeployment } from "@arc/deployment"
+import { storage } from "@arc/storage"
 import application, { auditEntries } from "../dist/app.js"
 import { WelcomeUser } from "../dist/workflows.js"
 import { object, string } from "../dist/schema.js"
@@ -156,4 +159,45 @@ test("Cloudflare workflow planner preserves durable step and sleep semantics", (
     delay: "1 seconds",
     backoff: "exponential"
   })
+})
+
+
+test("deployment planning treats workflow tasks as execution surfaces", () => {
+  const files = storage("workflow-plan")
+  const Input = object({ value: string() })
+  const planned = workflow({
+    name: "test.deployment",
+    version: 1,
+    input: Input,
+    start: "read",
+    states: {
+      read: workflowTask({
+        requires: [access(files, "read")],
+        end: true,
+        handler(input) { return input }
+      })
+    }
+  })
+  const definition = app({
+    name: "workflow-plan",
+    modules: [module({ name: "workflow-plan", endpoints: {}, workflows: { planned } })]
+  })
+
+  const plan = planDeployment(definition)
+  const surface = plan.surfaces.find((item) => item.id === "workflow-task:workflow-plan.planned.read")
+  assert.equal(surface.kind, "workflow-task")
+  assert.deepEqual(surface.resourceAccess, [{
+    capability: "storage.workflow-plan",
+    resourceType: "object-storage",
+    operations: ["read"],
+    unrestricted: false,
+    reason: "declared"
+  }])
+})
+
+test("workflow input validation fails with a stable framework error", async () => {
+  await assert.rejects(
+    () => executeWorkflow(application, WelcomeUser, { id: "", name: "Angel" }),
+    (error) => error.code === "ARC2004"
+  )
 })
