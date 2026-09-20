@@ -1,0 +1,16 @@
+{
+  "name": "@arc/deployment-aws",
+  "version": "0.9.0",
+  "type": "module",
+  "dependencies": {
+    "@arc/deployment": "file:../deployment"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": { "build": "tsc -b" }
+}
