@@ -21,6 +21,11 @@
         "put",
         "delete",
         "streaming"
+      ],
+      "operations": [
+        "read",
+        "write",
+        "delete"
       ]
     },
     {
@@ -31,6 +36,9 @@
       "features": [
         "send",
         "delay"
+      ],
+      "operations": [
+        "publish"
       ]
     },
     {
@@ -41,6 +49,9 @@
       "features": [
         "send",
         "delay"
+      ],
+      "operations": [
+        "publish"
       ]
     },
     {
@@ -52,6 +63,11 @@
         "atomic-claim",
         "lease",
         "completion"
+      ],
+      "operations": [
+        "claim",
+        "complete",
+        "release"
       ]
     },
     {
