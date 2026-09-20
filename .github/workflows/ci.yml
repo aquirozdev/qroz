@@ -48,6 +48,27 @@ jobs:
       - run: npm run typecheck
       - run: npm test
 
+
+  cli-platform-smoke:
+    name: CLI smoke (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+      - run: npm install
+      - name: Pin verified TypeScript toolchain
+        run: npm install --no-save typescript@5.8.3
+      - run: npm run build
+      - name: Execute packaged-style CLI smoke
+        run: node scripts/ci-cli-smoke.mjs
+
   workerd-smoke:
     name: Cloudflare workerd smoke
     runs-on: ubuntu-latest
