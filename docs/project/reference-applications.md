@@ -239,6 +239,22 @@ Must prove:
 - trace/log/metric access;
 - no secret values in CLI/MCP/graph output.
 
+## 21 — Browser/BFF application
+
+Example: server-backed web application using secure session cookies and OAuth/OIDC login.
+
+Must prove cookie parsing/setting, Secure/HttpOnly/SameSite defaults, session rotation and logout/invalidation hooks, CSRF protection for cookie-authenticated mutations, OAuth callback/state/PKCE integration boundaries, redirects, flash-style short-lived state if supported and BFF access to upstream APIs without exposing backend credentials to browser JavaScript.
+
+Arc should provide safe primitives and adapter contracts rather than becoming an identity provider.
+
+## 22 — Streaming/SSE application
+
+Example: AI chat response, build log or long-running progress feed over HTTP streaming/SSE.
+
+Must prove Web Streams compatibility, cancellation when clients disconnect, backpressure, heartbeat/timeout behavior, trace continuity, auth before stream establishment, error behavior after headers are committed and provider/runtime parity where streaming is advertised.
+
+This prevents Arc's HTTP abstraction from being accidentally JSON-only.
+
 ## Cross-cutting failure suite
 
 Every applicable reference app should run a reusable matrix covering:
@@ -264,9 +280,9 @@ Every applicable reference app should run a reusable matrix covering:
 
 | Capability family | Primary reference apps |
 | --- | --- |
-| HTTP/schema/contracts | 01, 02, 03, 13 |
+| HTTP/schema/contracts | 01, 02, 03, 13, 21, 22 |
 | Database/transactions | 02, 04, 05, 15 |
-| Auth/policies | 03, 04, 13, 19 |
+| Auth/policies | 03, 04, 13, 19, 21 |
 | Cache/locks/rate limiting | 03, 10, 13, 15, 17 |
 | Storage/files | 03, 07, 09 |
 | Events | 05, 14 |
