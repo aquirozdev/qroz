@@ -41,7 +41,7 @@ test("create-arc scaffolds the minimal productive application", async () => {
 
     const packageJson = JSON.parse(await readFile(join(target, "package.json"), "utf8"))
     assert.equal(packageJson.name, "my-arc-app")
-    assert.equal(packageJson.scripts.dev, "npm run build && arc dev dist/app.js")
+    assert.equal(packageJson.scripts.dev, 'npm run build && arc dev dist/app.js --watch --build "npm run build:watch"')\n    assert.match(packageJson.scripts["build:watch"], /tsc .*--watch/)
 
     const app = await readFile(join(target, "src/app.ts"), "utf8")
     assert.match(app, /path: "\/health"/)
