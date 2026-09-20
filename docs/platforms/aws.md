@@ -17,7 +17,7 @@ Status: **v0.8 in progress**.
 - S3 Object Storage adapter preserving streaming reads;
 - DynamoDB lease-based idempotency adapter using conditional put/update/delete semantics.
 
-These remain contract-tested adapters until AWS SDK and real-service gates pass.
+These remain pre-production adapters. Arc now validates the AWS SDK v3 integration against Floci 2.1.0 in CI for S3, SQS and DynamoDB. That is stronger than interface-only testing, but it is still emulator evidence rather than a claim of production AWS equivalence.
 
 ## DynamoDB idempotency model
 
@@ -37,11 +37,11 @@ DynamoDB TTL is treated as asynchronous physical cleanup only. Arc uses the stor
 
 ## Next gates
 
-1. bind S3/SQS/DynamoDB adapters to AWS SDK for JavaScript v3;
-2. execute representative operations against an AWS-compatible integration environment;
-3. add a real AWS environment gate for semantics emulators cannot prove;
-4. add AWS tracing bridge;
-5. derive IAM requirements from execution-surface capabilities.
+1. keep S3/SQS/DynamoDB green through AWS SDK v3 + Floci;
+2. extend Floci coverage to Lambda + API Gateway v2 using its Docker-backed Lambda runtime;
+3. add AWS tracing bridge;
+4. derive IAM requirements from execution-surface capabilities;
+5. reserve real-AWS testing for semantics that cannot be established with contracts, the official SDK, SAM or Floci.
 
 ## Runtime lifecycle difference
 
