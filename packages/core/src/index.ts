@@ -259,6 +259,40 @@ export interface JobIdempotencyStore {
   release(key: string, token: string): Promise<boolean>
 }
 
+export interface HttpIdempotencyResponse {
+  readonly status: number
+  readonly body: unknown
+}
+
+export type HttpIdempotencyClaim =
+  | { readonly acquired: true; readonly token: string }
+  | { readonly acquired: false; readonly state: "processing"; readonly retryAfterSeconds?: number }
+  | { readonly acquired: false; readonly state: "completed"; readonly response: HttpIdempotencyResponse }
+  | { readonly acquired: false; readonly state: "mismatch" }
+
+export interface HttpIdempotencyStore {
+  claim(
+    key: string,
+    fingerprint: string,
+    options: { readonly leaseSeconds: number }
+  ): Promise<HttpIdempotencyClaim>
+  complete(
+    key: string,
+    token: string,
+    response: HttpIdempotencyResponse,
+    options?: { readonly ttlSeconds?: number }
+  ): Promise<boolean>
+  release(key: string, token: string): Promise<boolean>
+}
+
+export interface HttpIdempotencyPolicy {
+  readonly store: Capability<HttpIdempotencyStore, any>
+  readonly header?: string
+  readonly leaseSeconds?: number
+  readonly ttlSeconds?: number
+  readonly required?: boolean
+}
+
 export interface JobIdempotencyPolicy<InputSchema extends StandardSchemaLike = StandardSchemaLike> {
   readonly store: Capability<JobIdempotencyStore, any>
   readonly key: (input: InferOutput<InputSchema>) => string
@@ -406,6 +440,7 @@ export interface EndpointDefinition<
   readonly path: string
   readonly status?: number
   readonly auth?: EndpointAuthorization<ParamsSchema, BodySchema, QuerySchema>
+  readonly idempotency?: HttpIdempotencyPolicy
   readonly requires?: readonly CapabilityRequirement<any, any>[]
   readonly emits?: readonly EventDefinition<any>[]
   readonly dispatches?: readonly AnyJob[]
@@ -505,7 +540,11 @@ export type ArcErrorCode =
   | "ARC1009"
   | "ARC1010"
   | "ARC1011"
+  | "ARC1012"
   | "ARC2001"
+  | "ARC2010"
+  | "ARC2011"
+  | "ARC2012"
   | "ARC2004"
   | "ARC3001"
   | "ARC3002"
