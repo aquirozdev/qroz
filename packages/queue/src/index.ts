@@ -18,17 +18,22 @@ export interface MessageQueue<T> {
   native?(): unknown
 }
 
-export interface QueueCapability<T> extends Capability<MessageQueue<T>> {
+export type QueueAccess = "publish"
+
+export interface QueueCapability<T> extends Capability<MessageQueue<T>, QueueAccess> {
   readonly requiredFeatures: readonly QueueFeature[]
 }
 
 export function queue<T>(name: string, options: { requires?: readonly QueueFeature[] } = {}): QueueCapability<T> {
   const requiredFeatures = Object.freeze([...(options.requires ?? [])])
   return Object.freeze({
-    ...capability<MessageQueue<T>>(`queue.${name}`, {
+    ...capability<MessageQueue<T>, QueueAccess>(`queue.${name}`, {
       kind: "resource",
       resourceType: "message-queue",
-      features: ["send", ...requiredFeatures]
+      features: ["send", ...requiredFeatures],
+      operationMethods: {
+        publish: ["send", "sendBatch"]
+      }
     }),
     requiredFeatures
   })
