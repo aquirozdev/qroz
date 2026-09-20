@@ -12,7 +12,7 @@ This is not a feature wishlist. Every item is justified by one or more [referenc
 ### Authorization policy model
 Reference apps: 03, 04, 13, 19, 21.
 
-Need object/resource authorization in addition to static permission strings, tenant context, audit-friendly decisions and runtime enforcement. Cloud IAM remains separate.
+Current slice: endpoint policies can declare capability dependencies, resolve them through a constrained runtime resolver, and expose their resource access through the Application Graph/deployment plan. Still needed: richer reusable composition, explicit tenant context where useful, audit-friendly authorization decisions, non-HTTP principal propagation and provider/identity integrations. Cloud IAM remains separate.
 
 ### Request idempotency
 Reference apps: 05, 06, 13, 15.
