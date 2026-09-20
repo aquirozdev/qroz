@@ -1,9 +1,9 @@
 {
   "name": "@arc/auth",
-  "version": "0.10.0",
+  "version": "0.1.0-beta.0",
   "type": "module",
   "dependencies": {
-    "@arc/core": "file:../core"
+    "@arc/core": "0.1.0-beta.0"
   },
   "exports": {
     ".": {
@@ -11,8 +11,33 @@
       "default": "./dist/index.js"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc -b"
+  },
+  "description": "Portable authentication and authorization primitives for Arc applications.",
+  "keywords": [
+    "typescript",
+    "backend",
+    "serverless",
+    "application-framework",
+    "developer-tools"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aquirozdev/arc.git",
+    "directory": "packages/auth"
+  },
+  "bugs": {
+    "url": "https://github.com/aquirozdev/arc/issues"
+  },
+  "homepage": "https://github.com/aquirozdev/arc#readme",
+  "engines": {
+    "node": ">=22.14.0 <25"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
