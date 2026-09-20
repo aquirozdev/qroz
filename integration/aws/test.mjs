@@ -43,7 +43,7 @@ const sqs = new SQSClient({ region, endpoint, credentials })
 const ddb = new DynamoDBClient({ region, endpoint, credentials })
 const document = DynamoDBDocumentClient.from(ddb)
 
-const bucket = `arc-${Date.now()}`
+const bucket = `qroz-${Date.now()}`
 await s3.send(new CreateBucketCommand({ Bucket: bucket }))
 
 const storage = createS3Storage({
@@ -95,7 +95,7 @@ assert.deepEqual(await probeStorageContract(storage), {
   delete: true
 })
 
-const queueName = `arc-${Date.now()}`
+const queueName = `qroz-${Date.now()}`
 await sqs.send(new CreateQueueCommand({ QueueName: queueName }))
 const queueUrl = (await sqs.send(new GetQueueUrlCommand({ QueueName: queueName }))).QueueUrl
 assert.ok(queueUrl)
@@ -121,9 +121,9 @@ for (let attempt = 0; attempt < 5 && received < 13; attempt += 1) {
   }))
   received += result.Messages?.length ?? 0
 }
-assert.ok(received > 0, "SQS integration should receive messages sent through Arc adapter")
+assert.ok(received > 0, "SQS integration should receive messages sent through Qroz adapter")
 
-const tableName = `arc-idempotency-${Date.now()}`
+const tableName = `qroz-idempotency-${Date.now()}`
 await ddb.send(new CreateTableCommand({
   TableName: tableName,
   BillingMode: "PAY_PER_REQUEST",

@@ -1,5 +1,5 @@
 {
-  "name": "arc-framework-poc",
+  "name": "qroz-framework-poc",
   "private": true,
   "version": "0.8.0",
   "type": "module",
@@ -15,8 +15,8 @@
     "docs:check": "node scripts/check-docs.mjs",
     "agents:check": "node scripts/check-agent-compat.mjs",
     "verify": "npm run clean && npm run typecheck && npm test && npm run docs:check && npm run agents:check",
-    "inspect": "npm run build && node packages/cli/bin/arc.mjs inspect examples/hello-world/dist/app.js",
-    "inspect:json": "npm run build && node packages/cli/bin/arc.mjs inspect examples/hello-world/dist/app.js --json",
+    "inspect": "npm run build && node packages/cli/bin/qroz.mjs inspect examples/hello-world/dist/app.js",
+    "inspect:json": "npm run build && node packages/cli/bin/qroz.mjs inspect examples/hello-world/dist/app.js --json",
     "release:check": "node scripts/check-release-readiness.mjs",
     "dx:performance": "npm run build && node scripts/check-dx-performance.mjs",
     "pack:check": "npm run build && node scripts/test-packed-consumer.mjs"

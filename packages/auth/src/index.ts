@@ -1,4 +1,4 @@
-import type { MaybePromise, Principal } from "@arc/core"
+import type { MaybePromise, Principal } from "@qroz/core"
 
 export interface Authenticator {
   authenticate(request: Request): MaybePromise<Principal | undefined>

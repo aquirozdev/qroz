@@ -11,7 +11,7 @@ This policy applies to the planned public beta. It becomes enforceable for users
 
 ## Release channels
 
-Arc's final public identity should use three channels:
+Qroz's final public identity should use three channels:
 
 - **alpha** — architectural experiments; APIs may change quickly;
 - **beta** — intended for real applications and developer feedback; breaking changes are allowed but deliberate, documented and migration-noted;
@@ -52,7 +52,7 @@ Public API includes:
 - CLI commands, flags, exit behavior and JSON contracts;
 - Application Graph schemas;
 - job/event/workflow serialized envelopes;
-- stable Arc error codes;
+- stable Qroz error codes;
 - documented provider adapter behavior;
 - generated deployment/change-plan schemas;
 - documented MCP/tool contracts.

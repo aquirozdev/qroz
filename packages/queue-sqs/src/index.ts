@@ -1,4 +1,4 @@
-import type { MessageQueue, QueueBatchItem, QueueFeature, QueueSendOptions } from "@arc/queue"
+import type { MessageQueue, QueueBatchItem, QueueFeature, QueueSendOptions } from "@qroz/queue"
 
 export interface SqsSendMessageInput {
   readonly QueueUrl: string

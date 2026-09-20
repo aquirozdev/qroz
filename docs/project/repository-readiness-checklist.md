@@ -1,6 +1,6 @@
 ---
 title: Repository readiness checklist
-description: Operational checklist for keeping Arc ready for human and agent-driven development.
+description: Operational checklist for keeping Qroz ready for human and agent-driven development.
 ---
 
 # Repository readiness checklist
@@ -24,7 +24,7 @@ description: Operational checklist for keeping Arc ready for human and agent-dri
 
 ## GitHub UI/account settings to enable when available
 
-- [ ] Create user Project **Arc Development** using `docs/project/github-projects.md`.
+- [ ] Create user Project **Qroz Development** using `docs/project/github-projects.md`.
 - [ ] Enable ruleset for `main` using `docs/project/repository-governance.md`.
 - [ ] Prefer squash merge; consider disabling merge commits once history policy is enforced.
 - [ ] Enable auto-merge after required checks/ruleset exists.

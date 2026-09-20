@@ -1,11 +1,11 @@
 ---
 title: Application Graph architecture
-description: Purpose, boundaries, consumers, and evolution rules for Arc's semantic graph.
+description: Purpose, boundaries, consumers, and evolution rules for Qroz's semantic graph.
 ---
 
 # Application Graph architecture
 
-The Application Graph is Arc's machine-readable description of application structure.
+The Application Graph is Qroz's machine-readable description of application structure.
 
 It currently represents:
 
@@ -33,7 +33,7 @@ Those artifacts may be **derived** from it.
 
 ## Integrity
 
-Graph metadata is useful only if application code cannot bypass it. Arc therefore enforces declared `requires`, `emits` and `dispatches`, validates workflow transitions before execution, and restricts workflow-task capability access through the same resolver used by other execution surfaces.
+Graph metadata is useful only if application code cannot bypass it. Qroz therefore enforces declared `requires`, `emits` and `dispatches`, validates workflow transitions before execution, and restricts workflow-task capability access through the same resolver used by other execution surfaces.
 
 ## Schema evolution
 
@@ -47,9 +47,9 @@ The graph has an explicit schema version. Breaking schema changes require:
 
 ## Long-term consumers
 
-- `arc inspect`;
-- `arc context`;
-- `arc diff`;
+- `qroz inspect`;
+- `qroz context`;
+- `qroz diff`;
 - MCP;
 - generated docs;
 - LSP navigation;

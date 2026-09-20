@@ -75,7 +75,7 @@ test("DynamoDB idempotency store implements claim, duplicate completion and leas
   let sequence = 0
   const fake = fakeDynamo(clock)
   const store = createDynamoDbIdempotencyStore(fake.operations, {
-    tableName: "arc-idempotency",
+    tableName: "qroz-idempotency",
     now: () => clock.value,
     token: () => `token-${++sequence}`
   })

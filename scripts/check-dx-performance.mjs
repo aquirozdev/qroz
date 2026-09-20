@@ -9,7 +9,7 @@ import { createTestClient } from "../packages/testing/dist/index.js"
 const schema = {
   "~standard": {
     version: 1,
-    vendor: "arc-dx-benchmark",
+    vendor: "qroz-dx-benchmark",
     validate(value) {
       return { value }
     }
@@ -63,7 +63,7 @@ function measure(label, operation, iterations = 7) {
 function processTime(args) {
   return new Promise((resolveRun, reject) => {
     const start = performance.now()
-    const child = spawn(process.execPath, ["packages/cli/bin/arc.mjs", ...args], {
+    const child = spawn(process.execPath, ["packages/cli/bin/qroz.mjs", ...args], {
       cwd: process.cwd(),
       stdio: ["ignore", "ignore", "pipe"]
     })

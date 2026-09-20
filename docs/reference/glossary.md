@@ -1,11 +1,11 @@
 ---
 title: Glossary
-description: Canonical vocabulary used across Arc APIs, architecture, documentation, and tooling.
+description: Canonical vocabulary used across Qroz APIs, architecture, documentation, and tooling.
 ---
 
 # Glossary
 
-**Application Model** — semantic definition formed by Arc application primitives.
+**Application Model** — semantic definition formed by Qroz application primitives.
 
 **Application Graph** — deterministic machine-readable serialization of the Application Model and declared relationships.
 
@@ -31,7 +31,7 @@ description: Canonical vocabulary used across Arc APIs, architecture, documentat
 
 **Workflow** — planned durable multi-step orchestration primitive.
 
-**Adapter** — provider/runtime-specific implementation translating Arc contracts to an external platform.
+**Adapter** — provider/runtime-specific implementation translating Qroz contracts to an external platform.
 
 **Contract test** — shared behavioral test executed against multiple adapter implementations.
 

@@ -1,4 +1,4 @@
-import type { DeploymentPlan, PlannedResourceAccess } from "@arc/deployment"
+import type { DeploymentPlan, PlannedResourceAccess } from "@qroz/deployment"
 
 export type AwsResource =
   | { readonly kind: "s3"; readonly bucketArn: string }

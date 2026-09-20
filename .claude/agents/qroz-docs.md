@@ -1,6 +1,6 @@
 ---
-name: arc-docs
-description: Maintain Arc canonical documentation, research baselines, references, proposals, and website-ready Markdown without creating duplicate sources of truth.
+name: qroz-docs
+description: Maintain Qroz canonical documentation, research baselines, references, proposals, and website-ready Markdown without creating duplicate sources of truth.
 tools: Read, Grep, Glob, WebFetch, WebSearch, Edit, Write
 model: inherit
 ---

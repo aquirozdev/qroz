@@ -1,6 +1,6 @@
 ---
 title: Package map
-description: Current Arc packages and their responsibilities.
+description: Current Qroz packages and their responsibilities.
 ---
 
 # Package map
@@ -9,46 +9,46 @@ description: Current Arc packages and their responsibilities.
 
 | Package | Responsibility |
 | --- | --- |
-| `@arc/core` | DSL, capabilities, authorization policies, events/jobs metadata, graph, invariant errors |
-| `@arc/auth` | Portable HTTP authentication mechanisms and composition |
-| `@arc/runtime-web` | Portable Web Standards HTTP execution |
-| `@arc/runtime-memory` | Deterministic reference runtime |
-| `@arc/runtime-cloudflare` | Workers adapter and invocation providers |
-| `@arc/testing` | Shared runtime/adapter contract probes |
+| `@qroz/core` | DSL, capabilities, authorization policies, events/jobs metadata, graph, invariant errors |
+| `@qroz/auth` | Portable HTTP authentication mechanisms and composition |
+| `@qroz/runtime-web` | Portable Web Standards HTTP execution |
+| `@qroz/runtime-memory` | Deterministic reference runtime |
+| `@qroz/runtime-cloudflare` | Workers adapter and invocation providers |
+| `@qroz/testing` | Shared runtime/adapter contract probes |
 
 ## Resources
 
 | Package | Responsibility |
 | --- | --- |
-| `@arc/database` | ORM-transparent database capability |
-| `@arc/storage` | Object storage contract |
-| `@arc/storage-memory` | Memory storage adapter |
-| `@arc/storage-r2` | Cloudflare R2 adapter |
-| `@arc/queue` | Queue producer capability/feature contract |
-| `@arc/queue-memory` | Memory queue adapter |
-| `@arc/queue-cloudflare` | Cloudflare Queues producer adapter |
+| `@qroz/database` | ORM-transparent database capability |
+| `@qroz/storage` | Object storage contract |
+| `@qroz/storage-memory` | Memory storage adapter |
+| `@qroz/storage-r2` | Cloudflare R2 adapter |
+| `@qroz/queue` | Queue producer capability/feature contract |
+| `@qroz/queue-memory` | Memory queue adapter |
+| `@qroz/queue-cloudflare` | Cloudflare Queues producer adapter |
 
 ## Distributed execution
 
 | Package | Responsibility |
 | --- | --- |
-| `@arc/jobs` | Job envelope, registry, executor and retry semantics |
-| `@arc/jobs-memory` | Local deterministic consumer |
-| `@arc/jobs-cloudflare` | Cloudflare Queue consumer |
-| `@arc/idempotency` | Durable idempotency capability contract |
-| `@arc/idempotency-memory` | Lease store for tests/local |
-| `@arc/idempotency-cloudflare-do` | SQLite Durable Object implementation |
-| `@arc/workflows` | Workflow memory executor and portable execution semantics |
-| `@arc/workflows-aws` | AWS Step Functions definition compiler for the supported workflow subset |
-| `@arc/workflows-cloudflare` | Cloudflare Workflows step planner for the supported workflow subset |
+| `@qroz/jobs` | Job envelope, registry, executor and retry semantics |
+| `@qroz/jobs-memory` | Local deterministic consumer |
+| `@qroz/jobs-cloudflare` | Cloudflare Queue consumer |
+| `@qroz/idempotency` | Durable idempotency capability contract |
+| `@qroz/idempotency-memory` | Lease store for tests/local |
+| `@qroz/idempotency-cloudflare-do` | SQLite Durable Object implementation |
+| `@qroz/workflows` | Workflow memory executor and portable execution semantics |
+| `@qroz/workflows-aws` | AWS Step Functions definition compiler for the supported workflow subset |
+| `@qroz/workflows-cloudflare` | Cloudflare Workflows step planner for the supported workflow subset |
 
 ## Telemetry and agents
 
 | Package | Responsibility |
 | --- | --- |
-| `@arc/telemetry` | Portable semantic tracer contract |
-| `@arc/telemetry-cloudflare` | Workers custom-span bridge |
+| `@qroz/telemetry` | Portable semantic tracer contract |
+| `@qroz/telemetry-cloudflare` | Workers custom-span bridge |
 | MCP integration | Currently exercised through `integration/mcp`; package shape is not stable yet |
-| `@arc/cli` | inspect/validate/explain/context/diff commands |
+| `@qroz/cli` | inspect/validate/explain/context/diff commands |
 
 Package names and boundaries remain pre-1.0 and may change.

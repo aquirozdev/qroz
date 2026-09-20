@@ -1,9 +1,9 @@
 {
-  "name": "@arc/storage-r2",
+  "name": "@qroz/storage-r2",
   "version": "0.4.0",
   "type": "module",
   "dependencies": {
-    "@arc/storage": "file:../storage"
+    "@qroz/storage": "file:../storage"
   },
   "exports": {
     ".": {

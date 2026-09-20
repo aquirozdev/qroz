@@ -1,4 +1,4 @@
-import type { JobIdempotencyClaim, JobIdempotencyStore } from "@arc/core"
+import type { JobIdempotencyClaim, JobIdempotencyStore } from "@qroz/core"
 
 export interface DynamoDbDocumentItem {
   readonly key: string
@@ -94,7 +94,7 @@ export function createDynamoDbIdempotencyStore(
   const keyAttribute = options.keyAttribute ?? "id"
   const now = options.now ?? Date.now
   const tokenFactory = options.token ?? (() => crypto.randomUUID())
-  const storageKey = (key: string) => `${options.keyPrefix ?? "arc#"}${key}`
+  const storageKey = (key: string) => `${options.keyPrefix ?? "qroz#"}${key}`
   const keyOf = (key: string) => ({ [keyAttribute]: storageKey(key) })
 
   async function read(key: string): Promise<DynamoDbDocumentItem | undefined> {

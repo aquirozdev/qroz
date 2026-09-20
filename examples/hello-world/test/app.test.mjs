@@ -10,8 +10,8 @@ import {
   inspect,
   module,
   provide
-} from "@arc/core"
-import { createTestRuntime, probeRuntimeContract } from "@arc/testing"
+} from "@qroz/core"
+import { createTestRuntime, probeRuntimeContract } from "@qroz/testing"
 import application, { auditEntries } from "../dist/app.js"
 import { object, string } from "../dist/schema.js"
 
@@ -165,7 +165,7 @@ test("prevents undeclared capability usage so the graph cannot lie", async () =>
     providers: [provide(visible, {}), provide(hidden, {})],
     modules: [module({ name: "sneaky", endpoints: { sneaky } })]
   })
-  const { createMemoryRuntime } = await import("@arc/runtime-memory")
+  const { createMemoryRuntime } = await import("@qroz/runtime-memory")
   const response = await createMemoryRuntime(sneakyApp, { onError(error) { captured = error } })
     .fetch(new Request("https://app.test/sneaky"))
   assert.equal(response.status, 500)
@@ -182,7 +182,7 @@ test("treats output schema violations as server errors, not bad client input", a
     handler() { return { ok: 123 } }
   })
   const badApp = app({ name: "bad-output", modules: [module({ name: "bad-output", endpoints: { bad } })] })
-  const { createMemoryRuntime } = await import("@arc/runtime-memory")
+  const { createMemoryRuntime } = await import("@qroz/runtime-memory")
   const response = await createMemoryRuntime(badApp, { onError(error) { captured = error } })
     .fetch(new Request("https://app.test/bad-output"))
   assert.equal(response.status, 500)
@@ -206,7 +206,7 @@ test("rejects ambiguous capability names so graph identities remain deterministi
 
 
 test("prevents undeclared event emission so the graph remains trustworthy", async () => {
-  const Ghost = (await import("@arc/core")).event("ghost", { version: 1 })
+  const Ghost = (await import("@qroz/core")).event("ghost", { version: 1 })
   const Output = object({ ok: string() })
   let captured
   const ep = endpoint({
@@ -219,7 +219,7 @@ test("prevents undeclared event emission so the graph remains trustworthy", asyn
     }
   })
   const ghostApp = app({ name: "ghost", modules: [module({ name: "ghost", endpoints: { ep } })] })
-  const { createMemoryRuntime } = await import("@arc/runtime-memory")
+  const { createMemoryRuntime } = await import("@qroz/runtime-memory")
   const response = await createMemoryRuntime(ghostApp, { onError(error) { captured = error } })
     .fetch(new Request("https://app.test/ghost"))
   assert.equal(response.status, 500)
@@ -228,8 +228,8 @@ test("prevents undeclared event emission so the graph remains trustworthy", asyn
 
 
 test("enforces operation-level resource access so the graph cannot overstate least privilege", async () => {
-  const { createMemoryStorage } = await import("@arc/storage-memory")
-  const { storage } = await import("@arc/storage")
+  const { createMemoryStorage } = await import("@qroz/storage-memory")
+  const { storage } = await import("@qroz/storage")
   const restrictedStorage = storage("restricted")
   const Output = object({ ok: string() })
   let captured
@@ -251,7 +251,7 @@ test("enforces operation-level resource access so the graph cannot overstate lea
     modules: [module({ name: "restricted", endpoints: { sneakyWrite } })]
   })
 
-  const { createMemoryRuntime } = await import("@arc/runtime-memory")
+  const { createMemoryRuntime } = await import("@qroz/runtime-memory")
   const response = await createMemoryRuntime(restrictedApp, { onError(error) { captured = error } })
     .fetch(new Request("https://app.test/restricted"))
 
@@ -263,8 +263,8 @@ test("enforces operation-level resource access so the graph cannot overstate lea
 
 
 test("merges multiple operation grants declared for the same capability", async () => {
-  const { createMemoryStorage } = await import("@arc/storage-memory")
-  const { storage } = await import("@arc/storage")
+  const { createMemoryStorage } = await import("@qroz/storage-memory")
+  const { storage } = await import("@qroz/storage")
   const sharedStorage = storage("multi-access")
   const Output = object({ ok: string() })
 
@@ -290,7 +290,7 @@ test("merges multiple operation grants declared for the same capability", async 
     modules: [module({ name: "multi-access", endpoints: { ep } })]
   })
 
-  const { createMemoryRuntime } = await import("@arc/runtime-memory")
+  const { createMemoryRuntime } = await import("@qroz/runtime-memory")
   const response = await createMemoryRuntime(multiAccessApp)
     .fetch(new Request("https://app.test/multi-access"))
 
@@ -393,7 +393,7 @@ test("authenticates portable HTTP principals through bearer and cookie mechanism
     bearerAuthenticator,
     composeAuthenticators,
     cookieSessionAuthenticator
-  } = await import("@arc/auth")
+  } = await import("@qroz/auth")
 
   const Output = object({ principal: string() })
   const me = endpoint({

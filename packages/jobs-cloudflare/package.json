@@ -1,11 +1,11 @@
 {
-  "name": "@arc/jobs-cloudflare",
+  "name": "@qroz/jobs-cloudflare",
   "version": "0.4.0",
   "type": "module",
   "dependencies": {
-    "@arc/core": "file:../core",
-    "@arc/jobs": "file:../jobs",
-    "@arc/telemetry-cloudflare": "file:../telemetry-cloudflare"
+    "@qroz/core": "file:../core",
+    "@qroz/jobs": "file:../jobs",
+    "@qroz/telemetry-cloudflare": "file:../telemetry-cloudflare"
   },
   "exports": {
     ".": {

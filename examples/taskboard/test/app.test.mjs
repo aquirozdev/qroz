@@ -1,6 +1,6 @@
 import test from "node:test"
 import assert from "node:assert/strict"
-import { createTestClient } from "@arc/testing"
+import { createTestClient } from "@qroz/testing"
 import application from "../dist/app.js"
 
 function client() {
@@ -13,20 +13,20 @@ test("reads a task through the application-facing API", async () => {
   assert.equal(response.status, 200)
   assert.deepEqual(await response.json(), {
     id: "task-1",
-    title: "Ship the first Arc app",
+    title: "Ship the first Qroz app",
     completed: false
   })
 })
 
 test("creates a task with concise JSON test ergonomics", async () => {
   const response = await client().post("/tasks", {
-    json: { title: "Drive Arc with executable examples" }
+    json: { title: "Drive Qroz with executable examples" }
   })
 
   assert.equal(response.status, 201)
   assert.deepEqual(await response.json(), {
     id: "task-2",
-    title: "Drive Arc with executable examples",
+    title: "Drive Qroz with executable examples",
     completed: false
   })
 })

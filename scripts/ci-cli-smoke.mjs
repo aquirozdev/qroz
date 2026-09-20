@@ -16,7 +16,7 @@ async function availablePort() {
 
 function run(args) {
   return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, ["packages/cli/bin/arc.mjs", ...args], {
+    const child = spawn(process.execPath, ["packages/cli/bin/qroz.mjs", ...args], {
       cwd: process.cwd(),
       stdio: ["ignore", "pipe", "pipe"]
     })
@@ -29,7 +29,7 @@ function run(args) {
     child.once("error", reject)
     child.once("exit", (code) => {
       if (code === 0) resolve({ stdout, stderr })
-      else reject(new Error(`arc ${args.join(" ")} exited ${code}: ${stderr || stdout}`))
+      else reject(new Error(`qroz ${args.join(" ")} exited ${code}: ${stderr || stdout}`))
     })
   })
 }
@@ -37,7 +37,7 @@ function run(args) {
 async function waitFor(url, child, stderr) {
   const deadline = Date.now() + 15_000
   while (Date.now() < deadline) {
-    if (child.exitCode !== null) throw new Error(`arc dev exited early: ${stderr()}`)
+    if (child.exitCode !== null) throw new Error(`qroz dev exited early: ${stderr()}`)
     try {
       const response = await fetch(url)
       if (response.ok) return response
@@ -59,7 +59,7 @@ if (graph.name !== "taskboard") throw new Error(`unexpected graph name: ${graph.
 
 const port = await availablePort()
 const child = spawn(process.execPath, [
-  "packages/cli/bin/arc.mjs",
+  "packages/cli/bin/qroz.mjs",
   "dev",
   "examples/taskboard/src/app.ts",
   "--port",
@@ -87,6 +87,6 @@ try {
   if (child.exitCode === null) child.kill("SIGKILL")
 }
 
-if (stderr.trim()) throw new Error(`arc dev emitted stderr: ${stderr}`)
+if (stderr.trim()) throw new Error(`qroz dev emitted stderr: ${stderr}`)
 
 console.log(`✓ CLI smoke passed on ${process.platform} / Node ${process.version}`)

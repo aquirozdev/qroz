@@ -1,5 +1,5 @@
 ---
-description: Review Arc changes for correctness, portability, security, compatibility, and missing evidence.
+description: Review Qroz changes for correctness, portability, security, compatibility, and missing evidence.
 mode: subagent
 permission:
   edit: deny

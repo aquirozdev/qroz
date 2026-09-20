@@ -100,7 +100,7 @@ export interface CapabilityMetadata<Operation extends string = string> {
 }
 
 export interface Capability<T, Operation extends string = never> {
-  readonly kind: "arc.capability"
+  readonly kind: "qroz.capability"
   readonly id: symbol
   readonly name: string
   readonly metadata?: CapabilityMetadata<Operation>
@@ -109,7 +109,7 @@ export interface Capability<T, Operation extends string = never> {
 }
 
 export interface CapabilityAccess<T = unknown, Operation extends string = string> {
-  readonly kind: "arc.capability-access"
+  readonly kind: "qroz.capability-access"
   readonly capability: Capability<T, Operation>
   readonly operations: readonly Operation[]
 }
@@ -132,8 +132,8 @@ export function capability<T, Operation extends string = never>(
     : undefined
 
   return Object.freeze({
-    kind: "arc.capability" as const,
-    id: Symbol(`arc.capability.${name}.${capabilityCounter++}`),
+    kind: "qroz.capability" as const,
+    id: Symbol(`qroz.capability.${name}.${capabilityCounter++}`),
     name,
     ...(metadata ? {
       metadata: Object.freeze({
@@ -162,7 +162,7 @@ export function access<T, Operation extends string>(
     }
   }
   return Object.freeze({
-    kind: "arc.capability-access" as const,
+    kind: "qroz.capability-access" as const,
     capability: target,
     operations: Object.freeze([...new Set(operations)])
   })
@@ -171,17 +171,17 @@ export function access<T, Operation extends string>(
 export function requirementCapability<T, Operation extends string>(
   requirement: CapabilityRequirement<T, Operation>
 ): Capability<T, Operation> {
-  return requirement.kind === "arc.capability-access" ? requirement.capability : requirement
+  return requirement.kind === "qroz.capability-access" ? requirement.capability : requirement
 }
 
 export function requirementOperations(
   requirement: CapabilityRequirement<any, any>
 ): readonly string[] | undefined {
-  return requirement.kind === "arc.capability-access" ? requirement.operations : undefined
+  return requirement.kind === "qroz.capability-access" ? requirement.operations : undefined
 }
 
 export interface Provider<T = unknown> {
-  readonly kind: "arc.provider"
+  readonly kind: "qroz.provider"
   readonly capability: Capability<T, any>
   readonly value: T
 }
@@ -190,7 +190,7 @@ export function provide<T, Operation extends string>(
   target: Capability<T, Operation>,
   value: T
 ): Provider<T> {
-  return Object.freeze({ kind: "arc.provider" as const, capability: target, value })
+  return Object.freeze({ kind: "qroz.provider" as const, capability: target, value })
 }
 
 export interface ProviderScope {
@@ -216,14 +216,14 @@ export function normalizeProviderSource(source: ProviderSource | undefined): Pro
 }
 
 export interface EventDefinition<Payload> {
-  readonly kind: "arc.event"
+  readonly kind: "qroz.event"
   readonly name: string
   readonly version: number
   readonly _payload?: Payload
 }
 
 export function event<Payload>(name: string, options: { version?: number } = {}): EventDefinition<Payload> {
-  return Object.freeze({ kind: "arc.event" as const, name, version: options.version ?? 1 })
+  return Object.freeze({ kind: "qroz.event" as const, name, version: options.version ?? 1 })
 }
 
 export interface EmittedEvent<Payload> {
@@ -253,7 +253,7 @@ export interface TraceContext {
 }
 
 export interface JobEnvelope {
-  readonly kind: "arc.job-message"
+  readonly kind: "qroz.job-message"
   readonly schemaVersion: 1
   readonly id: string
   readonly job: string
@@ -296,7 +296,7 @@ export interface JobExecutionContext extends CapabilityResolver {
 }
 
 export interface JobDefinition<InputSchema extends StandardSchemaLike = StandardSchemaLike> {
-  readonly kind: "arc.job"
+  readonly kind: "qroz.job"
   readonly name: string
   readonly version: number
   readonly transport: Capability<JobTransport, any>
@@ -312,7 +312,7 @@ export type AnyJob = JobDefinition<any>
 export function job<InputSchema extends StandardSchemaLike>(
   definition: Omit<JobDefinition<InputSchema>, "kind">
 ): JobDefinition<InputSchema> {
-  return Object.freeze({ kind: "arc.job" as const, ...definition })
+  return Object.freeze({ kind: "qroz.job" as const, ...definition })
 }
 
 export interface JobDispatchOptions {
@@ -342,7 +342,7 @@ export interface WorkflowRetryPolicy {
 }
 
 export interface WorkflowTaskState {
-  readonly kind: "arc.workflow-task"
+  readonly kind: "qroz.workflow-task"
   readonly requires?: readonly CapabilityRequirement<any, any>[]
   readonly retry?: WorkflowRetryPolicy
   readonly next?: string
@@ -351,31 +351,31 @@ export interface WorkflowTaskState {
 }
 
 export function workflowTask(definition: Omit<WorkflowTaskState, "kind">): WorkflowTaskState {
-  return Object.freeze({ kind: "arc.workflow-task" as const, ...definition })
+  return Object.freeze({ kind: "qroz.workflow-task" as const, ...definition })
 }
 
 export interface WorkflowSleepState {
-  readonly kind: "arc.workflow-sleep"
+  readonly kind: "qroz.workflow-sleep"
   readonly seconds: number
   readonly next: string
 }
 
 export function workflowSleep(seconds: number, next: string): WorkflowSleepState {
-  return Object.freeze({ kind: "arc.workflow-sleep" as const, seconds, next })
+  return Object.freeze({ kind: "qroz.workflow-sleep" as const, seconds, next })
 }
 
 export interface WorkflowSucceedState {
-  readonly kind: "arc.workflow-succeed"
+  readonly kind: "qroz.workflow-succeed"
 }
 
 export function workflowSucceed(): WorkflowSucceedState {
-  return Object.freeze({ kind: "arc.workflow-succeed" as const })
+  return Object.freeze({ kind: "qroz.workflow-succeed" as const })
 }
 
 export type WorkflowState = WorkflowTaskState | WorkflowSleepState | WorkflowSucceedState
 
 export interface WorkflowDefinition<InputSchema extends StandardSchemaLike = StandardSchemaLike> {
-  readonly kind: "arc.workflow"
+  readonly kind: "qroz.workflow"
   readonly name: string
   readonly version: number
   readonly input: InputSchema
@@ -389,7 +389,7 @@ export function workflow<InputSchema extends StandardSchemaLike>(
   definition: Omit<WorkflowDefinition<InputSchema>, "kind">
 ): WorkflowDefinition<InputSchema> {
   return Object.freeze({
-    kind: "arc.workflow" as const,
+    kind: "qroz.workflow" as const,
     ...definition,
     states: Object.freeze({ ...definition.states })
   })
@@ -417,7 +417,7 @@ export interface EndpointDefinition<
   QuerySchema extends StandardSchemaLike | EmptySchema = undefined,
   OutputSchema extends StandardSchemaLike = StandardSchemaLike
 > {
-  readonly kind: "arc.endpoint"
+  readonly kind: "qroz.endpoint"
   readonly method: HttpMethod
   readonly path: string
   readonly status?: number
@@ -442,7 +442,7 @@ export function endpoint<
   QuerySchema extends StandardSchemaLike | EmptySchema = undefined,
   OutputSchema extends StandardSchemaLike = StandardSchemaLike
 >(definition: Omit<EndpointDefinition<ParamsSchema, BodySchema, QuerySchema, OutputSchema>, "kind">): EndpointDefinition<ParamsSchema, BodySchema, QuerySchema, OutputSchema> {
-  return Object.freeze({ kind: "arc.endpoint" as const, ...definition })
+  return Object.freeze({ kind: "qroz.endpoint" as const, ...definition })
 }
 
 export interface ListenerContext extends CapabilityResolver {
@@ -451,7 +451,7 @@ export interface ListenerContext extends CapabilityResolver {
 }
 
 export interface ListenerDefinition<Payload> {
-  readonly kind: "arc.listener"
+  readonly kind: "qroz.listener"
   readonly event: EventDefinition<Payload>
   readonly requires?: readonly CapabilityRequirement<any, any>[]
   readonly emits?: readonly EventDefinition<any>[]
@@ -462,7 +462,7 @@ export interface ListenerDefinition<Payload> {
 export type AnyListener = ListenerDefinition<any>
 
 export function listener<Payload>(definition: Omit<ListenerDefinition<Payload>, "kind">): ListenerDefinition<Payload> {
-  return Object.freeze({ kind: "arc.listener" as const, ...definition })
+  return Object.freeze({ kind: "qroz.listener" as const, ...definition })
 }
 
 export interface ModuleDefinition<
@@ -471,7 +471,7 @@ export interface ModuleDefinition<
   Jobs extends Record<string, AnyJob> = Record<string, AnyJob>,
   Workflows extends Record<string, AnyWorkflow> = Record<string, AnyWorkflow>
 > {
-  readonly kind: "arc.module"
+  readonly kind: "qroz.module"
   readonly name: string
   readonly endpoints: Endpoints
   readonly listeners?: Listeners
@@ -485,18 +485,18 @@ export function module<
   const Jobs extends Record<string, AnyJob> = Record<string, never>,
   const Workflows extends Record<string, AnyWorkflow> = Record<string, never>
 >(definition: Omit<ModuleDefinition<Endpoints, Listeners, Jobs, Workflows>, "kind">): ModuleDefinition<Endpoints, Listeners, Jobs, Workflows> {
-  return Object.freeze({ kind: "arc.module" as const, ...definition })
+  return Object.freeze({ kind: "qroz.module" as const, ...definition })
 }
 
 export interface AppDefinition<Modules extends readonly ModuleDefinition[] = readonly ModuleDefinition[]> {
-  readonly kind: "arc.app"
+  readonly kind: "qroz.app"
   readonly name: string
   readonly modules: Modules
   readonly providers?: readonly Provider<any>[]
 }
 
 export function app<const Modules extends readonly ModuleDefinition[]>(definition: Omit<AppDefinition<Modules>, "kind">): AppDefinition<Modules> {
-  return Object.freeze({ kind: "arc.app" as const, ...definition })
+  return Object.freeze({ kind: "qroz.app" as const, ...definition })
 }
 
 export function withProviders<const Modules extends readonly ModuleDefinition[]>(
@@ -651,7 +651,7 @@ export function buildApplication(application: AppDefinition, options: BuildAppli
 
       for (const [stateName, state] of Object.entries(item.states)) {
         const owner = `${mod.name}.${workflowName}.${stateName}`
-        if (state.kind === "arc.workflow-task") {
+        if (state.kind === "qroz.workflow-task") {
           for (const requirement of state.requires ?? []) registerCapability(requirementCapability(requirement), owner)
           validateRequiredCapabilities(providers, state.requires ?? [], owner, options.allowMissingCapabilities ?? false)
           if (state.retry && (!Number.isInteger(state.retry.maxAttempts) || state.retry.maxAttempts < 1)) {
@@ -667,7 +667,7 @@ export function buildApplication(application: AppDefinition, options: BuildAppli
               next: state.next
             })
           }
-        } else if (state.kind === "arc.workflow-sleep") {
+        } else if (state.kind === "qroz.workflow-sleep") {
           if (!Number.isFinite(state.seconds) || state.seconds < 0) {
             throw new ArcError("ARC1011", `Workflow sleep '${owner}' requires non-negative finite seconds`, { owner })
           }
@@ -887,7 +887,7 @@ export function inspect(application: AppDefinition): ApplicationGraph {
     }
     for (const item of Object.values(mod.workflows ?? {})) {
       for (const state of Object.values(item.states)) {
-        if (state.kind !== "arc.workflow-task") continue
+        if (state.kind !== "qroz.workflow-task") continue
         for (const requirement of state.requires ?? []) {
           const target = requirementCapability(requirement)
           capabilities.set(target.id, target)
@@ -930,7 +930,7 @@ export function inspect(application: AppDefinition): ApplicationGraph {
           ...(ep.requires ?? []),
           ...(ep.auth?.policies ?? []).flatMap((policy) => policy.requires ?? [])
         ]
-          .filter((item) => item.kind === "arc.capability-access")
+          .filter((item) => item.kind === "qroz.capability-access")
           .map((item) => ({ capability: item.capability.name, operations: [...item.operations] })),
         emits: (ep.emits ?? []).map((item) => ({ event: item.name, version: item.version })),
         dispatches: (ep.dispatches ?? []).map((item) => ({ job: item.name, version: item.version })),
@@ -945,7 +945,7 @@ export function inspect(application: AppDefinition): ApplicationGraph {
         version: item.event.version,
         requires: (item.requires ?? []).map((target) => requirementCapability(target).name),
         access: (item.requires ?? [])
-          .filter((target) => target.kind === "arc.capability-access")
+          .filter((target) => target.kind === "qroz.capability-access")
           .map((target) => ({ capability: target.capability.name, operations: [...target.operations] })),
         emits: (item.emits ?? []).map((emitted) => ({ event: emitted.name, version: emitted.version })),
         dispatches: (item.dispatches ?? []).map((job) => ({ job: job.name, version: job.version }))
@@ -957,7 +957,7 @@ export function inspect(application: AppDefinition): ApplicationGraph {
         transport: item.transport.name,
         requires: (item.requires ?? []).map((target) => requirementCapability(target).name),
         access: (item.requires ?? [])
-          .filter((target) => target.kind === "arc.capability-access")
+          .filter((target) => target.kind === "qroz.capability-access")
           .map((target) => ({ capability: target.capability.name, operations: [...target.operations] })),
         ...(item.retry ? { retry: item.retry } : {}),
         ...(item.idempotency ? {
@@ -977,21 +977,21 @@ export function inspect(application: AppDefinition): ApplicationGraph {
         hasInputSchema: Boolean(item.input),
         states: Object.entries(item.states).map(([stateName, state]) => ({
           name: stateName,
-          kind: state.kind === "arc.workflow-task"
+          kind: state.kind === "qroz.workflow-task"
             ? "task" as const
-            : state.kind === "arc.workflow-sleep"
+            : state.kind === "qroz.workflow-sleep"
               ? "sleep" as const
               : "succeed" as const,
-          ...(state.kind === "arc.workflow-task" && state.next ? { next: state.next } : {}),
-          ...(state.kind === "arc.workflow-task" && state.end ? { end: true } : {}),
-          ...(state.kind === "arc.workflow-task" && state.retry ? { retry: state.retry } : {}),
-          ...(state.kind === "arc.workflow-sleep" ? { seconds: state.seconds, next: state.next } : {}),
-          requires: state.kind === "arc.workflow-task"
+          ...(state.kind === "qroz.workflow-task" && state.next ? { next: state.next } : {}),
+          ...(state.kind === "qroz.workflow-task" && state.end ? { end: true } : {}),
+          ...(state.kind === "qroz.workflow-task" && state.retry ? { retry: state.retry } : {}),
+          ...(state.kind === "qroz.workflow-sleep" ? { seconds: state.seconds, next: state.next } : {}),
+          requires: state.kind === "qroz.workflow-task"
             ? (state.requires ?? []).map((target) => requirementCapability(target).name)
             : [],
-          access: state.kind === "arc.workflow-task"
+          access: state.kind === "qroz.workflow-task"
             ? (state.requires ?? [])
-                .filter((target) => target.kind === "arc.capability-access")
+                .filter((target) => target.kind === "qroz.capability-access")
                 .map((target) => ({ capability: target.capability.name, operations: [...target.operations] }))
             : []
         }))

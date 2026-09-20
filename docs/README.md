@@ -1,23 +1,23 @@
 ---
-title: Arc Documentation
-description: Canonical map of Arc's product, architecture, guides, references, platform notes, agent interfaces, research, and decisions.
+title: Qroz Documentation
+description: Canonical map of Qroz's product, architecture, guides, references, platform notes, agent interfaces, research, and decisions.
 ---
 
-# Arc documentation
+# Qroz documentation
 
-This directory is the canonical product and engineering knowledge base for Arc. It is intentionally structured so the same Markdown can be used today in GitHub and later rendered as a public documentation website.
+This directory is the canonical product and engineering knowledge base for Qroz. It is intentionally structured so the same Markdown can be used today in GitHub and later rendered as a public documentation website.
 
 ## Start here
 
 - [Getting started](./getting-started/README.md) — learn the API from the user's point of view.
-- [Mental model](./getting-started/mental-model.md) — understand what Arc is before learning packages.
+- [Mental model](./getting-started/mental-model.md) — understand what Qroz is before learning packages.
 - [Vision](./project/vision.md) — the full product thesis.
 - [Design principles](./project/principles.md) — non-negotiable product, DX and architecture rules.
 - [System architecture](./architecture/system-overview.md) — how the pieces fit.
 - [Testing applications](./guides/testing-applications.md) — outside-in TDD with the in-memory runtime.
-- [Roadmap](./project/roadmap.md) — current sequence, including the Arc DX Preview milestone.
+- [Roadmap](./project/roadmap.md) — current sequence, including the Qroz DX Preview milestone.
 - [Current status](./project/status.md) — what is implemented and verified today.
-- [Public beta readiness](./project/public-beta-readiness.md) — package, release, compatibility and first-run gates before publication.\n- [Production readiness](./project/production-readiness.md) — evidence gates before Arc can make production claims.\n- [Naming decision](./project/naming.md) — why Arc remains a codename before public publication.\n- [Visual evidence](./project/visual-evidence.md) — reproducible browser evidence for DX claims.
+- [Public beta readiness](./project/public-beta-readiness.md) — package, release, compatibility and first-run gates before publication.\n- [Production readiness](./project/production-readiness.md) — evidence gates before Qroz can make production claims.\n- [Naming decision](./project/naming.md) — why Qroz remains a codename before public publication.\n- [Visual evidence](./project/visual-evidence.md) — reproducible browser evidence for DX claims.
 - [Reference applications](./project/reference-applications.md) — executable product corpus from simple CRUD to workflows, realtime and agents.
 - [Capability backlog](./project/capability-backlog.md) — risk-ordered implementation work derived from the corpus.
 
@@ -51,7 +51,7 @@ This directory is the canonical product and engineering knowledge base for Arc. 
 
 ## Documentation status
 
-Arc is currently a research framework, not a stable production release. Documentation distinguishes between:
+Qroz is currently a research framework, not a stable production release. Documentation distinguishes between:
 
 - **implemented** — code exists;
 - **contract-tested** — portable behavior is tested against a shared contract;

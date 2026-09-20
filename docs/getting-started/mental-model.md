@@ -1,11 +1,11 @@
 ---
 title: Mental model
-description: The minimum set of ideas needed to reason about Arc.
+description: The minimum set of ideas needed to reason about Qroz.
 ---
 
 # Mental model
 
-Arc separates **what the application means** from **where it runs**.
+Qroz separates **what the application means** from **where it runs**.
 
 ## 1. The application defines intent
 
@@ -43,7 +43,7 @@ This enables least-privilege bindings/IAM and avoids loading unrelated infrastru
 
 ## 4. The Application Graph is a product artifact
 
-Arc turns explicit declarations into a deterministic graph describing routes, capabilities, events, jobs and their relationships.
+Qroz turns explicit declarations into a deterministic graph describing routes, capabilities, events, jobs and their relationships.
 
 The graph is intended to power:
 
@@ -57,7 +57,7 @@ The graph is intended to power:
 
 ## 5. Distributed behavior is explicit
 
-Arc does not hide important distributed-system properties. Retry, idempotency, versioning, timeouts, consistency and provider feature gaps must be visible in APIs and graph metadata.
+Qroz does not hide important distributed-system properties. Retry, idempotency, versioning, timeouts, consistency and provider feature gaps must be visible in APIs and graph metadata.
 
 ## 6. Portability is proven, not claimed
 

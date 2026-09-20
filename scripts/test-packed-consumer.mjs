@@ -6,7 +6,7 @@ import { basename, join, resolve } from "node:path"
 
 const root = process.cwd()
 const packagesRoot = join(root, "packages")
-const workRoot = await mkdtemp(join(tmpdir(), "arc-packed-consumer-"))
+const workRoot = await mkdtemp(join(tmpdir(), "qroz-packed-consumer-"))
 const stageRoot = join(workRoot, "stage")
 const tarballRoot = join(workRoot, "tarballs")
 const consumerRoot = join(workRoot, "consumer")
@@ -106,14 +106,14 @@ try {
 
   const tarballs = packed.map((item) => join(tarballRoot, item.filename))
   await writeFile(join(consumerRoot, "package.json"), JSON.stringify({
-    name: "arc-packed-consumer",
+    name: "qroz-packed-consumer",
     private: true,
     type: "module"
   }, null, 2) + "\n")
 
   await run("npm", ["install", "--ignore-scripts", "--no-audit", "--no-fund", ...tarballs], { cwd: consumerRoot })
 
-  await writeFile(join(consumerRoot, "app.mjs"), `import { app, endpoint, module } from "@arc/core"
+  await writeFile(join(consumerRoot, "app.mjs"), `import { app, endpoint, module } from "@qroz/core"
 
 const Output = {
   "~standard": {
@@ -139,7 +139,7 @@ export default application
 `, "utf8")
 
   await writeFile(join(consumerRoot, "consumer.mjs"), `import application from "./app.mjs"
-import { createTestClient } from "@arc/testing"
+import { createTestClient } from "@qroz/testing"
 
 const response = await createTestClient(application).get("/health")
 if (response.status !== 200) throw new Error(\`unexpected status \${response.status}\`)
@@ -158,17 +158,17 @@ console.log("packed consumer request ok")
 
   const appRun = await run(process.execPath, ["consumer.mjs"], { cwd: consumerRoot })
 
-  const cliPath = join(consumerRoot, "node_modules", "@arc", "cli", "bin", "arc.mjs")
+  const cliPath = join(consumerRoot, "node_modules", "@qroz", "cli", "bin", "qroz.mjs")
   const cliRun = await run(process.execPath, [cliPath, "validate", "app.mjs", "--json"], { cwd: consumerRoot })
   const cli = JSON.parse(cliRun.stdout)
   if (cli.ok !== true || cli.app !== "packed-consumer") throw new Error(`unexpected packed CLI result: ${cliRun.stdout}`)
 
-  const createPath = join(consumerRoot, "node_modules", "create-arc", "bin", "create-arc.mjs")
+  const createPath = join(consumerRoot, "node_modules", "create-qroz", "bin", "create-qroz.mjs")
   const scaffoldPath = join(consumerRoot, "generated")
   await run(process.execPath, [createPath, scaffoldPath, "--yes"], { cwd: consumerRoot })
   const scaffoldManifest = JSON.parse(await readFile(join(scaffoldPath, "package.json"), "utf8"))
-  if (scaffoldManifest.scripts?.dev !== "arc dev src/app.ts --watch") {
-    throw new Error(`packed create-arc generated unexpected dev script: ${scaffoldManifest.scripts?.dev}`)
+  if (scaffoldManifest.scripts?.dev !== "qroz dev src/app.ts --watch") {
+    throw new Error(`packed create-qroz generated unexpected dev script: ${scaffoldManifest.scripts?.dev}`)
   }
 
   const evidence = {

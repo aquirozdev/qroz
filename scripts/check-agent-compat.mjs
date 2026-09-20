@@ -32,9 +32,9 @@ for (const entry of await readdir(canonicalSkills, { withFileTypes: true })) {
 }
 
 const requiredAdapters = {
-  ".claude/agents": ["arc-architect.md", "arc-reviewer.md", "arc-implementer.md", "arc-docs.md"],
-  ".opencode/agents": ["arc-architect.md", "arc-reviewer.md", "arc-implementer.md", "arc-docs.md"],
-  ".codex/agents": ["arc-architect.toml", "arc-reviewer.toml", "arc-implementer.toml", "arc-docs.toml"]
+  ".claude/agents": ["qroz-architect.md", "qroz-reviewer.md", "qroz-implementer.md", "qroz-docs.md"],
+  ".opencode/agents": ["qroz-architect.md", "qroz-reviewer.md", "qroz-implementer.md", "qroz-docs.md"],
+  ".codex/agents": ["qroz-architect.toml", "qroz-reviewer.toml", "qroz-implementer.toml", "qroz-docs.toml"]
 }
 
 for (const [dir, expected] of Object.entries(requiredAdapters)) {

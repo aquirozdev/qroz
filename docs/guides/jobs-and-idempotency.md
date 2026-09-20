@@ -1,11 +1,11 @@
 ---
 title: Jobs and idempotency
-description: How to design reliable Arc asynchronous work with retry, leases, duplicates, and external side effects.
+description: How to design reliable Qroz asynchronous work with retry, leases, duplicates, and external side effects.
 ---
 
 # Jobs and idempotency
 
-Arc assumes asynchronous delivery can happen more than once.
+Qroz assumes asynchronous delivery can happen more than once.
 
 ## Define a stable job identity
 
@@ -17,7 +17,7 @@ Retry is part of job semantics. Use fixed or exponential policies based on the o
 
 ## Use durable idempotency for non-trivial side effects
 
-Arc's durable contract uses:
+Qroz's durable contract uses:
 
 ```text
 claim(key, lease)
@@ -29,11 +29,11 @@ If execution fails, the claim can be released/retried. If another worker observe
 
 ## The external-side-effect rule
 
-Arc can prevent duplicate handler execution within its idempotency boundary, but cannot magically make an external API exactly-once. Reuse the same idempotency key with providers such as payment/email APIs when they support it.
+Qroz can prevent duplicate handler execution within its idempotency boundary, but cannot magically make an external API exactly-once. Reuse the same idempotency key with providers such as payment/email APIs when they support it.
 
 ## Long-running jobs
 
-Lease extension/heartbeat is a planned requirement before Arc calls very long-running jobs production-ready.
+Lease extension/heartbeat is a planned requirement before Qroz calls very long-running jobs production-ready.
 
 ## Schema evolution
 

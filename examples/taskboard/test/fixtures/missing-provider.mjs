@@ -1,11 +1,11 @@
-import { app, capability, endpoint, module } from "@arc/core"
+import { app, capability, endpoint, module } from "@qroz/core"
 
 const database = capability("example.database")
 
 const output = {
   "~standard": {
     version: 1,
-    vendor: "arc-error-fixture",
+    vendor: "qroz-error-fixture",
     validate(value) {
       return { value }
     }

@@ -1,11 +1,11 @@
 ---
 title: Repository governance
-description: Arc's branch, issue, pull-request, merge, automation and maintainer workflow.
+description: Qroz's branch, issue, pull-request, merge, automation and maintainer workflow.
 ---
 
 # Repository governance
 
-Arc uses GitHub Issues/PRs as the executable engineering record and canonical docs/ADRs as the durable architecture record.
+Qroz uses GitHub Issues/PRs as the executable engineering record and canonical docs/ADRs as the durable architecture record.
 
 ## Branch naming
 

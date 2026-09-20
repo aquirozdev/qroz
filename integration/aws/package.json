@@ -1,5 +1,5 @@
 {
-  "name": "@arc/integration-aws",
+  "name": "@qroz/integration-aws",
   "private": true,
   "type": "module",
   "dependencies": {

@@ -1,4 +1,4 @@
-import type { DeploymentPlan } from "@arc/deployment"
+import type { DeploymentPlan } from "@qroz/deployment"
 
 export type CloudflareResource =
   | { readonly kind: "r2"; readonly binding: string; readonly bucket: string }

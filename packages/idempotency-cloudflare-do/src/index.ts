@@ -1,4 +1,4 @@
-import type { JobIdempotencyClaim, JobIdempotencyStore } from "@arc/core"
+import type { JobIdempotencyClaim, JobIdempotencyStore } from "@qroz/core"
 
 export interface DurableObjectStubLike {
   fetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response>
@@ -90,7 +90,7 @@ export class ArcIdempotencyDurableObjectLogic {
   }
 }
 
-export function createDurableObjectIdempotencyStore(namespace: DurableObjectNamespaceLike, scope = "arc-idempotency"): JobIdempotencyStore {
+export function createDurableObjectIdempotencyStore(namespace: DurableObjectNamespaceLike, scope = "qroz-idempotency"): JobIdempotencyStore {
   const stubFor = (key: string) => {
     const name = `${scope}:${key}`
     if (namespace.getByName) return namespace.getByName(name)
@@ -98,12 +98,12 @@ export function createDurableObjectIdempotencyStore(namespace: DurableObjectName
     throw new Error("Durable Object namespace must expose getByName() or idFromName()+get()")
   }
   const call = async <T>(key: string, payload: Record<string, unknown>): Promise<T> => {
-    const response = await stubFor(key).fetch("https://arc.internal/idempotency", {
+    const response = await stubFor(key).fetch("https://qroz.internal/idempotency", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ key, ...payload })
     })
-    if (!response.ok) throw new Error(`Arc idempotency Durable Object returned HTTP ${response.status}`)
+    if (!response.ok) throw new Error(`Qroz idempotency Durable Object returned HTTP ${response.status}`)
     return await response.json() as T
   }
 

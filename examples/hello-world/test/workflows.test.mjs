@@ -10,12 +10,12 @@ import {
   workflow,
   workflowSucceed,
   workflowTask
-} from "@arc/core"
-import { executeWorkflow } from "@arc/workflows"
-import { compileAwsStateMachine } from "@arc/workflows-aws"
-import { executeCloudflareWorkflow, planCloudflareWorkflow } from "@arc/workflows-cloudflare"
-import { planDeployment } from "@arc/deployment"
-import { storage } from "@arc/storage"
+} from "@qroz/core"
+import { executeWorkflow } from "@qroz/workflows"
+import { compileAwsStateMachine } from "@qroz/workflows-aws"
+import { executeCloudflareWorkflow, planCloudflareWorkflow } from "@qroz/workflows-cloudflare"
+import { planDeployment } from "@qroz/deployment"
+import { storage } from "@qroz/storage"
 import application, { auditEntries } from "../dist/app.js"
 import { WelcomeUser } from "../dist/workflows.js"
 import { object, string } from "../dist/schema.js"

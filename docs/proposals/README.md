@@ -1,11 +1,11 @@
 ---
 title: Design proposals
-description: Planned Arc subsystems that preserve product intent without pretending the APIs are implemented or stable.
+description: Planned Qroz subsystems that preserve product intent without pretending the APIs are implemented or stable.
 ---
 
 # Design proposals
 
-These pages preserve important parts of Arc's product thesis that are not implemented yet.
+These pages preserve important parts of Qroz's product thesis that are not implemented yet.
 
 A proposal is **not a compatibility promise**. It should describe:
 

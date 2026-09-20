@@ -48,11 +48,11 @@ const s3 = new S3Client({ ...clientOptions, forcePathStyle: true })
 const dynamodb = new DynamoDBClient(clientOptions)
 
 const suffix = String(Date.now())
-const queueName = `arc-jobs-${suffix}`
-const tableName = `arc-idempotency-${suffix}`
-const bucket = `arc-delivery-${suffix}`
-const apiFunctionName = `arc-api-${suffix}`
-const consumerFunctionName = `arc-consumer-${suffix}`
+const queueName = `qroz-jobs-${suffix}`
+const tableName = `qroz-idempotency-${suffix}`
+const bucket = `qroz-delivery-${suffix}`
+const apiFunctionName = `qroz-api-${suffix}`
+const consumerFunctionName = `qroz-consumer-${suffix}`
 
 await sqs.send(new CreateQueueCommand({ QueueName: queueName }))
 const queueUrl = (await sqs.send(new GetQueueUrlCommand({ QueueName: queueName }))).QueueUrl
@@ -79,7 +79,7 @@ for (let attempt = 0; attempt < 30; attempt += 1) {
 }
 
 async function bundleAndZip(entry, name) {
-  const dir = await mkdtemp(join(tmpdir(), `arc-${name}-`))
+  const dir = await mkdtemp(join(tmpdir(), `qroz-${name}-`))
   const outfile = join(dir, "index.js")
   await build({
     entryPoints: [entry],
@@ -99,7 +99,7 @@ async function bundleAndZip(entry, name) {
 
 const apiZip = await bundleAndZip(new URL("./lambda-api.mjs", import.meta.url).pathname, "api")
 const consumerZip = await bundleAndZip(new URL("./lambda-consumer.mjs", import.meta.url).pathname, "consumer")
-const role = "arn:aws:iam::000000000000:role/arc-lambda"
+const role = "arn:aws:iam::000000000000:role/qroz-lambda"
 
 const apiFunction = await lambda.send(new CreateFunctionCommand({
   FunctionName: apiFunctionName,
@@ -153,7 +153,7 @@ await lambda.send(new CreateEventSourceMappingCommand({
 }))
 
 const api = await apigw.send(new CreateApiCommand({
-  Name: `arc-http-${suffix}`,
+  Name: `qroz-http-${suffix}`,
   ProtocolType: "HTTP"
 }))
 assert.ok(api.ApiId)
@@ -203,6 +203,6 @@ for (let attempt = 0; attempt < 90; attempt += 1) {
   await new Promise((resolve) => setTimeout(resolve, 1000))
 }
 
-assert.equal(delivered, true, "SQS event source should invoke Arc job consumer and produce delivery marker")
+assert.equal(delivered, true, "SQS event source should invoke Qroz job consumer and produce delivery marker")
 
-console.log("Floci end-to-end passed: API Gateway v2 -> Lambda -> Arc -> SQS -> Lambda -> Arc Job -> DynamoDB/S3.")
+console.log("Floci end-to-end passed: API Gateway v2 -> Lambda -> Qroz -> SQS -> Lambda -> Qroz Job -> DynamoDB/S3.")

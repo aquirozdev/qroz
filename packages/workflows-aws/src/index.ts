@@ -1,4 +1,4 @@
-import type { AnyWorkflow, WorkflowRetryPolicy } from "@arc/core"
+import type { AnyWorkflow, WorkflowRetryPolicy } from "@qroz/core"
 
 export interface AwsWorkflowTaskResources {
   readonly [stateName: string]: string
@@ -28,12 +28,12 @@ export function compileAwsStateMachine(
   const states: Record<string, Record<string, unknown>> = {}
 
   for (const [name, state] of Object.entries(workflow.states)) {
-    if (state.kind === "arc.workflow-succeed") {
+    if (state.kind === "qroz.workflow-succeed") {
       states[name] = { Type: "Succeed" }
       continue
     }
 
-    if (state.kind === "arc.workflow-sleep") {
+    if (state.kind === "qroz.workflow-sleep") {
       states[name] = {
         Type: "Wait",
         Seconds: state.seconds,
@@ -55,7 +55,7 @@ export function compileAwsStateMachine(
   }
 
   return {
-    Comment: `Arc workflow ${workflow.name}@${workflow.version}`,
+    Comment: `Qroz workflow ${workflow.name}@${workflow.version}`,
     StartAt: workflow.start,
     States: states
   }

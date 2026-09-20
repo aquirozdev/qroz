@@ -1,5 +1,5 @@
 name: Feature proposal
-description: Propose a user-facing Arc capability or DX improvement.
+description: Propose a user-facing Qroz capability or DX improvement.
 title: "[feature] "
 body:
   - type: textarea
@@ -13,7 +13,7 @@ body:
     id: desired-api
     attributes:
       label: Desired application-facing API
-      description: Show how you would want an Arc application to use this capability.
+      description: Show how you would want an Qroz application to use this capability.
       render: typescript
     validations:
       required: true

@@ -5,16 +5,16 @@ description: Portable execution boundary and responsibilities of runtime adapter
 
 # Runtime model
 
-Arc's runtime layering is intentionally narrow.
+Qroz's runtime layering is intentionally narrow.
 
 ```text
-@arc/core
+@qroz/core
    │
    ▼
-@arc/runtime-web
+@qroz/runtime-web
    │
-   ├── @arc/runtime-memory
-   └── @arc/runtime-cloudflare
+   ├── @qroz/runtime-memory
+   └── @qroz/runtime-cloudflare
 ```
 
 The portable interface is conceptually:
@@ -45,4 +45,4 @@ interface Runtime<Context> {
 
 ## Why not wrap the platform completely
 
-Arc wants application portability, not platform denial. A runtime adapter should be thin enough that platform-native behavior remains understandable and reachable.
+Qroz wants application portability, not platform denial. A runtime adapter should be thin enough that platform-native behavior remains understandable and reachable.

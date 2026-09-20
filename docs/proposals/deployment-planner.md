@@ -7,7 +7,7 @@ description: Planned transformation from Application Graph and environment confi
 
 Status: **planned**.
 
-Arc should not begin by building another cloud control plane. It should first produce a deterministic **deployment plan**.
+Qroz should not begin by building another cloud control plane. It should first produce a deterministic **deployment plan**.
 
 ```text
 Application Graph
@@ -34,9 +34,9 @@ Terraform/Pulumi/CDK/SST/provider APIs may implement the resulting plan.
 ## Desired CLI
 
 ```text
-arc plan
-arc plan --json
-arc diff deployment main
+qroz plan
+qroz plan --json
+qroz diff deployment main
 ```
 
 ## Safety

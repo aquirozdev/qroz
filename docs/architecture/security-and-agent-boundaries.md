@@ -5,7 +5,7 @@ description: Least privilege, capability enforcement, MCP read-only defaults, an
 
 # Security and agent boundaries
 
-Arc treats architecture metadata as a future security input, but does not equate metadata with enforcement until platform policies are generated and verified.
+Qroz treats architecture metadata as a future security input, but does not equate metadata with enforcement until platform policies are generated and verified.
 
 ## Least privilege
 
@@ -31,4 +31,4 @@ Application Graph and agent context must describe that a secret capability exist
 
 ## Security claims
 
-Arc will not claim generated IAM, secret isolation or production-safe agent mutations until provider-specific integration tests prove those paths.
+Qroz will not claim generated IAM, secret isolation or production-safe agent mutations until provider-specific integration tests prove those paths.

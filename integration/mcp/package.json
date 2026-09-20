@@ -1,5 +1,5 @@
 {
-  "name": "arc-mcp-integration",
+  "name": "qroz-mcp-integration",
   "private": true,
   "type": "module",
   "dependencies": {

@@ -1,4 +1,4 @@
-import { capability, type Capability } from "@arc/core"
+import { capability, type Capability } from "@qroz/core"
 
 export type StorageBody = string | Uint8Array | ArrayBuffer | Blob | ReadableStream<Uint8Array>
 
@@ -53,7 +53,7 @@ export async function probeStorageContract(store: ObjectStorage): Promise<{
   delete: true
 }> {
   const key = `__arc_contract__/${Date.now()}-${Math.random().toString(16).slice(2)}`
-  const content = "arc-storage-contract"
+  const content = "qroz-storage-contract"
   const saved = await store.put(key, content, {
     contentType: "text/plain",
     custom: { source: "contract" }

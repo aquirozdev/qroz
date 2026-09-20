@@ -22,7 +22,7 @@ function resolveTypeScriptCompiler(cwd) {
   try {
     return requireFromProject.resolve("typescript/bin/tsc")
   } catch {
-    throw new Error("source-first arc dev requires TypeScript in the application. Install it with 'npm install -D typescript'.")
+    throw new Error("source-first qroz dev requires TypeScript in the application. Install it with 'npm install -D typescript'.")
   }
 }
 
@@ -62,7 +62,7 @@ export function prepareTypeScriptDev(appPath, cwd = process.cwd()) {
 
   if (!configuredRoot || !configuredOut) {
     throw new Error(
-      "source-first arc dev currently requires compilerOptions.rootDir and compilerOptions.outDir so Arc can map source to emitted JavaScript truthfully"
+      "source-first qroz dev currently requires compilerOptions.rootDir and compilerOptions.outDir so Qroz can map source to emitted JavaScript truthfully"
     )
   }
 
@@ -84,7 +84,7 @@ export function prepareTypeScriptDev(appPath, cwd = process.cwd()) {
   const compiledPath = join(outDir, compiledRelative)
 
   if (!existsSync(compiledPath)) {
-    throw new Error(`TypeScript build completed but Arc could not find emitted application '${compiledPath}'`)
+    throw new Error(`TypeScript build completed but Qroz could not find emitted application '${compiledPath}'`)
   }
 
   return {

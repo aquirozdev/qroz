@@ -1,6 +1,6 @@
 ---
 title: Current status
-description: Current implementation and verification state of Arc.
+description: Current implementation and verification state of Qroz.
 ---
 
 # Current status
@@ -9,17 +9,17 @@ Current repository state: **pre-public-beta development**. Package versions are 
 
 ## Current product priority
 
-Arc has enough architectural foundation to shift from breadth toward **developer-experience depth**.
+Qroz has enough architectural foundation to shift from breadth toward **developer-experience depth**.
 
 Near-term sequencing is:
 
 1. make the framework publishable as a truthful public beta: final identity, license, package metadata, clean-install proof, docs and trusted release pipeline;
-2. finish the Arc DX Preview: source-first dev, navigable Studio, source-aware errors and performance budgets;
+2. finish the Qroz DX Preview: source-first dev, navigable Studio, source-aware errors and performance budgets;
 3. keep durable workflows to a deliberately small, provider-proven portable subset;
 4. finish security evidence needed for stronger production claims;
 5. deepen semantic deployment/change review and agent-safe interfaces.
 
-The framework should not expand primitives merely to match competitors. **Arc owns semantics; providers own primitives.**
+The framework should not expand primitives merely to match competitors. **Qroz owns semantics; providers own primitives.**
 
 ## Implemented and verified
 
@@ -59,7 +59,7 @@ The framework should not expand primitives merely to match competitors. **Arc ow
 
 ## What the current foundation proves
 
-The same Arc application semantics execute across Cloudflare-shaped and AWS-shaped environments without domain modules importing provider SDKs. AWS validation uses the official AWS SDK v3 plus Floci's Docker-backed Lambda runtime with Node.js 24.
+The same Qroz application semantics execute across Cloudflare-shaped and AWS-shaped environments without domain modules importing provider SDKs. AWS validation uses the official AWS SDK v3 plus Floci's Docker-backed Lambda runtime with Node.js 24.
 
 This is strong portability evidence, not a claim that a local emulator reproduces every production AWS behavior.
 

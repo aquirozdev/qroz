@@ -1,6 +1,6 @@
 # Support
 
-Arc is currently pre-public-beta research software.
+Qroz is currently pre-public-beta research software.
 
 ## Questions and usage help
 
@@ -10,13 +10,13 @@ Use GitHub Discussions once enabled for design questions, usage help and impleme
 
 Open a GitHub issue with:
 
-- Arc/package version or commit;
+- Qroz/package version or commit;
 - Node.js and TypeScript versions;
 - operating system;
 - minimal reproduction;
 - expected behavior;
 - actual behavior;
-- relevant Arc error code, trace or visual evidence where available.
+- relevant Qroz error code, trace or visual evidence where available.
 
 ## Security issues
 

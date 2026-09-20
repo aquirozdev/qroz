@@ -1,8 +1,8 @@
 import test from "node:test"
 import assert from "node:assert/strict"
-import { probeQueueProducerContract, provideQueue, queue } from "@arc/queue"
-import { createMemoryQueue } from "@arc/queue-memory"
-import { createCloudflareQueue } from "@arc/queue-cloudflare"
+import { probeQueueProducerContract, provideQueue, queue } from "@qroz/queue"
+import { createMemoryQueue } from "@qroz/queue-memory"
+import { createCloudflareQueue } from "@qroz/queue-cloudflare"
 
 function fakeCloudflareBinding() {
   const sent = []

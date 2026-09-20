@@ -1,4 +1,4 @@
-import { app, provide, withProviders } from "@arc/core"
+import { app, provide, withProviders } from "@qroz/core"
 import {
   membershipRepository,
   projectRepository,

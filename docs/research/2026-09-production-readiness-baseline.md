@@ -1,13 +1,13 @@
 ---
 title: Production readiness research baseline — September 2026
-description: External production guidance used to derive Arc's reference application corpus and readiness gates.
+description: External production guidance used to derive Qroz's reference application corpus and readiness gates.
 ---
 
 # Production readiness research baseline — September 2026
 
-This document records the external sources used to derive Arc's production-readiness corpus. It is intentionally dated: provider behavior and protocol guidance change.
+This document records the external sources used to derive Qroz's production-readiness corpus. It is intentionally dated: provider behavior and protocol guidance change.
 
-Arc should not define "production ready" as "the happy path works". The common pattern across mature framework, cloud, security, observability, payments, database, workflow and agent guidance is that production software must make failure, duplication, concurrency, authorization and operations explicit.
+Qroz should not define "production ready" as "the happy path works". The common pattern across mature framework, cloud, security, observability, payments, database, workflow and agent guidance is that production software must make failure, duplication, concurrency, authorization and operations explicit.
 
 ## Cross-source findings
 
@@ -22,7 +22,7 @@ Sources:
 - https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html
 - https://docs.aws.amazon.com/powertools/typescript/latest/features/batch/
 
-Implication for Arc: queues/jobs/events/workflows must have explicit retry, idempotency, poison-message, partial-batch and execution-surface semantics.
+Implication for Qroz: queues/jobs/events/workflows must have explicit retry, idempotency, poison-message, partial-batch and execution-surface semantics.
 
 ### Background work and durable workflows are different primitives
 
@@ -33,7 +33,7 @@ Sources:
 - https://docs.temporal.io/
 - https://developers.cloudflare.com/dynamic-workers/examples/dynamic-workflows-playground/
 
-Implication for Arc: "job" cannot become a catch-all. Jobs, events and workflows need separate semantics and contracts.
+Implication for Qroz: "job" cannot become a catch-all. Jobs, events and workflows need separate semantics and contracts.
 
 ### Authorization must include object-level access, not only endpoint roles
 
@@ -44,7 +44,7 @@ Sources:
 - https://www.postgresql.org/docs/current/ddl-rowsecurity.html
 - https://laravel.com/docs/13.x/authorization
 
-Implication for Arc: production authorization examples must include global permissions, tenant isolation, ownership checks, resource policies and protection against accidental over-exposure.
+Implication for Qroz: production authorization examples must include global permissions, tenant isolation, ownership checks, resource policies and protection against accidental over-exposure.
 
 ### Transaction boundaries and async side effects matter
 
@@ -53,7 +53,7 @@ Laravel documents the hazard of dispatching queued listeners before a database t
 Source:
 - https://laravel.com/docs/13.x/events
 
-Implication for Arc: the corpus must force us to model transaction-aware event/job dispatch and eventually an outbox-compatible pattern.
+Implication for Qroz: the corpus must force us to model transaction-aware event/job dispatch and eventually an outbox-compatible pattern.
 
 ### Production frameworks need scheduling, locks, rate limits and storage ergonomics
 
@@ -65,7 +65,7 @@ Sources:
 - https://laravel.com/docs/13.x/routing
 - https://laravel.com/docs/13.x/filesystem
 
-Implication for Arc: these are not convenience-only features. They encode concurrency, abuse-control and secure data-transfer requirements that production applications repeatedly need.
+Implication for Qroz: these are not convenience-only features. They encode concurrency, abuse-control and secure data-transfer requirements that production applications repeatedly need.
 
 ### Payment/webhook systems require idempotency and replay-safe boundaries
 
@@ -74,7 +74,7 @@ Stripe's API supports idempotency keys for safely retrying state-changing reques
 Source:
 - https://docs.stripe.com/api/idempotent_requests
 
-Implication for Arc: request-level idempotency and webhook/event-consumer idempotency are separate production scenarios and should both exist in the corpus.
+Implication for Qroz: request-level idempotency and webhook/event-consumer idempotency are separate production scenarios and should both exist in the corpus.
 
 ### Realtime applications introduce stateful coordination
 
@@ -84,7 +84,7 @@ Sources:
 - https://developers.cloudflare.com/durable-objects/best-practices/websockets/
 - https://developers.cloudflare.com/durable-objects/examples/websocket-hibernation-server/
 
-Implication for Arc: a production corpus needs long-lived connections, rooms, presence, reconnect behavior, authorization and state restoration.
+Implication for Qroz: a production corpus needs long-lived connections, rooms, presence, reconnect behavior, authorization and state restoration.
 
 ### Observability must span HTTP, database and messaging boundaries
 
@@ -96,7 +96,7 @@ Sources:
 - https://opentelemetry.io/docs/specs/semconv/db/
 - https://opentelemetry.io/docs/specs/semconv/messaging/
 
-Implication for Arc: every reference application should be diagnosable through correlated traces/logs/metrics, not just return the correct result.
+Implication for Qroz: every reference application should be diagnosable through correlated traces/logs/metrics, not just return the correct result.
 
 ### Production changes need safe deployment and rollback signals
 
@@ -105,7 +105,7 @@ AWS recommends incremental deployment, monitoring and canary strategies with rol
 Source:
 - https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/deployment-approaches.html
 
-Implication for Arc: production readiness includes config/secrets, migration safety, previews, semantic diffs and rollback-aware deployment plans.
+Implication for Qroz: production readiness includes config/secrets, migration safety, previews, semantic diffs and rollback-aware deployment plans.
 
 ### AI/agent applications add authority and tool-security risks
 
@@ -116,7 +116,7 @@ Sources:
 - https://owasp.org/projects/mcp-top-10
 - https://genai.owasp.org/2025/12/09/owasp-top-10-for-agentic-applications-the-benchmark-for-agentic-security-in-the-age-of-autonomous-ai/
 
-Implication for Arc: agent-native cannot mean agent-unrestricted. The reference corpus must test bounded tools, approvals, audit, identity propagation, sensitive-context controls and deterministic machine interfaces.
+Implication for Qroz: agent-native cannot mean agent-unrestricted. The reference corpus must test bounded tools, approvals, audit, identity propagation, sensitive-context controls and deterministic machine interfaces.
 
 ### Browser applications need explicit session and OAuth security
 
@@ -127,11 +127,11 @@ Sources:
 - https://datatracker.ietf.org/doc/html/rfc9700
 - https://datatracker.ietf.org/doc/html/rfc10017
 
-Implication for Arc: the corpus must include secure cookie/session behavior, CSRF-sensitive browser mutations, OAuth callback/state/PKCE integration boundaries and a BFF-style application.
+Implication for Qroz: the corpus must include secure cookie/session behavior, CSRF-sensitive browser mutations, OAuth callback/state/PKCE integration boundaries and a BFF-style application.
 
 ## Derived rule
 
-Arc should call itself production-ready only when a representative corpus demonstrates that the same semantic application model survives:
+Qroz should call itself production-ready only when a representative corpus demonstrates that the same semantic application model survives:
 
 - normal request/response work;
 - persistence and transaction boundaries;

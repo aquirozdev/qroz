@@ -32,7 +32,7 @@ export const Purchase = workflow({
 })
 ```
 
-The graph is intentionally declarative. Arc does not treat arbitrary JavaScript branching as portable workflow control flow.
+The graph is intentionally declarative. Qroz does not treat arbitrary JavaScript branching as portable workflow control flow.
 
 ## Implemented research semantics
 

@@ -1,5 +1,5 @@
 name: Bug report
-description: Report reproducible incorrect behavior in Arc.
+description: Report reproducible incorrect behavior in Qroz.
 title: "[bug] "
 body:
   - type: markdown
@@ -38,7 +38,7 @@ body:
   - type: input
     id: version
     attributes:
-      label: Arc version / commit
+      label: Qroz version / commit
       placeholder: v0.7.0 or commit SHA
   - type: dropdown
     id: surface

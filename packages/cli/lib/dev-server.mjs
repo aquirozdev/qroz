@@ -1,9 +1,9 @@
 import { createServer } from "node:http"
 import { spawn } from "node:child_process"
-import { explainError, inspect } from "@arc/core"
-import { createWebRuntime } from "@arc/runtime-web"
-import { createRecordingTracer } from "@arc/telemetry"
-import { planDeployment } from "@arc/deployment"
+import { explainError, inspect } from "@qroz/core"
+import { createWebRuntime } from "@qroz/runtime-web"
+import { createRecordingTracer } from "@qroz/telemetry"
+import { planDeployment } from "@qroz/deployment"
 
 const STUDIO_PREFIX = "/__arc"
 
@@ -14,7 +14,7 @@ function studioHtml(appName) {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Arc Studio · ${appName}</title>
+<title>Qroz Studio · ${appName}</title>
 <style>
 :root{color-scheme:dark;--bg:#0b0d10;--panel:#11151a;--panel2:#171c22;--line:#252c35;--text:#f4f7fb;--muted:#93a0b2;--accent:#a7f3d0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text)}button{font:inherit}
@@ -24,7 +24,7 @@ function studioHtml(appName) {
 <body>
 <div class="shell">
 <aside class="side">
-  <div class="brand">Arc Studio</div>
+  <div class="brand">Qroz Studio</div>
   <div class="app" id="app-name"></div>
   <div class="status"><span class="dot"></span>Local runtime connected</div>
   <div class="nav"><button class="active" data-target="overview">Overview</button><button data-target="request-runner">Requests</button><button data-target="security">Security</button><button data-target="deploy">Deploy</button></div>
@@ -64,7 +64,7 @@ for(const button of document.querySelectorAll(".nav button")){
  });
 }
 async function explain(code){
- if(!code||!/^ARC\\d{4}$/.test(code)) return;
+ if(!code||!/^QROZ\\d{4}$/.test(code)) return;
  const res=await fetch("/__arc/api/explain?code="+encodeURIComponent(code));
  if(!res.ok)return;
  const descriptor=await res.json();
@@ -120,7 +120,7 @@ async function loadActivity(){
  const decisionNode=document.getElementById("decisions");
  decisionNode.replaceChildren(...(decisions.length?decisions.slice(-8).reverse().map(item=>{const row=el("div","resource");const label=item.kind+(item.permission?" · "+item.permission:item.policy?" · "+item.policy:"");row.append(el("span","",label),el("span","pill",item.outcome));return row}):[el("div","empty","No authorization decisions yet")]));
  const traceNode=document.getElementById("traces");
- traceNode.replaceChildren(...(traces.length?traces.slice(-10).reverse().map(item=>{const row=el("div","resource");const owner=item.attributes?.["arc.endpoint"]||item.attributes?.["arc.listener"]||item.attributes?.["arc.workflow"]||item.requestId;row.append(el("span","",item.name+(owner?" · "+owner:"")),el("span","pill",item.requestId));return row}):[el("div","empty","No spans recorded yet")]));
+ traceNode.replaceChildren(...(traces.length?traces.slice(-10).reverse().map(item=>{const row=el("div","resource");const owner=item.attributes?.["qroz.endpoint"]||item.attributes?.["qroz.listener"]||item.attributes?.["qroz.workflow"]||item.requestId;row.append(el("span","",item.name+(owner?" · "+owner:"")),el("span","pill",item.requestId));return row}):[el("div","empty","No spans recorded yet")]));
  const deploymentNode=document.getElementById("deployment");
  const deploymentRows=plan.surfaces.map(surface=>{const row=el("div","resource");const access=surface.resourceAccess.length?surface.resourceAccess.map(item=>item.capability+" ["+(item.unrestricted?"*":item.operations.join(","))+"]").join(" · "):"no resource grants";row.append(el("span","",surface.id),el("span","pill",access));return row});
  for(const warning of plan.warnings){const row=el("div","explain",warning.code+" — "+warning.message);row.style.display="block";deploymentRows.unshift(row)}
@@ -231,7 +231,7 @@ export async function runDev(application, options = {}) {
         const descriptor = code ? explainError(code) : undefined
         response.statusCode = descriptor ? 200 : 404
         response.setHeader("content-type", "application/json; charset=utf-8")
-        response.end(JSON.stringify(descriptor ?? { error: "Unknown Arc error code" }))
+        response.end(JSON.stringify(descriptor ?? { error: "Unknown Qroz error code" }))
         return
       }
 
@@ -275,7 +275,7 @@ export async function runDev(application, options = {}) {
     } catch (error) {
       response.statusCode = 500
       response.setHeader("content-type", "application/json; charset=utf-8")
-      response.end(JSON.stringify({ error: "Arc dev server failed", message: error instanceof Error ? error.message : String(error) }))
+      response.end(JSON.stringify({ error: "Qroz dev server failed", message: error instanceof Error ? error.message : String(error) }))
     }
   })
 
@@ -290,7 +290,7 @@ export async function runDev(application, options = {}) {
   const studioUrl = `${baseUrl}${STUDIO_PREFIX}/`
 
   if (!options.silent) {
-    console.log(`Arc dev · ${graph.name}`)
+    console.log(`Qroz dev · ${graph.name}`)
     console.log(`  app     ${baseUrl}`)
     console.log(`  studio  ${studioUrl}`)
   }

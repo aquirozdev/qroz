@@ -5,7 +5,7 @@ description: How repository documentation becomes a future public docs website w
 
 # Documentation strategy
 
-Documentation is part of Arc's product surface.
+Documentation is part of Qroz's product surface.
 
 ## Canonical source
 
@@ -26,7 +26,7 @@ The hierarchy follows documentation intent:
 - **research** — dated external facts;
 - **decisions** — ADRs.
 
-This roughly follows the useful separation between tutorial/how-to/explanation/reference while retaining project/platform material Arc specifically needs.
+This roughly follows the useful separation between tutorial/how-to/explanation/reference while retaining project/platform material Qroz specifically needs.
 
 ## Future site generator
 
@@ -45,7 +45,7 @@ Reasons:
 
 The decision is reversible because canonical docs stay mostly plain Markdown.
 
-VitePress remains a credible alternative, especially for minimal Vue-centric docs and built-in local search. Site framework selection should not affect Arc architecture.
+VitePress remains a credible alternative, especially for minimal Vue-centric docs and built-in local search. Site framework selection should not affect Qroz architecture.
 
 ## Writing rules
 

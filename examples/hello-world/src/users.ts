@@ -1,4 +1,4 @@
-import { capability, endpoint, event, listener, module } from "@arc/core"
+import { capability, endpoint, event, listener, module } from "@qroz/core"
 import { object, string } from "./schema.js"
 
 export interface User {

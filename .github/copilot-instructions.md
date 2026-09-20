@@ -1,6 +1,6 @@
-# Arc repository instructions for GitHub Copilot
+# Qroz repository instructions for GitHub Copilot
 
-Arc is a pre-1.0 research framework. Optimize for architectural truth, portability evidence, and small public APIs rather than feature count.
+Qroz is a pre-1.0 research framework. Optimize for architectural truth, portability evidence, and small public APIs rather than feature count.
 
 ## Required context
 
@@ -16,7 +16,7 @@ Before a substantial change, read:
 
 ## Development method
 
-Arc uses example-first API design + outside-in TDD + contract tests.
+Qroz uses example-first API design + outside-in TDD + contract tests.
 
 For behavior changes:
 
@@ -30,7 +30,7 @@ For behavior changes:
 
 ## Architectural invariants
 
-- Never import cloud/vendor APIs into `@arc/core`.
+- Never import cloud/vendor APIs into `@qroz/core`.
 - Do not introduce mandatory decorators/reflection.
 - Do not bypass `requires`, `emits`, or `dispatches`.
 - Do not call a one-provider abstraction portable.

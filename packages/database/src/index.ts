@@ -1,4 +1,4 @@
-import { capability, provide, type Capability, type Provider } from "@arc/core"
+import { capability, provide, type Capability, type Provider } from "@qroz/core"
 
 /**
  * Declares a typed database capability without hiding the chosen query builder/ORM.

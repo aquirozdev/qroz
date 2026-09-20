@@ -1,6 +1,6 @@
 ---
 title: Capabilities and providers
-description: How Arc separates application dependencies from concrete vendors and manages provider composition.
+description: How Qroz separates application dependencies from concrete vendors and manages provider composition.
 ---
 
 # Capabilities and providers
@@ -53,8 +53,8 @@ This metadata is intended for graph tooling, compatibility checks and later depl
 
 ## No lowest-common-denominator fiction
 
-Arc does not pretend all providers have identical features. Advanced capabilities such as FIFO ordering, delayed delivery, signed URLs or provider-native transactions must be represented as explicit features or reached through a native escape hatch.
+Qroz does not pretend all providers have identical features. Advanced capabilities such as FIFO ordering, delayed delivery, signed URLs or provider-native transactions must be represented as explicit features or reached through a native escape hatch.
 
 ## Lifecycle
 
-Provider lifetime belongs to the execution surface. Invocation-scoped resources can define `dispose()`, which Arc guarantees to invoke after success or failure. See [resource lifecycle](../architecture/resource-lifecycle.md).
+Provider lifetime belongs to the execution surface. Invocation-scoped resources can define `dispose()`, which Qroz guarantees to invoke after success or failure. See [resource lifecycle](../architecture/resource-lifecycle.md).

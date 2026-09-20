@@ -6,7 +6,7 @@
 - provider-neutral deployment plan with AWS IAM and Cloudflare binding derivation;
 - Application Graph v5: endpoint principal and permission authorization;
 - Application Graph v6: named contextual endpoint policies;
-- add portable HTTP authentication composition and `@arc/auth`;
+- add portable HTTP authentication composition and `@qroz/auth`;
 - Application Graph v7: declarative workflow states, transitions and task dependencies;
 - add deterministic workflow memory execution with bounded retries;
 - add AWS Step Functions compiler and Cloudflare Workflows planner for the experimental portable workflow subset;
@@ -17,11 +17,11 @@
 
 - add API Gateway HTTP API v2 → Web Request/Response runtime adapter;
 - add SQS producer adapter with AWS batch/delay constraints;
-- add Lambda/SQS consumer with Arc retry → `batchItemFailures` mapping;
+- add Lambda/SQS consumer with Qroz retry → `batchItemFailures` mapping;
 - add S3 Object Storage adapter preserving streaming reads;
 - add DynamoDB lease-based idempotency with conditional claim/takeover/complete/release semantics;
 - validate S3, SQS and DynamoDB through AWS SDK v3 against Floci 2.1.0;
-- validate the complete zero-cost Docker flow API Gateway v2 → Lambda Node 24 → Arc endpoint → SQS → Lambda consumer → Arc Job → DynamoDB idempotency → S3 side effect;
+- validate the complete zero-cost Docker flow API Gateway v2 → Lambda Node 24 → Qroz endpoint → SQS → Lambda consumer → Qroz Job → DynamoDB idempotency → S3 side effect;
 - fix DynamoDB expression alias strictness discovered by SDK integration;
 - fix Web Crypto `randomUUID()` receiver semantics discovered under Lambda Node 24;
 - document AWS lifecycle differences and the Floci-first evidence strategy.
@@ -30,12 +30,12 @@
 
 - propagate W3C `traceparent`/`tracestate` from HTTP requests into typed Job envelopes;
 - expose propagated trace context to Job handlers;
-- add official MCP v2 integration tests for `arc.inspect`, `arc.context`, and `arc.explain`.
+- add official MCP v2 integration tests for `qroz.inspect`, `qroz.context`, and `qroz.explain`.
 
 ## 0.6.0 - lifecycle and database integration
 
 - added `ProviderScope` with deterministic invocation disposal;
-- added `@arc/database`;
+- added `@qroz/database`;
 - added PostgreSQL 18 + pg + Drizzle integration;
 - added real SQLite Durable Object workerd integration.
 

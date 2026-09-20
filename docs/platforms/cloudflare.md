@@ -1,11 +1,11 @@
 ---
 title: Cloudflare platform
-description: Current Arc integration model for Workers, R2, Queues, Durable Objects, Hyperdrive, and native tracing.
+description: Current Qroz integration model for Workers, R2, Queues, Durable Objects, Hyperdrive, and native tracing.
 ---
 
 # Cloudflare platform
 
-Cloudflare is Arc's first integration platform because it exposes serverless compute, object storage, queues, durable state, database acceleration and tracing through Worker bindings while retaining a Web Standards execution model.
+Cloudflare is Qroz's first integration platform because it exposes serverless compute, object storage, queues, durable state, database acceleration and tracing through Worker bindings while retaining a Web Standards execution model.
 
 ## Verified today
 
@@ -19,7 +19,7 @@ Cloudflare is Arc's first integration platform because it exposes serverless com
 
 ## Runtime composition
 
-Platform bindings become Arc providers at the boundary:
+Platform bindings become Qroz providers at the boundary:
 
 ```ts
 createCloudflareWorker(application, {
@@ -36,7 +36,7 @@ Domain modules remain unaware of binding names.
 
 ## Durable Objects
 
-Arc's idempotency adapter uses SQLite-backed Durable Objects because claim/lease/completion requires coordinated durable state. This is an adapter implementation, not a requirement that all Arc idempotency stores use Durable Objects.
+Qroz's idempotency adapter uses SQLite-backed Durable Objects because claim/lease/completion requires coordinated durable state. This is an adapter implementation, not a requirement that all Qroz idempotency stores use Durable Objects.
 
 ## Hyperdrive
 
@@ -44,7 +44,7 @@ Database application code receives a typed database capability. Cloudflare compo
 
 ## Observability
 
-Workers already automatically instrument platform operations and supports custom spans and OTLP export. Arc bridges semantic operations into native spans rather than embedding a competing tracing runtime.
+Workers already automatically instrument platform operations and supports custom spans and OTLP export. Qroz bridges semantic operations into native spans rather than embedding a competing tracing runtime.
 
 ## Remaining Cloudflare gates
 

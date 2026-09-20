@@ -1,0 +1,14 @@
+{
+  "name": "create-qroz",
+  "version": "0.1.0",
+  "type": "module",
+  "bin": {
+    "create-qroz": "./bin/create-qroz.mjs"
+  },
+  "files": [
+    "bin"
+  ],
+  "scripts": {
+    "build": "node --check bin/create-qroz.mjs"
+  }
+}

@@ -1,6 +1,6 @@
 ---
 title: Research index
-description: Time-stamped external facts that influence Arc design.
+description: Time-stamped external facts that influence Qroz design.
 ---
 
 # Research index
@@ -11,7 +11,7 @@ Rules:
 
 - include research date;
 - prefer primary specifications/vendor documentation;
-- distinguish fact from Arc design decision;
+- distinguish fact from Qroz design decision;
 - record assumptions that may expire;
 - move durable conclusions into concepts/architecture/ADRs;
 - do not use a research note as the only documentation for a public API.

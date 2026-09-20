@@ -1,7 +1,7 @@
-import { type AppDefinition, buildApplication } from "@arc/core"
-import { createWebRuntime, type ArcRuntime, type WebExecutionContext, type WebRuntimeOptions } from "@arc/runtime-web"
+import { type AppDefinition, buildApplication } from "@qroz/core"
+import { createWebRuntime, type ArcRuntime, type WebExecutionContext, type WebRuntimeOptions } from "@qroz/runtime-web"
 
-export type { ArcRuntime } from "@arc/runtime-web"
+export type { ArcRuntime } from "@qroz/runtime-web"
 
 export interface MemoryRuntimeOptions extends WebRuntimeOptions {
   readonly context?: WebExecutionContext

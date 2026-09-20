@@ -3,7 +3,7 @@ import { mkdir, readdir, writeFile } from "node:fs/promises"
 import { basename, resolve } from "node:path"
 
 const args = process.argv.slice(2)
-const directory = args.find((arg) => !arg.startsWith("--")) ?? "arc-app"
+const directory = args.find((arg) => !arg.startsWith("--")) ?? "qroz-app"
 const target = resolve(process.cwd(), directory)
 const yes = args.includes("--yes")
 
@@ -11,7 +11,7 @@ function packageName(input) {
   return input
     .toLowerCase()
     .replace(/[^a-z0-9._-]+/g, "-")
-    .replace(/^-+|-+$/g, "") || "arc-app"
+    .replace(/^-+|-+$/g, "") || "qroz-app"
 }
 
 async function assertEmpty(path) {
@@ -34,16 +34,16 @@ const files = {
     type: "module",
     scripts: {
       build: "tsc -p tsconfig.json",
-      dev: "arc dev src/app.ts --watch",
+      dev: "qroz dev src/app.ts --watch",
       test: "npm run build && node --test test/*.test.mjs"
     },
     dependencies: {
-      "@arc/core": "latest",
-      "@arc/testing": "latest",
+      "@qroz/core": "latest",
+      "@qroz/testing": "latest",
       zod: "^4.0.0"
     },
     devDependencies: {
-      "@arc/cli": "latest",
+      "@qroz/cli": "latest",
       typescript: "^5.8.0"
     }
   }, null, 2) + "\n",
@@ -59,7 +59,7 @@ const files = {
     },
     include: ["src/**/*.ts"]
   }, null, 2) + "\n",
-  "src/app.ts": `import { app, endpoint, module } from "@arc/core"
+  "src/app.ts": `import { app, endpoint, module } from "@qroz/core"
 import { z } from "zod"
 
 const Health = z.object({
@@ -88,7 +88,7 @@ export default app({
   "test/app.test.mjs": `import assert from "node:assert/strict"
 import test from "node:test"
 import application from "../dist/app.js"
-import { createTestClient } from "@arc/testing"
+import { createTestClient } from "@qroz/testing"
 
 test("health endpoint", async () => {
   const response = await createTestClient(application).get("/health")
@@ -99,7 +99,7 @@ test("health endpoint", async () => {
   ".gitignore": "node_modules\ndist\n.env\n",
   "README.md": `# ${appName}
 
-Created with Arc.
+Created with Qroz.
 
 ## Start
 
@@ -109,7 +109,7 @@ npm test
 npm run dev
 \`\`\`
 
-Arc Studio opens from the local development server and uses the same Application Graph as the runtime.
+Qroz Studio opens from the local development server and uses the same Application Graph as the runtime.
 `
 }
 
@@ -130,6 +130,6 @@ try {
   console.log("  npm run dev")
   if (!yes) console.log("\nTip: use --yes for non-interactive scaffolding.")
 } catch (error) {
-  console.error(`create-arc: ${error instanceof Error ? error.message : String(error)}`)
+  console.error(`create-qroz: ${error instanceof Error ? error.message : String(error)}`)
   process.exit(1)
 }

@@ -1,5 +1,5 @@
 ---
-description: Implement focused Arc vertical slices using example-first TDD and portability contracts.
+description: Implement focused Qroz vertical slices using example-first TDD and portability contracts.
 mode: subagent
 permission:
   skill:

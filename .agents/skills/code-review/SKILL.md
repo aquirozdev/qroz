@@ -1,9 +1,9 @@
 ---
 name: code-review
-description: Review Arc pull requests for correctness, portability, architecture integrity, security, compatibility, and evidence.
+description: Review Qroz pull requests for correctness, portability, architecture integrity, security, compatibility, and evidence.
 ---
 
-# Arc code review
+# Qroz code review
 
 Review behavior and architectural claims before style.
 

@@ -1,8 +1,8 @@
-import { app, provide, withProviders } from "@arc/core"
+import { app, provide, withProviders } from "@qroz/core"
 import { taskRepository, tasks, type Task, type TaskRepository } from "./tasks.js"
 
 const records = new Map<string, Task>([
-  ["task-1", { id: "task-1", title: "Ship the first Arc app", completed: false }]
+  ["task-1", { id: "task-1", title: "Ship the first Qroz app", completed: false }]
 ])
 
 let sequence = 1

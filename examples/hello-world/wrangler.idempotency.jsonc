@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "arc-idempotency-integration",
+  "name": "qroz-idempotency-integration",
   "main": "src/idempotency-integration-worker.ts",
   "compatibility_date": "2026-09-18",
   "durable_objects": {

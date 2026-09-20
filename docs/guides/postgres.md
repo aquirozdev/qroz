@@ -1,11 +1,11 @@
 ---
 title: PostgreSQL and Drizzle
-description: Current database integration approach without creating an Arc ORM.
+description: Current database integration approach without creating an Qroz ORM.
 ---
 
 # PostgreSQL and Drizzle
 
-Arc intentionally does not invent another ORM.
+Qroz intentionally does not invent another ORM.
 
 The database capability is generic over the actual client type:
 
@@ -30,7 +30,7 @@ Hyperdrive is the intended Cloudflare production connection path. The client sho
 
 ## Migrations
 
-Migrations are an operational workflow, not request-runtime behavior. Arc has not stabilized a migration abstraction yet.
+Migrations are an operational workflow, not request-runtime behavior. Qroz has not stabilized a migration abstraction yet.
 
 A future migration layer should:
 

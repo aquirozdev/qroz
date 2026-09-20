@@ -5,11 +5,11 @@ description: Concrete release gates for publishing the framework without oversta
 
 # Public beta readiness
 
-This document separates **publishable beta**, **production-credible**, and **1.0** so Arc can ship useful software without pretending unfinished areas are complete.
+This document separates **publishable beta**, **production-credible**, and **1.0** so Qroz can ship useful software without pretending unfinished areas are complete.
 
 ## Current verdict
 
-Arc is not ready for npm publication yet.
+Qroz is not ready for npm publication yet.
 
 The architecture and evidence base are strong enough to justify a public beta effort, but publication is currently blocked by package identity, licensing, release integrity, package metadata, clean-install proof, compatibility coverage and public documentation.
 
@@ -141,12 +141,12 @@ Before publication also add/verify:
 
 ## Naming gate
 
-**Arc is a codename, not the recommended final public identity.**
+**Qroz is a codename, not the recommended final public identity.**
 
 Reasons:
 
-- the established Architect serverless framework already uses the `arc` CLI and `arc.codes`;
-- other active projects use “Arc Framework” for agent tooling;
+- the established Architect serverless framework already uses the `qroz` CLI and `qroz.codes`;
+- other active projects use “Qroz Framework” for agent tooling;
 - the word is crowded across developer tooling and makes npm/search/discovery ambiguous.
 
 A rename should happen before package publication, not after users depend on package names.

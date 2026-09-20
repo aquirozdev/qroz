@@ -1,12 +1,12 @@
 import test from "node:test"
 import assert from "node:assert/strict"
-import { app, capability, job, module, provide } from "@arc/core"
-import { queue, provideQueue } from "@arc/queue"
-import { createMemoryQueue } from "@arc/queue-memory"
-import { createMemoryRuntime } from "@arc/runtime-memory"
-import { executeJobEnvelope, NonRetryableJobError, retryDelaySeconds } from "@arc/jobs"
-import { runMemoryJobs } from "@arc/jobs-memory"
-import { createCloudflareJobConsumer } from "@arc/jobs-cloudflare"
+import { app, capability, job, module, provide } from "@qroz/core"
+import { queue, provideQueue } from "@qroz/queue"
+import { createMemoryQueue } from "@qroz/queue-memory"
+import { createMemoryRuntime } from "@qroz/runtime-memory"
+import { executeJobEnvelope, NonRetryableJobError, retryDelaySeconds } from "@qroz/jobs"
+import { runMemoryJobs } from "@qroz/jobs-memory"
+import { createCloudflareJobConsumer } from "@qroz/jobs-cloudflare"
 import application, { deliveredNotifications, notificationJobQueueMemory } from "../dist/app.js"
 
 // The example app proves endpoint -> typed job envelope -> memory consumer end-to-end.
@@ -24,7 +24,7 @@ test("dispatches and executes a typed job end-to-end", async () => {
   assert.equal(typeof payload.id, "string")
   assert.equal(notificationJobQueueMemory.messages.length, 1)
   const envelope = notificationJobQueueMemory.messages[0].body
-  assert.equal(envelope.kind, "arc.job-message")
+  assert.equal(envelope.kind, "qroz.job-message")
   assert.equal(envelope.job, "notifications.deliver")
   assert.equal(envelope.version, 1)
   assert.equal(envelope.idempotencyKey, "notification:welcome")
@@ -101,7 +101,7 @@ function fixture(handler, retry = { strategy: "exponential", delaySeconds: 2, ma
 }
 
 function envelope(payload = "ok") {
-  return { kind: "arc.job-message", schemaVersion: 1, id: "logical-1", job: "test.task", version: 1, payload, createdAt: new Date(0).toISOString() }
+  return { kind: "qroz.job-message", schemaVersion: 1, id: "logical-1", job: "test.task", version: 1, payload, createdAt: new Date(0).toISOString() }
 }
 
 test("job executor retries failures with exponential backoff", async () => {
@@ -162,7 +162,7 @@ test("cloudflare consumer explicitly ack/retries individual messages", async () 
 test("undeclared job dispatch fails so the graph cannot lie", async () => {
   const Task = job({ name: "hidden.task", version: 1, transport, input: StringInput, async handler() {} })
   const Output = { "~standard": { version: 1, vendor: "test", validate(value) { return { value } } } }
-  const ep = (await import("@arc/core")).endpoint({
+  const ep = (await import("@qroz/core")).endpoint({
     method: "POST",
     path: "/hidden-job",
     output: Output,
@@ -185,7 +185,7 @@ test("undeclared job dispatch fails so the graph cannot lie", async () => {
 })
 
 test("duplicate job name/version pairs fail at build time", async () => {
-  const { buildApplication } = await import("@arc/core")
+  const { buildApplication } = await import("@qroz/core")
   const One = job({ name: "same.job", version: 1, transport, input: StringInput, async handler() {} })
   const Two = job({ name: "same.job", version: 1, transport, input: StringInput, async handler() {} })
   const definition = app({
@@ -200,7 +200,7 @@ test("duplicate job name/version pairs fail at build time", async () => {
 })
 
 test("Cloudflare job consumer disposes invocation provider scopes", async () => {
-  const { providerScope } = await import("@arc/core")
+  const { providerScope } = await import("@qroz/core")
   const { definition } = fixture(async () => {})
   let disposed = 0
   const providers = [provideQueue(transport, createMemoryQueue()), provide(dependency, {})]

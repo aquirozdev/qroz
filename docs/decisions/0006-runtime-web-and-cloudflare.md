@@ -4,9 +4,9 @@ Status: accepted
 
 ## Decision
 
-HTTP execution lives in `@arc/runtime-web`, which depends on Web Standards and Arc core definitions. Platform packages are thin adapters.
+HTTP execution lives in `@qroz/runtime-web`, which depends on Web Standards and Qroz core definitions. Platform packages are thin adapters.
 
-`@arc/runtime-memory` wraps this engine without platform context. `@arc/runtime-cloudflare` maps `(request, env, executionCtx)` into an Arc execution context and can derive request-scoped providers from bindings.
+`@qroz/runtime-memory` wraps this engine without platform context. `@qroz/runtime-cloudflare` maps `(request, env, executionCtx)` into an Qroz execution context and can derive request-scoped providers from bindings.
 
 ## Why
 
@@ -14,4 +14,4 @@ Duplicating routers/validation/event execution per runtime would cause semantic 
 
 ## Consequence
 
-Platform adapters remain intentionally small. Provider-specific behavior belongs in resource adapters such as `@arc/storage-r2` rather than in the HTTP engine.
+Platform adapters remain intentionally small. Provider-specific behavior belongs in resource adapters such as `@qroz/storage-r2` rather than in the HTTP engine.

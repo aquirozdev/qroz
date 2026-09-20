@@ -5,18 +5,18 @@ export default defineConfig({
   site: "https://docs.example.invalid",
   integrations: [
     starlight({
-      title: "Arc",
+      title: "Qroz",
       description: "Application framework for humans and agents.",
       lastUpdated: true,
       social: [
         {
           icon: "github",
           label: "GitHub",
-          href: "https://github.com/aquirozdev/arc"
+          href: "https://github.com/aquirozdev/qroz"
         }
       ],
       editLink: {
-        baseUrl: "https://github.com/aquirozdev/arc/edit/main/docs/"
+        baseUrl: "https://github.com/aquirozdev/qroz/edit/main/docs/"
       },
       sidebar: [
         {

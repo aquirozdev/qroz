@@ -9,7 +9,7 @@ import {
   type MaybePromise,
   type Provider,
   type WorkflowRetryPolicy
-} from "@arc/core"
+} from "@qroz/core"
 
 export interface CloudflareWorkflowPlan {
   readonly schemaVersion: 1
@@ -49,10 +49,10 @@ export function planCloudflareWorkflow(workflow: AnyWorkflow): CloudflareWorkflo
     version: workflow.version,
     start: workflow.start,
     states: Object.entries(workflow.states).map(([name, state]) => {
-      if (state.kind === "arc.workflow-succeed") {
+      if (state.kind === "qroz.workflow-succeed") {
         return { name, kind: "succeed" as const }
       }
-      if (state.kind === "arc.workflow-sleep") {
+      if (state.kind === "qroz.workflow-sleep") {
         return {
           name,
           kind: "step.sleep" as const,
@@ -237,11 +237,11 @@ export async function executeCloudflareWorkflow(
       })
     }
 
-    if (state.kind === "arc.workflow-succeed") {
+    if (state.kind === "qroz.workflow-succeed") {
       return { workflowId, output: data, transitions }
     }
 
-    if (state.kind === "arc.workflow-sleep") {
+    if (state.kind === "qroz.workflow-sleep") {
       await step.sleep(stateName, state.seconds * 1000)
       stateName = state.next
       continue

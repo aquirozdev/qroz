@@ -1,21 +1,21 @@
 {
-  "name": "@arc/cli",
+  "name": "@qroz/cli",
   "version": "0.4.0",
   "type": "module",
   "bin": {
-    "arc": "./bin/arc.mjs"
+    "qroz": "./bin/qroz.mjs"
   },
   "dependencies": {
-    "@arc/core": "file:../core",
-    "@arc/deployment": "file:../deployment",
-    "@arc/runtime-web": "file:../runtime-web",
-    "@arc/telemetry": "file:../telemetry"
+    "@qroz/core": "file:../core",
+    "@qroz/deployment": "file:../deployment",
+    "@qroz/runtime-web": "file:../runtime-web",
+    "@qroz/telemetry": "file:../telemetry"
   },
   "files": [
     "bin",
     "lib"
   ],
   "scripts": {
-    "build": "node --check bin/arc.mjs"
+    "build": "node --check bin/qroz.mjs"
   }
 }

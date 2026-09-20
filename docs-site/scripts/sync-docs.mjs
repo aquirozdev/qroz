@@ -97,7 +97,7 @@ for (const sourcePath of await walk(sourceRoot)) {
 pages.sort((left, right) => left.route.localeCompare(right.route))
 
 const llms = [
-  "# Arc documentation",
+  "# Qroz documentation",
   "",
   "> Canonical documentation index generated from the repository's docs/ Markdown.",
   "",

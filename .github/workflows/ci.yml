@@ -113,7 +113,7 @@ jobs:
       - name: Upload documentation site
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: arc-docs-site
+          name: qroz-docs-site
           path: docs-site/dist
           if-no-files-found: error
           retention-days: 14
@@ -159,7 +159,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          ./node_modules/.bin/wrangler dev --config examples/hello-world/wrangler.jsonc --local --port 8787 > /tmp/arc-wrangler.log 2>&1 &
+          ./node_modules/.bin/wrangler dev --config examples/hello-world/wrangler.jsonc --local --port 8787 > /tmp/qroz-wrangler.log 2>&1 &
           PID=$!
           trap 'kill "$PID" 2>/dev/null || true' EXIT
           for attempt in $(seq 1 30); do
@@ -169,14 +169,14 @@ jobs:
             fi
             sleep 1
           done
-          cat /tmp/arc-wrangler.log
+          cat /tmp/qroz-wrangler.log
           exit 1
 
       - name: Execute SQLite Durable Object idempotency in workerd
         shell: bash
         run: |
           set -euo pipefail
-          ./node_modules/.bin/wrangler dev --config examples/hello-world/wrangler.idempotency.jsonc --local --port 8788 > /tmp/arc-do.log 2>&1 &
+          ./node_modules/.bin/wrangler dev --config examples/hello-world/wrangler.idempotency.jsonc --local --port 8788 > /tmp/qroz-do.log 2>&1 &
           PID=$!
           trap 'kill "$PID" 2>/dev/null || true' EXIT
           key="ci-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
@@ -188,7 +188,7 @@ jobs:
             fi
             sleep 1
           done
-          cat /tmp/arc-do.log
+          cat /tmp/qroz-do.log
           exit 1
 
   cloudflare-workflows:
@@ -204,11 +204,11 @@ jobs:
       - name: Install pinned workflow integration toolchain
         run: npm install --no-save typescript@5.8.3 wrangler@4.135.0
       - run: npm run build
-      - name: Execute Arc workflow in Cloudflare Workflows local runtime
+      - name: Execute Qroz workflow in Cloudflare Workflows local runtime
         shell: bash
         run: |
           set -euo pipefail
-          ./node_modules/.bin/wrangler dev --config integration/cloudflare-workflows/wrangler.jsonc --local --port 8790 > /tmp/arc-workflows.log 2>&1 &
+          ./node_modules/.bin/wrangler dev --config integration/cloudflare-workflows/wrangler.jsonc --local --port 8790 > /tmp/qroz-workflows.log 2>&1 &
           PID=$!
           trap 'kill "$PID" 2>/dev/null || true' EXIT
 
@@ -235,13 +235,13 @@ jobs:
             fi
             if echo "$response" | grep -q '"status":"errored"'; then
               echo "$response"
-              cat /tmp/arc-workflows.log
+              cat /tmp/qroz-workflows.log
               exit 1
             fi
             sleep 1
           done
 
-          cat /tmp/arc-workflows.log
+          cat /tmp/qroz-workflows.log
           exit 1
 
   postgres-drizzle:
@@ -254,16 +254,16 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: arc
+          POSTGRES_DB: qroz
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U postgres -d arc"
+          --health-cmd "pg_isready -U postgres -d qroz"
           --health-interval 5s
           --health-timeout 5s
           --health-retries 10
     env:
-      DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/arc
+      DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/qroz
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
@@ -275,7 +275,7 @@ jobs:
       - name: Install pinned database integration dependencies
         working-directory: integration/postgres
         run: npm install
-      - name: Execute Arc through real PostgreSQL and Drizzle
+      - name: Execute Qroz through real PostgreSQL and Drizzle
         working-directory: integration/postgres
         run: node test.mjs
 
@@ -294,13 +294,13 @@ jobs:
       - name: Install official MCP v2 integration dependencies
         working-directory: integration/mcp
         run: npm install
-      - name: Execute Arc MCP server/client integration
+      - name: Execute Qroz MCP server/client integration
         working-directory: integration/mcp
         run: node test.mjs
 
 
   visual-evidence:
-    name: Arc Studio visual evidence
+    name: Qroz Studio visual evidence
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
@@ -318,14 +318,14 @@ jobs:
       - name: Install Chromium
         working-directory: integration/visual-evidence
         run: npx playwright install --with-deps chromium
-      - name: Execute Arc Studio browser journey
+      - name: Execute Qroz Studio browser journey
         working-directory: integration/visual-evidence
         run: npm test
       - name: Upload visual product evidence
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: arc-studio-visual-evidence
+          name: qroz-studio-visual-evidence
           path: |
             integration/visual-evidence/evidence
             integration/visual-evidence/test-results
@@ -353,10 +353,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          docker network create arc-floci
+          docker network create qroz-floci
           docker run -d \
             --name floci \
-            --network arc-floci \
+            --network qroz-floci \
             --network-alias floci \
             -p 4566:4566 \
             -v /var/run/docker.sock:/var/run/docker.sock \
@@ -364,7 +364,7 @@ jobs:
             -e FLOCI_STORAGE_MODE=memory \
             -e FLOCI_HOSTNAME=floci \
             -e FLOCI_BASE_URL=http://floci:4566 \
-            -e FLOCI_SERVICES_LAMBDA_DOCKER_NETWORK=arc-floci \
+            -e FLOCI_SERVICES_LAMBDA_DOCKER_NETWORK=qroz-floci \
             -e FLOCI_SERVICES_LAMBDA_EPHEMERAL=true \
             floci/floci:2.1.0
 
@@ -403,4 +403,4 @@ jobs:
         shell: bash
         run: |
           docker rm -f floci 2>/dev/null || true
-          docker network rm arc-floci 2>/dev/null || true
+          docker network rm qroz-floci 2>/dev/null || true

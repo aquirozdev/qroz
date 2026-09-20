@@ -1,6 +1,6 @@
 ---
 title: Design principles
-description: Non-negotiable product, DX and architecture principles used to evaluate Arc changes.
+description: Non-negotiable product, DX and architecture principles used to evaluate Qroz changes.
 ---
 
 # Design principles
@@ -15,15 +15,15 @@ Dependencies, effects, permissions, caching, retries, workflow transitions and d
 
 ## One semantic source of truth
 
-Application source produces the Application Graph. Runtime enforcement, CLI, Arc Studio, generated contracts, deployment planning and agent context consume that same model instead of maintaining parallel metadata.
+Application source produces the Application Graph. Runtime enforcement, CLI, Qroz Studio, generated contracts, deployment planning and agent context consume that same model instead of maintaining parallel metadata.
 
 ## Capabilities over vendors
 
 Application code requests semantic abilities. Platform composition chooses implementations.
 
-**Arc owns semantics. Providers own primitives.**
+**Qroz owns semantics. Providers own primitives.**
 
-Do not build a custom ORM, identity provider, LLM SDK, generic IaC engine or durable engine without compelling evidence that an Arc-specific implementation is required.
+Do not build a custom ORM, identity provider, LLM SDK, generic IaC engine or durable engine without compelling evidence that an Qroz-specific implementation is required.
 
 ## Application Graph over configuration sprawl
 
@@ -31,14 +31,14 @@ Important application intent should not be duplicated across code, YAML, dashboa
 
 ## Code remains authoritative
 
-Arc Studio is a projection and control surface over the application model, not a second application model. Meaningful UI edits must have an explicit code/config representation.
+Qroz Studio is a projection and control surface over the application model, not a second application model. Meaningful UI edits must have an explicit code/config representation.
 
 ## Beautiful errors are product features
 
 Framework errors must answer:
 
 1. what happened?
-2. why did Arc reject it?
+2. why did Qroz reject it?
 3. where is the responsible application declaration?
 4. what are the safe fixes?
 
@@ -54,7 +54,7 @@ An application must not need a rewrite to move from one endpoint to modules, job
 
 ## Local-first, no-account-first
 
-Core development must work without a hosted Arc account. `arc dev`, testing, graph inspection and Studio should be useful locally before any cloud integration.
+Core development must work without a hosted Qroz account. `qroz dev`, testing, graph inspection and Studio should be useful locally before any cloud integration.
 
 ## UI and CLI parity
 

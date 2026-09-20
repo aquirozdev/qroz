@@ -1,7 +1,7 @@
 import test from "node:test"
 import assert from "node:assert/strict"
-import { createMemoryRuntime } from "@arc/runtime-memory"
-import { createRecordingTracer } from "@arc/telemetry"
+import { createMemoryRuntime } from "@qroz/runtime-memory"
+import { createRecordingTracer } from "@qroz/telemetry"
 import application from "../dist/app.js"
 
 test("portable runtime emits semantic endpoint and listener spans", async () => {
@@ -14,13 +14,13 @@ test("portable runtime emits semantic endpoint and listener spans", async () => 
   }))
   assert.equal(response.status, 201)
   const names = tracer.spans.map((span) => span.name)
-  assert.deepEqual(names, ["arc.endpoint", "arc.listener"])
-  assert.equal(tracer.spans[0].attributes["arc.module"], "users")
+  assert.deepEqual(names, ["qroz.endpoint", "qroz.listener"])
+  assert.equal(tracer.spans[0].attributes["qroz.module"], "users")
   assert.equal(tracer.spans[0].attributes["http.route"], "/users")
-  assert.equal(tracer.spans[1].attributes["arc.event"], "user.created")
+  assert.equal(tracer.spans[1].attributes["qroz.event"], "user.created")
 })
 
-test("Cloudflare tracing adapter maps Arc attributes to native spans", async () => {
+test("Cloudflare tracing adapter maps Qroz attributes to native spans", async () => {
   const attributes = {}
   const executionCtx = {
     waitUntil() {},
@@ -35,6 +35,6 @@ test("Cloudflare tracing adapter maps Arc attributes to native spans", async () 
   const queue = { async send(){}, async sendBatch(){} }
   const response = await worker.fetch(new Request("https://app.test/files/missing"), { FILES: r2, NOTIFICATIONS: queue, JOBS: queue }, executionCtx)
   assert.equal(response.status, 200)
-  assert.equal(attributes["arc.module"], "files")
-  assert.equal(attributes["arc.endpoint"], "getFile")
+  assert.equal(attributes["qroz.module"], "files")
+  assert.equal(attributes["qroz.endpoint"], "getFile")
 })

@@ -1,4 +1,4 @@
-import type { ArcSpan, ArcTracer, TraceAttribute } from "@arc/telemetry"
+import type { ArcSpan, ArcTracer, TraceAttribute } from "@qroz/telemetry"
 
 export interface CloudflareSpanLike {
   setAttribute(name: string, value: TraceAttribute): void

@@ -1,11 +1,11 @@
 ---
 title: System architecture
-description: The high-level technical architecture of Arc.
+description: The high-level technical architecture of Qroz.
 ---
 
 # System architecture
 
-Arc separates semantic application definition, portable execution and platform composition.
+Qroz separates semantic application definition, portable execution and platform composition.
 
 ```text
                        TypeScript application
@@ -42,7 +42,7 @@ Owns Web-Standards HTTP execution: route matching, input/output validation, surf
 
 ### Runtime adapters
 
-Translate platform invocation context into Arc execution context. They own platform-specific bindings, tracing bridges and lifecycle hooks.
+Translate platform invocation context into Qroz execution context. They own platform-specific bindings, tracing bridges and lifecycle hooks.
 
 ### Resource packages
 

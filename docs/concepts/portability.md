@@ -1,6 +1,6 @@
 ---
 title: Portability
-description: Arc's portability contract, Web Standards boundary, feature detection, and native escape hatches.
+description: Qroz's portability contract, Web Standards boundary, feature detection, and native escape hatches.
 ---
 
 # Portability
@@ -9,7 +9,7 @@ Portability is a tested property, not a marketing label.
 
 ## Runtime boundary
 
-Arc's portable HTTP layer uses Web Platform primitives such as `Request`, `Response`, `Headers`, `URL` and streams. This aligns with the TC55 Minimum Common Web API direction for interoperable server runtimes.
+Qroz's portable HTTP layer uses Web Platform primitives such as `Request`, `Response`, `Headers`, `URL` and streams. This aligns with the TC55 Minimum Common Web API direction for interoperable server runtimes.
 
 ## Resource boundary
 
@@ -21,7 +21,7 @@ Any abstraction described as portable should be tested against at least two impl
 
 ## Feature gaps are explicit
 
-Providers can differ in ordering, delay limits, consistency, batching, retry semantics and transaction models. Arc records required features rather than silently degrading behavior.
+Providers can differ in ordering, delay limits, consistency, batching, retry semantics and transaction models. Qroz records required features rather than silently degrading behavior.
 
 ## Escape hatches
 

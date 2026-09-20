@@ -1,17 +1,17 @@
 ---
 title: Proposal — generated contracts
-description: Planned OpenAPI, AsyncAPI, JSON Schema and SDK artifacts derived from Arc application definitions.
+description: Planned OpenAPI, AsyncAPI, JSON Schema and SDK artifacts derived from Qroz application definitions.
 ---
 
 # Proposal — generated contracts
 
-Status: **planned/partial**. MCP already consumes Arc semantics. HTTP/event description and SDK generation are not implemented.
+Status: **planned/partial**. MCP already consumes Qroz semantics. HTTP/event description and SDK generation are not implemented.
 
 ## HTTP contracts
 
 OpenAPI **3.2.x** is the current target family for generated HTTP descriptions.
 
-Arc endpoint definitions already contain much of the semantic input:
+Qroz endpoint definitions already contain much of the semantic input:
 
 ```text
 method
@@ -25,7 +25,7 @@ module/endpoint identity
 
 ## Schema conversion
 
-Arc already accepts Standard Schema V1 for validation. The Standard Schema ecosystem now also defines **Standard JSON Schema V1**, a separate optional interface for generating JSON Schema.
+Qroz already accepts Standard Schema V1 for validation. The Standard Schema ecosystem now also defines **Standard JSON Schema V1**, a separate optional interface for generating JSON Schema.
 
 Preferred strategy:
 
@@ -42,7 +42,7 @@ AsyncAPI 3.x is a candidate export format for externally meaningful event and me
 
 Important distinction:
 
-- Arc Event/Job/Application Graph = internal semantic source model;
+- Qroz Event/Job/Application Graph = internal semantic source model;
 - AsyncAPI = external protocol/documentation representation.
 
 Not every internal job should automatically become a public AsyncAPI channel.
@@ -68,5 +68,5 @@ Before stabilizing this subsystem:
 - validate OpenAPI 3.2 documents against official schemas;
 - exercise Standard JSON Schema with multiple validation libraries;
 - identify transformations that are not representable;
-- establish stable operation IDs from Arc semantic identities;
+- establish stable operation IDs from Qroz semantic identities;
 - define API breaking-change detection from graph + generated contracts.

@@ -1,9 +1,9 @@
 {
-  "name": "@arc/deployment",
+  "name": "@qroz/deployment",
   "version": "0.9.0",
   "type": "module",
   "dependencies": {
-    "@arc/core": "file:../core"
+    "@qroz/core": "file:../core"
   },
   "exports": {
     ".": {

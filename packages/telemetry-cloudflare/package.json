@@ -1,9 +1,9 @@
 {
-  "name": "@arc/telemetry-cloudflare",
+  "name": "@qroz/telemetry-cloudflare",
   "version": "0.4.0",
   "type": "module",
   "dependencies": {
-    "@arc/telemetry": "file:../telemetry"
+    "@qroz/telemetry": "file:../telemetry"
   },
   "exports": {
     ".": {

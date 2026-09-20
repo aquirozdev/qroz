@@ -1,18 +1,18 @@
 ---
 title: Quality gates
-description: Evidence required before Arc advertises runtime, resource, developer-experience and agent capabilities.
+description: Evidence required before Qroz advertises runtime, resource, developer-experience and agent capabilities.
 ---
 
 # Quality gates
 
-Arc uses evidence gates instead of declaring features complete because code compiles.
+Qroz uses evidence gates instead of declaring features complete because code compiles.
 
 ## Always-on architecture gates
 
 Every change preserves:
 
 1. TypeScript strictness.
-2. No cloud vendor imports from `@arc/core`.
+2. No cloud vendor imports from `@qroz/core`.
 3. No mandatory decorators/reflection.
 4. deterministic graph/machine output.
 5. `requires`, `emits` and `dispatches` integrity.
@@ -34,7 +34,7 @@ Public API work must also preserve:
 - **explainability** — important runtime behavior maps back to source/graph/trace/plan;
 - **actionable errors** — stable errors explain cause, owner and safe next steps;
 - **local-first operation** — core dev/test/inspect workflows require no hosted account;
-- **CLI/UI semantic parity** — Arc Studio consumes the same underlying model;
+- **CLI/UI semantic parity** — Qroz Studio consumes the same underlying model;
 - **type-system scalability** — representative large applications remain responsive in editor/typecheck;
 - **feedback performance** — DX latency budgets are measured and regressions are treated as bugs;
 - **visual evidence** — browser-facing DX claims have reproducible journeys with screenshots, video and traces where useful.
@@ -48,7 +48,7 @@ Create representative small, medium and large reference applications and track a
 | test-client startup | effectively immediate for ordinary apps |
 | incremental route/module edit | sub-second, with a stretch goal below 200 ms |
 | graph incremental update | sub-second, with a stretch goal below 100 ms |
-| `arc inspect` medium app | below 500 ms target |
+| `qroz inspect` medium app | below 500 ms target |
 | Studio semantic refresh | visually immediate |
 | editor diagnostics | no multi-second pauses caused by whole-app inference |
 
@@ -72,7 +72,7 @@ Exact budgets may change after measurement; publishing and regression-testing th
 | Workflow graph/execution | memory verified | local provider execution for supported subset | provider execution evidence incomplete |
 | Agent interface | read-only integration | Web-compatible | runtime-neutral |
 | Local product DX | CLI foundation | n/a | n/a |
-| Arc Studio | browser acceptance + screenshot/video/trace evidence | n/a | n/a |
+| Qroz Studio | browser acceptance + screenshot/video/trace evidence | n/a | n/a |
 
 ## Before production claims
 

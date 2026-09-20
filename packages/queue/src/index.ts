@@ -1,4 +1,4 @@
-import { capability, provide, type Capability, type Provider } from "@arc/core"
+import { capability, provide, type Capability, type Provider } from "@qroz/core"
 
 export type QueueFeature = "batch" | "delay"
 

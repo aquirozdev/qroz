@@ -4,8 +4,8 @@ import {
   type JobEnvelope,
   type MaybePromise,
   type ProviderSource
-} from "@arc/core"
-import { executeJobEnvelope } from "@arc/jobs"
+} from "@qroz/core"
+import { executeJobEnvelope } from "@qroz/jobs"
 
 export interface SqsLambdaRecord {
   readonly messageId: string

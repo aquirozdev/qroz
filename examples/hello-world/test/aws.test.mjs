@@ -9,7 +9,7 @@ import { createAwsSqsJobConsumer } from "../../../packages/jobs-aws-sqs/dist/ind
 import { createS3Storage } from "../../../packages/storage-s3/dist/index.js"
 import { probeStorageContract } from "../../../packages/storage/dist/index.js"
 
-test("AWS HTTP API v2 adapter executes the same Arc application", async () => {
+test("AWS HTTP API v2 adapter executes the same Qroz application", async () => {
   const handler = createAwsLambdaHandler(application)
   const result = await handler({
     version: "2.0",
@@ -38,12 +38,12 @@ test("SQS queue adapter serializes messages, chunks batches and enforces AWS del
   await assert.rejects(() => queue.send({ bad: true }, { delaySeconds: 901 }), /0 and 900/)
 })
 
-test("AWS SQS consumer maps Arc retry outcomes to Lambda partial batch failures", async () => {
+test("AWS SQS consumer maps Qroz retry outcomes to Lambda partial batch failures", async () => {
   const before = deliveredNotifications.length
   const consumer = createAwsSqsJobConsumer(application)
 
   const goodEnvelope = {
-    kind: "arc.job-message",
+    kind: "qroz.job-message",
     schemaVersion: 1,
     id: "aws-job-1",
     job: DeliverNotification.name,
@@ -64,7 +64,7 @@ test("AWS SQS consumer maps Arc retry outcomes to Lambda partial batch failures"
   assert.equal(deliveredNotifications.length, before + 1)
 })
 
-test("S3 adapter satisfies Arc storage contract", async () => {
+test("S3 adapter satisfies Qroz storage contract", async () => {
   const objects = new Map()
   const operations = {
     async putObject(input) {
@@ -113,7 +113,7 @@ test("S3 adapter satisfies Arc storage contract", async () => {
 
 
 test("AWS runtime resolves an authenticated principal from the HTTP request", async () => {
-  const { app, endpoint, module } = await import("@arc/core")
+  const { app, endpoint, module } = await import("@qroz/core")
   const { object, string } = await import("../dist/schema.js")
   const Output = object({ principal: string() })
   const secured = endpoint({

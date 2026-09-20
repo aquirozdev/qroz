@@ -1,7 +1,7 @@
 import test from "node:test"
 import assert from "node:assert/strict"
-import { app, capability, endpoint, module, provide } from "@arc/core"
-import { createCloudflareWorker } from "@arc/runtime-cloudflare"
+import { app, capability, endpoint, module, provide } from "@qroz/core"
+import { createCloudflareWorker } from "@qroz/runtime-cloudflare"
 import application from "../dist/app.js"
 import { object, string } from "../dist/schema.js"
 
@@ -177,7 +177,7 @@ test("Cloudflare runtime awaits invocation-scoped async providers", async () => 
 })
 
 test("Cloudflare request provider scopes dispose after success and failure", async () => {
-  const { providerScope } = await import("@arc/core")
+  const { providerScope } = await import("@qroz/core")
   const disposable = capability("example.disposable")
   const Output = object({ value: string() })
   const success = endpoint({
