@@ -50,20 +50,22 @@ function accessFromRequirements(
   requirements: readonly CapabilityRequirement<any, any>[],
   reason: PlannedResourceAccess["reason"] = "declared"
 ): PlannedResourceAccess[] {
-  return requirements
-    .map((requirement) => {
-      const capability = requirementCapability(requirement)
-      if (capability.metadata?.kind !== "resource") return undefined
-      const operations = requirementOperations(requirement)
-      return {
-        capability: capability.name,
-        ...(capability.metadata.resourceType ? { resourceType: capability.metadata.resourceType } : {}),
-        operations: operations ? [...operations] : ["*"],
-        unrestricted: !operations,
-        reason
-      } satisfies PlannedResourceAccess
+  const output: PlannedResourceAccess[] = []
+
+  for (const requirement of requirements) {
+    const capability = requirementCapability(requirement)
+    if (capability.metadata?.kind !== "resource") continue
+    const operations = requirementOperations(requirement)
+    output.push({
+      capability: capability.name,
+      ...(capability.metadata.resourceType ? { resourceType: capability.metadata.resourceType } : {}),
+      operations: operations ? [...operations] : ["*"],
+      unrestricted: !operations,
+      reason
     })
-    .filter((item): item is PlannedResourceAccess => Boolean(item))
+  }
+
+  return output
 }
 
 function mergeAccess(items: readonly PlannedResourceAccess[]): PlannedResourceAccess[] {
@@ -153,13 +155,15 @@ export function planDeployment(application: AppDefinition): DeploymentPlan {
 
     for (const [name, job] of Object.entries(module.jobs ?? {})) {
       const transport = capabilityByName.get(job.transport.name)
-      const idempotency = job.idempotency
+      const idempotency: PlannedResourceAccess[] = job.idempotency
         ? [{
             capability: job.idempotency.store.name,
-            resourceType: job.idempotency.store.metadata?.resourceType,
+            ...(job.idempotency.store.metadata?.resourceType
+              ? { resourceType: job.idempotency.store.metadata.resourceType }
+              : {}),
             operations: ["claim", "complete", "release"],
             unrestricted: false,
-            reason: "job-idempotency" as const
+            reason: "job-idempotency"
           }]
         : []
 
