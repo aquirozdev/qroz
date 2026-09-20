@@ -4,6 +4,7 @@ import {
   ValidationError,
   buildApplication,
   createCapabilityResolver,
+  requirementCapability,
   validateSchema,
   type AnyJob,
   type AppDefinition,
@@ -116,7 +117,7 @@ export async function executeJobEnvelope(
     ...(idempotency ? [idempotency.store] : [])
   ]
   const resolver = createCapabilityResolver(built, allowedCapabilities, owner)
-  for (const target of allowedCapabilities) resolver.use(target)
+  for (const requirement of allowedCapabilities) resolver.use(requirementCapability(requirement))
 
   let idempotencyClaim: { key: string; token: string; store: import("@arc/core").JobIdempotencyStore } | undefined
   if (idempotency) {
