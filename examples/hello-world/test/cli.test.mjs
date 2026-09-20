@@ -11,10 +11,17 @@ test("CLI emits deterministic JSON application graph", () => {
     encoding: "utf8"
   })
   const graph = JSON.parse(output)
-  assert.equal(graph.schemaVersion, 3)
+  assert.equal(graph.schemaVersion, 4)
   assert.equal(graph.name, "example")
   assert.equal(graph.modules[0].endpoints[0].path, "/users/:id")
   assert.deepEqual(graph.modules[0].endpoints[0].requires, ["users.repository"])
+  const files = graph.modules.find((item) => item.name === "files")
+  assert.deepEqual(files.endpoints.find((item) => item.name === "putFile").access, [
+    { capability: "storage.files", operations: ["write"] }
+  ])
+  assert.deepEqual(files.endpoints.find((item) => item.name === "getFile").access, [
+    { capability: "storage.files", operations: ["read"] }
+  ])
 })
 
 test("CLI validates an application", () => {
