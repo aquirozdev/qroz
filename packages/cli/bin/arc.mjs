@@ -60,19 +60,42 @@ function changedSet(before, after, key) {
   return { added, removed, changed }
 }
 
-function semanticDiff(before, after) {
+function semanticDiff(before, after, beforePlan, afterPlan) {
   const flattenRoutes = (graph) => graph.modules.flatMap((mod) => mod.endpoints.map((endpoint) => ({ module: mod.name, ...endpoint })))
   const flattenListeners = (graph) => graph.modules.flatMap((mod) => mod.listeners.map((listener) => ({ module: mod.name, ...listener })))
   const flattenJobs = (graph) => graph.modules.flatMap((mod) => mod.jobs.map((job) => ({ module: mod.name, ...job })))
+  const flattenWorkflows = (graph) => graph.modules.flatMap((mod) => mod.workflows.map((workflow) => ({ module: mod.name, ...workflow })))
+  const security = (graph) => flattenRoutes(graph).map((endpoint) => ({
+    id: `${endpoint.module}.${endpoint.name}`,
+    method: endpoint.method,
+    path: endpoint.path,
+    auth: endpoint.auth ?? { required: false, permissions: [], policies: [] }
+  }))
+  const resourceAccess = (plan) => plan.surfaces.map((surface) => ({
+    id: surface.id,
+    kind: surface.kind,
+    resourceAccess: surface.resourceAccess,
+    triggers: surface.triggers
+  }))
+
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     from: before.name,
     to: after.name,
     modules: changedSet(before.modules, after.modules, (mod) => mod.name),
     routes: changedSet(flattenRoutes(before), flattenRoutes(after), (route) => `${route.method} ${route.path}`),
+    security: changedSet(security(before), security(after), (item) => item.id),
     capabilities: changedSet(before.capabilities, after.capabilities, (cap) => cap.name),
+    resourceAccess: changedSet(resourceAccess(beforePlan), resourceAccess(afterPlan), (surface) => surface.id),
     listeners: changedSet(flattenListeners(before), flattenListeners(after), (listener) => `${listener.event}@${listener.version}:${listener.module}.${listener.name}`),
-    jobs: changedSet(flattenJobs(before), flattenJobs(after), (job) => `${job.job}@${job.version}:${job.module}.${job.name}`)
+    jobs: changedSet(flattenJobs(before), flattenJobs(after), (job) => `${job.job}@${job.version}:${job.module}.${job.name}`),
+    workflows: changedSet(flattenWorkflows(before), flattenWorkflows(after), (workflow) => `${workflow.workflow}@${workflow.version}:${workflow.module}.${workflow.name}`),
+    deployment: changedSet(beforePlan.surfaces, afterPlan.surfaces, (surface) => surface.id),
+    deploymentWarnings: changedSet(
+      beforePlan.warnings,
+      afterPlan.warnings,
+      (warning) => `${warning.code}:${warning.surface}:${warning.capability}`
+    )
   }
 }
 
@@ -123,11 +146,27 @@ if (command === "diff") {
     const afterApp = await loadApplication(positional[1])
     buildApplication(beforeApp)
     buildApplication(afterApp)
-    const diff = semanticDiff(inspect(beforeApp), inspect(afterApp))
+    const diff = semanticDiff(
+      inspect(beforeApp),
+      inspect(afterApp),
+      planDeployment(beforeApp),
+      planDeployment(afterApp)
+    )
     if (json) console.log(JSON.stringify(diff, null, 2))
     else {
       console.log(`${diff.from} -> ${diff.to}`)
-      for (const [section, value] of Object.entries({ modules: diff.modules, routes: diff.routes, capabilities: diff.capabilities, listeners: diff.listeners, jobs: diff.jobs })) {
+      for (const [section, value] of Object.entries({
+        modules: diff.modules,
+        routes: diff.routes,
+        security: diff.security,
+        capabilities: diff.capabilities,
+        resourceAccess: diff.resourceAccess,
+        listeners: diff.listeners,
+        jobs: diff.jobs,
+        workflows: diff.workflows,
+        deployment: diff.deployment,
+        deploymentWarnings: diff.deploymentWarnings
+      })) {
         console.log(`\n${section}`)
         for (const item of value.added) console.log(`  + ${item}`)
         for (const item of value.removed) console.log(`  - ${item}`)
