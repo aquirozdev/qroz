@@ -27,14 +27,14 @@ function studioHtml(appName) {
   <div class="brand">Arc Studio</div>
   <div class="app" id="app-name"></div>
   <div class="status"><span class="dot"></span>Local runtime connected</div>
-  <div class="nav"><button class="active">Overview</button><button>Requests</button><button>Security</button><button>Deploy</button></div>
+  <div class="nav"><button class="active" data-target="overview">Overview</button><button data-target="request-runner">Requests</button><button data-target="security">Security</button><button data-target="deploy">Deploy</button></div>
 </aside>
-<main>
+<main id="overview">
   <div class="eyebrow">Application</div>
   <div class="title" id="title">Loading…</div>
   <section class="metrics" id="metrics"></section>
   <section class="grid">
-    <div class="card wide"><h2>Request runner</h2>
+    <div class="card wide" id="request-runner"><h2>Request runner</h2>
       <div class="runner">
         <select id="runner-method"><option>GET</option><option>POST</option><option>PUT</option><option>PATCH</option><option>DELETE</option></select>
         <input id="runner-path" value="/" aria-label="Request path">
@@ -47,9 +47,9 @@ function studioHtml(appName) {
     <div class="card"><h2>Modules & endpoints</h2><div id="modules"></div></div>
     <div class="card"><h2>Capabilities</h2><div id="capabilities"></div></div>
     <div class="card"><h2>Recent requests</h2><div id="requests"></div></div>
-    <div class="card"><h2>Authorization decisions</h2><div id="decisions"></div></div>
+    <div class="card" id="security"><h2>Authorization decisions</h2><div id="decisions"></div></div>
     <div class="card wide"><h2>Recent traces</h2><div id="traces"></div></div>
-    <div class="card wide"><h2>Deployment plan</h2><div id="deployment"></div></div>
+    <div class="card wide" id="deploy"><h2>Deployment plan</h2><div id="deployment"></div></div>
   </section>
 </main>
 </div>
@@ -57,6 +57,12 @@ function studioHtml(appName) {
 const initialName=${escaped};
 document.getElementById("app-name").textContent=initialName;
 function el(tag,cls,text){const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n}
+for(const button of document.querySelectorAll(".nav button")){
+ button.addEventListener("click",()=>{
+  document.querySelectorAll(".nav button").forEach(item=>item.classList.toggle("active",item===button));
+  document.getElementById(button.dataset.target)?.scrollIntoView({behavior:"smooth",block:"start"});
+ });
+}
 async function explain(code){
  if(!code||!/^ARC\\d{4}$/.test(code)) return;
  const res=await fetch("/__arc/api/explain?code="+encodeURIComponent(code));
