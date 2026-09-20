@@ -32,7 +32,7 @@ Current repository version: **v0.10 development line**.
 - provider-neutral deployment plans plus AWS IAM and Cloudflare binding planners;
 - runtime-enforced resource operation grants;
 - portable endpoint principal/permission authorization foundations;
-- named contextual endpoint policies over validated input;
+- named contextual endpoint policies over validated input with declared capability dependencies;
 - portable request authentication hook with bearer and cookie-session mechanisms;
 - Cloudflare and AWS per-invocation principal resolution;
 - experimental workflow graph with task/sleep/succeed states, memory execution and bounded retries;\n- supported workflow subset executed through Cloudflare Workflows in Wrangler's local Workflow runtime;
@@ -49,7 +49,7 @@ This is strong portability evidence, not a claim that a local emulator reproduce
 
 ## Important limits
 
-- authorization now covers runtime principals, permissions, named contextual policies and portable HTTP authentication composition; real identity-provider integrations, richer policy composition and principal propagation through non-HTTP surfaces remain open;
+- authorization now covers runtime principals, permissions, capability-aware contextual resource policies and portable HTTP authentication composition; audit-friendly decision records, richer policy composition, real identity-provider integrations and principal propagation through non-HTTP surfaces remain open;
 - R2/Cloudflare Queues still need deeper official end-to-end integration coverage;
 - Hyperdrive itself remains a deployment integration gate;
 - AWS tracing bridge remains open;
