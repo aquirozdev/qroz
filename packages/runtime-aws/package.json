@@ -1,0 +1,17 @@
+{
+  "name": "@arc/runtime-aws",
+  "version": "0.8.0",
+  "type": "module",
+  "dependencies": {
+    "@arc/core": "file:../core",
+    "@arc/runtime-web": "file:../runtime-web"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": { "build": "tsc -b" }
+}

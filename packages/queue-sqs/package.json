@@ -1,0 +1,16 @@
+{
+  "name": "@arc/queue-sqs",
+  "version": "0.8.0",
+  "type": "module",
+  "dependencies": {
+    "@arc/queue": "file:../queue"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": { "build": "tsc -b" }
+}
