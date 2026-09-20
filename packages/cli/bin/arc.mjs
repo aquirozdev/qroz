@@ -60,19 +60,118 @@ function changedSet(before, after, key) {
   return { added, removed, changed }
 }
 
-function semanticDiff(before, after) {
+function authorizationImpact(beforeItems, afterItems) {
+  const before = indexBy(beforeItems, (item) => item.id)
+  const after = indexBy(afterItems, (item) => item.id)
+  const output = []
+
+  for (const [id, current] of after) {
+    const previous = before.get(id)
+    if (!previous) continue
+    const addedPermissions = current.auth.permissions.filter((item) => !previous.auth.permissions.includes(item))
+    const removedPermissions = previous.auth.permissions.filter((item) => !current.auth.permissions.includes(item))
+    const addedPolicies = current.auth.policies.filter((item) => !previous.auth.policies.includes(item))
+    const removedPolicies = previous.auth.policies.filter((item) => !current.auth.policies.includes(item))
+    const authentication = previous.auth.required === current.auth.required
+      ? undefined
+      : current.auth.required ? "required" : "removed"
+
+    if (authentication || addedPermissions.length || removedPermissions.length || addedPolicies.length || removedPolicies.length) {
+      output.push({
+        surface: id,
+        ...(authentication ? { authentication } : {}),
+        addedPermissions,
+        removedPermissions,
+        addedPolicies,
+        removedPolicies
+      })
+    }
+  }
+
+  return output.sort((left, right) => left.surface.localeCompare(right.surface))
+}
+
+function privilegeExpansion(beforePlan, afterPlan) {
+  const before = indexBy(beforePlan.surfaces, (surface) => surface.id)
+  const output = []
+
+  for (const current of afterPlan.surfaces) {
+    const previous = before.get(current.id)
+    const previousByCapability = new Map((previous?.resourceAccess ?? []).map((item) => [item.capability, item]))
+
+    for (const access of current.resourceAccess) {
+      const old = previousByCapability.get(access.capability)
+      if (access.unrestricted && !old?.unrestricted) {
+        output.push({
+          surface: current.id,
+          capability: access.capability,
+          addedOperations: ["*"],
+          unrestricted: true
+        })
+        continue
+      }
+      if (old?.unrestricted) continue
+      const priorOperations = new Set(old?.operations ?? [])
+      const addedOperations = access.operations.filter((operation) => !priorOperations.has(operation))
+      if (addedOperations.length) {
+        output.push({
+          surface: current.id,
+          capability: access.capability,
+          addedOperations,
+          unrestricted: false
+        })
+      }
+    }
+  }
+
+  return output.sort((left, right) =>
+    left.surface.localeCompare(right.surface) || left.capability.localeCompare(right.capability)
+  )
+}
+
+function semanticDiff(before, after, beforePlan, afterPlan) {
   const flattenRoutes = (graph) => graph.modules.flatMap((mod) => mod.endpoints.map((endpoint) => ({ module: mod.name, ...endpoint })))
   const flattenListeners = (graph) => graph.modules.flatMap((mod) => mod.listeners.map((listener) => ({ module: mod.name, ...listener })))
   const flattenJobs = (graph) => graph.modules.flatMap((mod) => mod.jobs.map((job) => ({ module: mod.name, ...job })))
+  const flattenWorkflows = (graph) => graph.modules.flatMap((mod) => mod.workflows.map((workflow) => ({ module: mod.name, ...workflow })))
+  const security = (graph) => flattenRoutes(graph).map((endpoint) => ({
+    id: `${endpoint.module}.${endpoint.name}`,
+    method: endpoint.method,
+    path: endpoint.path,
+    auth: endpoint.auth ?? { required: false, permissions: [], policies: [] }
+  }))
+  const resourceAccess = (plan) => plan.surfaces.map((surface) => ({
+    id: surface.id,
+    kind: surface.kind,
+    resourceAccess: surface.resourceAccess,
+    triggers: surface.triggers
+  }))
+
+  const beforeSecurity = security(before)
+  const afterSecurity = security(after)
+
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     from: before.name,
     to: after.name,
     modules: changedSet(before.modules, after.modules, (mod) => mod.name),
     routes: changedSet(flattenRoutes(before), flattenRoutes(after), (route) => `${route.method} ${route.path}`),
+    security: changedSet(beforeSecurity, afterSecurity, (item) => item.id),
+    impact: {
+      authorization: authorizationImpact(beforeSecurity, afterSecurity),
+      privilegeExpansion: privilegeExpansion(beforePlan, afterPlan)
+    },
     capabilities: changedSet(before.capabilities, after.capabilities, (cap) => cap.name),
+    resourceAccess: changedSet(resourceAccess(beforePlan), resourceAccess(afterPlan), (surface) => surface.id),
     listeners: changedSet(flattenListeners(before), flattenListeners(after), (listener) => `${listener.event}@${listener.version}:${listener.module}.${listener.name}`),
-    jobs: changedSet(flattenJobs(before), flattenJobs(after), (job) => `${job.job}@${job.version}:${job.module}.${job.name}`)
+    jobs: changedSet(flattenJobs(before), flattenJobs(after), (job) => `${job.job}@${job.version}:${job.module}.${job.name}`),
+    workflows: changedSet(flattenWorkflows(before), flattenWorkflows(after), (workflow) => `${workflow.workflow}@${workflow.version}:${workflow.module}.${workflow.name}`),
+    deployment: changedSet(beforePlan.surfaces, afterPlan.surfaces, (surface) => surface.id),
+    deploymentWarnings: changedSet(
+      beforePlan.warnings,
+      afterPlan.warnings,
+      (warning) => `${warning.code}:${warning.surface}:${warning.capability}`
+    )
   }
 }
 
@@ -123,11 +222,42 @@ if (command === "diff") {
     const afterApp = await loadApplication(positional[1])
     buildApplication(beforeApp)
     buildApplication(afterApp)
-    const diff = semanticDiff(inspect(beforeApp), inspect(afterApp))
+    const diff = semanticDiff(
+      inspect(beforeApp),
+      inspect(afterApp),
+      planDeployment(beforeApp),
+      planDeployment(afterApp)
+    )
     if (json) console.log(JSON.stringify(diff, null, 2))
     else {
       console.log(`${diff.from} -> ${diff.to}`)
-      for (const [section, value] of Object.entries({ modules: diff.modules, routes: diff.routes, capabilities: diff.capabilities, listeners: diff.listeners, jobs: diff.jobs })) {
+      if (diff.impact.authorization.length || diff.impact.privilegeExpansion.length) {
+        console.log("\nimpact")
+        for (const item of diff.impact.authorization) {
+          for (const permission of item.addedPermissions) console.log(`  ! ${item.surface} adds permission ${permission}`)
+          for (const permission of item.removedPermissions) console.log(`  ! ${item.surface} removes permission ${permission}`)
+          for (const policy of item.addedPolicies) console.log(`  ! ${item.surface} adds policy ${policy}`)
+          for (const policy of item.removedPolicies) console.log(`  ! ${item.surface} removes policy ${policy}`)
+          if (item.authentication === "removed") console.log(`  ! ${item.surface} no longer requires authentication`)
+          if (item.authentication === "required") console.log(`  ! ${item.surface} now requires authentication`)
+        }
+        for (const item of diff.impact.privilegeExpansion) {
+          console.log(`  ! ${item.surface} expands ${item.capability} access: +${item.addedOperations.join(",")}`)
+        }
+      }
+
+      for (const [section, value] of Object.entries({
+        modules: diff.modules,
+        routes: diff.routes,
+        security: diff.security,
+        capabilities: diff.capabilities,
+        resourceAccess: diff.resourceAccess,
+        listeners: diff.listeners,
+        jobs: diff.jobs,
+        workflows: diff.workflows,
+        deployment: diff.deployment,
+        deploymentWarnings: diff.deploymentWarnings
+      })) {
         console.log(`\n${section}`)
         for (const item of value.added) console.log(`  + ${item}`)
         for (const item of value.removed) console.log(`  - ${item}`)
