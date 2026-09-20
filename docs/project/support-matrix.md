@@ -22,7 +22,7 @@ Legend:
 | Semantic tracing | Verified recording tracer | Contract/native bridge | Planned OTel/ADOT bridge |
 | W3C job trace propagation | Verified | Verified envelope path | Envelope path portable; AWS span linkage pending |
 | MCP v2 read-only | Verified CI | Web-compatible | Runtime-neutral |
-| Durable workflows | Memory executor verified | Contract plan for Cloudflare Workflows subset | ASL compile contract for Step Functions subset |
+| Durable workflows | Memory executor verified | Verified in Wrangler local Workflow runtime for supported subset; real-cloud pending | ASL compile contract for Step Functions subset; execution pending |
 | Auth/policies | Verified portable semantics | Per-invocation principal contract | Per-invocation principal contract |
 | IAM/deployment planning | Provider-neutral plan verified | Binding plan verified | Least-privilege IAM plan verified |
 
