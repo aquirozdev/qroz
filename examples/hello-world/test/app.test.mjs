@@ -330,7 +330,7 @@ test("enforces declarative endpoint authentication and permissions", async () =>
   assert.deepEqual(await allowed.json(), { principal: "user-1" })
 
   const graphEndpoint = inspect(securedApp).modules[0].endpoints[0]
-  assert.deepEqual(graphEndpoint.auth, { required: true, permissions: ["users.read"] })
+  assert.deepEqual(graphEndpoint.auth, { required: true, permissions: ["users.read"], policies: [] })
 })
 
 
