@@ -55,9 +55,9 @@ Prefer:
 
 ## Current status
 
-The canonical status is `docs/project/status.md`. At v0.7, Cloudflare/workerd, SQLite Durable Object idempotency, PostgreSQL/Drizzle and MCP v2 have CI integration coverage.
+The canonical status is `docs/project/status.md`. The v0.9 development line has Cloudflare/workerd, PostgreSQL/Drizzle, MCP v2, AWS Lambda/API Gateway/SQS/S3/DynamoDB through Floci, operation-level resource access, and provider-neutral deployment planning coverage.
 
-Current architectural priority: prove a second cloud with AWS Lambda + SQS/S3, then build auth/policies, durable workflows and the deployment model.
+Current architectural priority: finish authorization foundations without conflating end-user permissions with cloud IAM, then address the AWS tracing bridge and durable-workflow research.
 
 ## Documentation rule
 
