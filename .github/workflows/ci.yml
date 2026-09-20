@@ -4,11 +4,6 @@ on:
   push:
     branches:
       - main
-      - "feat/**"
-      - "fix/**"
-      - "docs/**"
-      - "chore/**"
-      - "research/**"
   pull_request:
 
 concurrency:
