@@ -587,6 +587,7 @@ export interface ApplicationGraph {
     kind?: "service" | "resource"
     resourceType?: string
     features?: string[]
+    operations?: string[]
   }>
   providers: Array<{ capability: string }>
   modules: Array<{
@@ -656,7 +657,8 @@ export function inspect(application: AppDefinition): ApplicationGraph {
       configured: configured.has(target.id),
       ...(target.metadata?.kind ? { kind: target.metadata.kind } : {}),
       ...(target.metadata?.resourceType ? { resourceType: target.metadata.resourceType } : {}),
-      ...(target.metadata?.features ? { features: [...target.metadata.features] } : {})
+      ...(target.metadata?.features ? { features: [...target.metadata.features] } : {}),
+      ...(target.metadata?.operationMethods ? { operations: Object.keys(target.metadata.operationMethods) } : {})
     })),
     providers: (application.providers ?? []).map((item) => ({ capability: item.capability.name })),
     modules: application.modules.map((mod) => ({
