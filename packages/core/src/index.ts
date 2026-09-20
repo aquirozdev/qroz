@@ -301,6 +301,66 @@ export interface JobPublisher {
   ): Promise<string>
 }
 
+export interface WorkflowTaskContext extends CapabilityResolver {
+  readonly workflowId: string
+  readonly state: string
+}
+
+export interface WorkflowTaskState {
+  readonly kind: "arc.workflow-task"
+  readonly requires?: readonly CapabilityRequirement<any, any>[]
+  readonly retry?: JobRetryPolicy
+  readonly timeoutSeconds?: number
+  readonly next?: string
+  readonly end?: boolean
+  readonly handler: (input: unknown, ctx: WorkflowTaskContext) => MaybePromise<unknown>
+}
+
+export function workflowTask(definition: Omit<WorkflowTaskState, "kind">): WorkflowTaskState {
+  return Object.freeze({ kind: "arc.workflow-task" as const, ...definition })
+}
+
+export interface WorkflowSleepState {
+  readonly kind: "arc.workflow-sleep"
+  readonly seconds: number
+  readonly next: string
+}
+
+export function workflowSleep(seconds: number, next: string): WorkflowSleepState {
+  return Object.freeze({ kind: "arc.workflow-sleep" as const, seconds, next })
+}
+
+export interface WorkflowSucceedState {
+  readonly kind: "arc.workflow-succeed"
+}
+
+export function workflowSucceed(): WorkflowSucceedState {
+  return Object.freeze({ kind: "arc.workflow-succeed" as const })
+}
+
+export type WorkflowState = WorkflowTaskState | WorkflowSleepState | WorkflowSucceedState
+
+export interface WorkflowDefinition<InputSchema extends StandardSchemaLike = StandardSchemaLike> {
+  readonly kind: "arc.workflow"
+  readonly name: string
+  readonly version: number
+  readonly input: InputSchema
+  readonly start: string
+  readonly states: Readonly<Record<string, WorkflowState>>
+}
+
+export type AnyWorkflow = WorkflowDefinition<any>
+
+export function workflow<InputSchema extends StandardSchemaLike>(
+  definition: Omit<WorkflowDefinition<InputSchema>, "kind">
+): WorkflowDefinition<InputSchema> {
+  return Object.freeze({
+    kind: "arc.workflow" as const,
+    ...definition,
+    states: Object.freeze({ ...definition.states })
+  })
+}
+
 export interface EndpointContext<
   ParamsSchema extends StandardSchemaLike | EmptySchema,
   BodySchema extends StandardSchemaLike | EmptySchema,
@@ -374,20 +434,23 @@ export function listener<Payload>(definition: Omit<ListenerDefinition<Payload>, 
 export interface ModuleDefinition<
   Endpoints extends Record<string, AnyEndpoint> = Record<string, AnyEndpoint>,
   Listeners extends Record<string, AnyListener> = Record<string, AnyListener>,
-  Jobs extends Record<string, AnyJob> = Record<string, AnyJob>
+  Jobs extends Record<string, AnyJob> = Record<string, AnyJob>,
+  Workflows extends Record<string, AnyWorkflow> = Record<string, AnyWorkflow>
 > {
   readonly kind: "arc.module"
   readonly name: string
   readonly endpoints: Endpoints
   readonly listeners?: Listeners
   readonly jobs?: Jobs
+  readonly workflows?: Workflows
 }
 
 export function module<
   const Endpoints extends Record<string, AnyEndpoint>,
   const Listeners extends Record<string, AnyListener> = Record<string, never>,
-  const Jobs extends Record<string, AnyJob> = Record<string, never>
->(definition: Omit<ModuleDefinition<Endpoints, Listeners, Jobs>, "kind">): ModuleDefinition<Endpoints, Listeners, Jobs> {
+  const Jobs extends Record<string, AnyJob> = Record<string, never>,
+  const Workflows extends Record<string, AnyWorkflow> = Record<string, never>
+>(definition: Omit<ModuleDefinition<Endpoints, Listeners, Jobs, Workflows>, "kind">): ModuleDefinition<Endpoints, Listeners, Jobs, Workflows> {
   return Object.freeze({ kind: "arc.module" as const, ...definition })
 }
 
@@ -423,7 +486,9 @@ export type ArcErrorCode =
   | "ARC1008"
   | "ARC1009"
   | "ARC1010"
+  | "ARC1011"
   | "ARC2001"
+  | "ARC2004"
   | "ARC3001"
   | "ARC3002"
   | "ARC2003"
@@ -459,6 +524,7 @@ export function buildApplication(application: AppDefinition, options: BuildAppli
   const moduleNames = new Set<string>()
   const routeKeys = new Set<string>()
   const jobKeys = new Set<string>()
+  const workflowKeys = new Set<string>()
   const providers = new Map<symbol, Provider<any>>()
   const capabilityNames = new Map<string, symbol>()
 
@@ -520,6 +586,49 @@ export function buildApplication(application: AppDefinition, options: BuildAppli
         `${mod.name}.${jobName}`,
         options.allowMissingCapabilities ?? false
       )
+    }
+
+    for (const [workflowName, item] of Object.entries(mod.workflows ?? {})) {
+      const key = `${item.name}@${item.version}`
+      if (workflowKeys.has(key)) {
+        throw new ArcError("ARC1011", `Duplicate workflow definition '${key}'`, { module: mod.name, workflow: workflowName })
+      }
+      workflowKeys.add(key)
+      if (!item.states[item.start]) {
+        throw new ArcError("ARC1011", `Workflow '${key}' starts at unknown state '${item.start}'`, {
+          module: mod.name,
+          workflow: workflowName,
+          state: item.start
+        })
+      }
+
+      for (const [stateName, state] of Object.entries(item.states)) {
+        const owner = `${mod.name}.${workflowName}.${stateName}`
+        if (state.kind === "arc.workflow-task") {
+          for (const requirement of state.requires ?? []) registerCapability(requirementCapability(requirement), owner)
+          validateRequiredCapabilities(providers, state.requires ?? [], owner, options.allowMissingCapabilities ?? false)
+          const terminal = state.end === true
+          if (terminal === Boolean(state.next)) {
+            throw new ArcError("ARC1011", `Workflow task '${owner}' must declare exactly one of next or end`, { owner })
+          }
+          if (state.next && !item.states[state.next]) {
+            throw new ArcError("ARC1011", `Workflow task '${owner}' points to unknown state '${state.next}'`, {
+              owner,
+              next: state.next
+            })
+          }
+        } else if (state.kind === "arc.workflow-sleep") {
+          if (!Number.isFinite(state.seconds) || state.seconds < 0) {
+            throw new ArcError("ARC1011", `Workflow sleep '${owner}' requires non-negative finite seconds`, { owner })
+          }
+          if (!item.states[state.next]) {
+            throw new ArcError("ARC1011", `Workflow sleep '${owner}' points to unknown state '${state.next}'`, {
+              owner,
+              next: state.next
+            })
+          }
+        }
+      }
     }
   }
 
@@ -634,7 +743,7 @@ export function createCapabilityResolver(
 }
 
 export interface ApplicationGraph {
-  schemaVersion: 6
+  schemaVersion: 7
   name: string
   capabilities: Array<{
     name: string
@@ -682,6 +791,24 @@ export interface ApplicationGraph {
       idempotency?: { store: string; leaseSeconds: number; ttlSeconds?: number }
       hasInputSchema: boolean
     }>
+    workflows: Array<{
+      name: string
+      workflow: string
+      version: number
+      start: string
+      hasInputSchema: boolean
+      states: Array<{
+        name: string
+        kind: "task" | "sleep" | "succeed"
+        next?: string
+        end?: boolean
+        seconds?: number
+        timeoutSeconds?: number
+        retry?: JobRetryPolicy
+        requires: string[]
+        access: Array<{ capability: string; operations: string[] }>
+      }>
+    }>
   }>
 }
 
@@ -703,10 +830,19 @@ export function inspect(application: AppDefinition): ApplicationGraph {
       for (const requirement of item.requires ?? []) { const target = requirementCapability(requirement); capabilities.set(target.id, target) }
       if (item.idempotency) capabilities.set(item.idempotency.store.id, item.idempotency.store)
     }
+    for (const item of Object.values(mod.workflows ?? {})) {
+      for (const state of Object.values(item.states)) {
+        if (state.kind !== "arc.workflow-task") continue
+        for (const requirement of state.requires ?? []) {
+          const target = requirementCapability(requirement)
+          capabilities.set(target.id, target)
+        }
+      }
+    }
   }
 
   return {
-    schemaVersion: 6,
+    schemaVersion: 7,
     name: application.name,
     capabilities: [...capabilities.values()].map((target) => ({
       name: target.name,
@@ -771,6 +907,34 @@ export function inspect(application: AppDefinition): ApplicationGraph {
           }
         } : {}),
         hasInputSchema: Boolean(item.input)
+      })),
+      workflows: Object.entries(mod.workflows ?? {}).map(([name, item]) => ({
+        name,
+        workflow: item.name,
+        version: item.version,
+        start: item.start,
+        hasInputSchema: Boolean(item.input),
+        states: Object.entries(item.states).map(([stateName, state]) => ({
+          name: stateName,
+          kind: state.kind === "arc.workflow-task"
+            ? "task" as const
+            : state.kind === "arc.workflow-sleep"
+              ? "sleep" as const
+              : "succeed" as const,
+          ...(state.kind === "arc.workflow-task" && state.next ? { next: state.next } : {}),
+          ...(state.kind === "arc.workflow-task" && state.end ? { end: true } : {}),
+          ...(state.kind === "arc.workflow-task" && state.timeoutSeconds !== undefined ? { timeoutSeconds: state.timeoutSeconds } : {}),
+          ...(state.kind === "arc.workflow-task" && state.retry ? { retry: state.retry } : {}),
+          ...(state.kind === "arc.workflow-sleep" ? { seconds: state.seconds, next: state.next } : {}),
+          requires: state.kind === "arc.workflow-task"
+            ? (state.requires ?? []).map((target) => requirementCapability(target).name)
+            : [],
+          access: state.kind === "arc.workflow-task"
+            ? (state.requires ?? [])
+                .filter((target) => target.kind === "arc.capability-access")
+                .map((target) => ({ capability: target.capability.name, operations: [...target.operations] }))
+            : []
+        }))
       }))
     }))
   }
@@ -788,6 +952,9 @@ export interface ModuleContext {
   readonly jobs: {
     readonly definitions: ApplicationGraph["modules"][number]["jobs"]
     readonly dispatches: Array<{ job: string; version: number; producer: string; producerKind: "endpoint" | "listener" }>
+  }
+  readonly workflows: {
+    readonly definitions: ApplicationGraph["modules"][number]["workflows"]
   }
 }
 
@@ -818,6 +985,9 @@ export function inspectModuleContext(application: AppDefinition, moduleName: str
         ...mod.endpoints.flatMap((endpoint) => endpoint.dispatches.map((job) => ({ ...job, producer: endpoint.name, producerKind: "endpoint" as const }))),
         ...mod.listeners.flatMap((listener) => listener.dispatches.map((job) => ({ ...job, producer: listener.name, producerKind: "listener" as const })))
       ]
+    },
+    workflows: {
+      definitions: mod.workflows
     }
   }
 }
@@ -851,8 +1021,10 @@ const ARC_ERROR_CATALOG: Readonly<Record<ArcErrorCode, ArcErrorDescriptor>> = Ob
   ARC1008: { code: "ARC1008", title: "Duplicate job definition", remediation: "Give every job name/version pair a unique definition in the application." },
   ARC1009: { code: "ARC1009", title: "Undeclared job dispatch", remediation: "Add the job to dispatches before calling ctx.jobs.dispatch()." },
   ARC1010: { code: "ARC1010", title: "Undeclared capability operation", remediation: "Declare operation-level access for the resource method or use an unrestricted capability requirement intentionally." },
+  ARC1011: { code: "ARC1011", title: "Invalid workflow graph", remediation: "Declare a valid start state and ensure every workflow transition targets an existing state with explicit terminal semantics." },
   ARC2001: { code: "ARC2001", title: "Malformed JSON request", remediation: "Send syntactically valid JSON when using application/json." },
   ARC2003: { code: "ARC2003", title: "Invalid job payload", remediation: "Dispatch a payload accepted by the job input schema and keep producers/consumers on compatible job versions." },
+  ARC2004: { code: "ARC2004", title: "Invalid workflow input", remediation: "Start the workflow with input accepted by its declared schema." },
   ARC2002: { code: "ARC2002", title: "Endpoint output contract violation", remediation: "Make the handler return a value accepted by its declared output schema." },
   ARC3001: { code: "ARC3001", title: "Authentication required", remediation: "Attach an authenticated principal to the execution context before invoking this endpoint." },
   ARC3002: { code: "ARC3002", title: "Permission denied", remediation: "Grant the principal the declared permission or provide an authorizer that allows it." }
