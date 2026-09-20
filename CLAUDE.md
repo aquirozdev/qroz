@@ -1,3 +1,5 @@
+<!-- GENERATED from AGENTS.md by scripts/check-agent-compat.mjs conventions. Do not edit independently. -->
+
 # Instructions for coding agents
 
 Arc is developed from the desired application experience inward. Optimize for **small, truthful semantics and exceptional DX**, not framework surface area.
