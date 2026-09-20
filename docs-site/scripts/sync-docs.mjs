@@ -13,13 +13,6 @@ function routeFor(relativePath) {
   return withoutName ? `/${withoutName}` : "/"
 }
 
-function projectedPath(relativePath) {
-  if (basename(relativePath).toLowerCase() === "readme.md") {
-    return join(dirname(relativePath), "index.md")
-  }
-  return relativePath
-}
-
 function rewriteRelativeMarkdownLinks(markdown) {
   return markdown.replace(/\]\(([^)]+\.md)(#[^)]+)?\)/g, (_match, path, hash = "") => {
     if (/^[a-z]+:/i.test(path)) return _match
@@ -52,7 +45,7 @@ await mkdir(publicRoot, { recursive: true })
 const pages = []
 for (const sourcePath of await walk(sourceRoot)) {
   const sourceRelative = relative(sourceRoot, sourcePath)
-  const targetRelative = projectedPath(sourceRelative)
+  const targetRelative = sourceRelative
   const targetPath = join(targetRoot, targetRelative)
   const markdown = rewriteRelativeMarkdownLinks(await readFile(sourcePath, "utf8"))
 
