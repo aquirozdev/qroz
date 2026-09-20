@@ -91,6 +91,7 @@ jobs:
           name: dx-performance-evidence
           path: .dx-evidence
           if-no-files-found: warn
+          include-hidden-files: true
           retention-days: 14
 
   workerd-smoke:
