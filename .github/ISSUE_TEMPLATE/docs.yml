@@ -1,0 +1,22 @@
+name: Documentation
+description: Report missing, stale, confusing, or structurally misplaced documentation.
+title: "[docs] "
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Documentation problem
+    validations:
+      required: true
+  - type: input
+    id: page
+    attributes:
+      label: Relevant page/path
+      placeholder: docs/...
+  - type: textarea
+    id: desired
+    attributes:
+      label: Desired outcome
+      description: What should a reader understand or be able to do afterward?
+    validations:
+      required: true

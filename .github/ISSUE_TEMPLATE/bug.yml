@@ -1,0 +1,61 @@
+name: Bug report
+description: Report reproducible incorrect behavior in Arc.
+title: "[bug] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a problem. Please separate observed behavior from expected behavior.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What is wrong?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Include the smallest example, commands, and relevant code/configuration.
+      placeholder: |
+        npm run ...
+        // minimal code
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior / logs
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Arc version / commit
+      placeholder: v0.7.0 or commit SHA
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Execution surface
+      options:
+        - HTTP/runtime
+        - Job/queue
+        - Storage
+        - Database
+        - Telemetry
+        - MCP/agent tooling
+        - CLI
+        - Documentation/tooling
+        - Other
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Node/runtime/provider/tool versions that matter to the reproduction.

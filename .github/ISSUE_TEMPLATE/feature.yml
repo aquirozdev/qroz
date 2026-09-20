@@ -1,0 +1,34 @@
+name: Feature proposal
+description: Propose a user-facing Arc capability or DX improvement.
+title: "[feature] "
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: Describe the application/developer problem before proposing implementation.
+    validations:
+      required: true
+  - type: textarea
+    id: desired-api
+    attributes:
+      label: Desired application-facing API
+      description: Show how you would want an Arc application to use this capability.
+      render: typescript
+    validations:
+      required: true
+  - type: textarea
+    id: semantics
+    attributes:
+      label: Semantics and failure modes
+      description: What retries, lifecycle, consistency, security, compatibility or distributed-system behavior matters?
+  - type: textarea
+    id: portability
+    attributes:
+      label: Portability evidence
+      description: Name at least two runtimes/providers if this should become a portable abstraction.
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives / existing ecosystem
+      description: Existing libraries/frameworks/standards that should be reused or compared.

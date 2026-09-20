@@ -1,0 +1,7 @@
+# Current maintainer ownership. Expand to teams when Arc gains additional maintainers.
+* @aquirozdev
+
+# High-impact architecture and automation paths.
+/packages/core/ @aquirozdev
+/.github/ @aquirozdev
+/docs/decisions/ @aquirozdev

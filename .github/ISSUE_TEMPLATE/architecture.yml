@@ -1,0 +1,37 @@
+name: Architecture proposal
+description: Discuss a change that may affect multiple Arc packages, contracts, or provider boundaries.
+title: "[architecture] "
+body:
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: What architectural constraint or problem exists?
+    validations:
+      required: true
+  - type: textarea
+    id: decision
+    attributes:
+      label: Proposed direction
+      description: Include the desired public API and semantic model, not only internal classes.
+    validations:
+      required: true
+  - type: textarea
+    id: graph
+    attributes:
+      label: Application Graph impact
+      description: Which graph fields/relationships or compatibility versions change?
+  - type: textarea
+    id: providers
+    attributes:
+      label: Provider/runtime impact
+      description: How would Cloudflare, AWS and memory/reference implementations map the design?
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Required evidence
+      description: Contract/integration tests and research needed before acceptance.
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
