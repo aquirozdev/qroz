@@ -91,6 +91,7 @@ jobs:
           name: packed-consumer-evidence
           path: .release-evidence
           if-no-files-found: warn
+          include-hidden-files: true
           retention-days: 14
 
   workerd-smoke:
