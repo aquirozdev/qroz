@@ -26,15 +26,15 @@ export default defineConfig({
             { label: "Getting started", link: "/getting-started/" }
           ]
         },
-        { label: "Concepts", autogenerate: { directory: "concepts" } },
-        { label: "Guides", autogenerate: { directory: "guides" } },
-        { label: "Reference", autogenerate: { directory: "reference" } },
-        { label: "Architecture", autogenerate: { directory: "architecture" } },
-        { label: "Platforms", autogenerate: { directory: "platforms" } },
-        { label: "Agents", autogenerate: { directory: "agents" } },
-        { label: "Project", autogenerate: { directory: "project" } },
-        { label: "Research", autogenerate: { directory: "research" } },
-        { label: "Decisions", autogenerate: { directory: "decisions" } }
+        { label: "Concepts", items: [{ autogenerate: { directory: "concepts" } }] },
+        { label: "Guides", items: [{ autogenerate: { directory: "guides" } }] },
+        { label: "Reference", items: [{ autogenerate: { directory: "reference" } }] },
+        { label: "Architecture", items: [{ autogenerate: { directory: "architecture" } }] },
+        { label: "Platforms", items: [{ autogenerate: { directory: "platforms" } }] },
+        { label: "Agents", items: [{ autogenerate: { directory: "agents" } }] },
+        { label: "Project", items: [{ autogenerate: { directory: "project" } }] },
+        { label: "Research", items: [{ autogenerate: { directory: "research" } }] },
+        { label: "Decisions", items: [{ autogenerate: { directory: "decisions" } }] }
       ],
       customCss: ["./src/styles/custom.css"]
     })
