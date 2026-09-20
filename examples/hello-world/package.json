@@ -1,23 +1,28 @@
 {
   "name": "@arc/example-hello-world",
-  "version": "0.5.0",
+  "version": "0.8.0",
   "private": true,
   "type": "module",
   "dependencies": {
     "@arc/core": "file:../../packages/core",
     "@arc/testing": "file:../../packages/testing",
     "@arc/runtime-cloudflare": "file:../../packages/runtime-cloudflare",
+    "@arc/runtime-aws": "file:../../packages/runtime-aws",
     "@arc/storage": "file:../../packages/storage",
     "@arc/storage-memory": "file:../../packages/storage-memory",
     "@arc/storage-r2": "file:../../packages/storage-r2",
+    "@arc/storage-s3": "file:../../packages/storage-s3",
     "@arc/queue": "file:../../packages/queue",
     "@arc/queue-memory": "file:../../packages/queue-memory",
     "@arc/queue-cloudflare": "file:../../packages/queue-cloudflare",
+    "@arc/queue-sqs": "file:../../packages/queue-sqs",
     "@arc/jobs": "file:../../packages/jobs",
     "@arc/jobs-memory": "file:../../packages/jobs-memory",
     "@arc/jobs-cloudflare": "file:../../packages/jobs-cloudflare",
+    "@arc/jobs-aws-sqs": "file:../../packages/jobs-aws-sqs",
     "@arc/idempotency": "file:../../packages/idempotency",
     "@arc/idempotency-memory": "file:../../packages/idempotency-memory",
-    "@arc/idempotency-cloudflare-do": "file:../../packages/idempotency-cloudflare-do"
+    "@arc/idempotency-cloudflare-do": "file:../../packages/idempotency-cloudflare-do",
+    "@arc/idempotency-dynamodb": "file:../../packages/idempotency-dynamodb"
   }
 }

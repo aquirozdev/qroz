@@ -45,7 +45,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          ./node_modules/.bin/wrangler dev             --config examples/hello-world/wrangler.jsonc             --local             --port 8787 > /tmp/arc-wrangler.log 2>&1 &
+          ./node_modules/.bin/wrangler dev --config examples/hello-world/wrangler.jsonc --local --port 8787 > /tmp/arc-wrangler.log 2>&1 &
           PID=$!
           trap 'kill "$PID" 2>/dev/null || true' EXIT
           for attempt in $(seq 1 30); do
@@ -62,7 +62,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          ./node_modules/.bin/wrangler dev             --config examples/hello-world/wrangler.idempotency.jsonc             --local             --port 8788 > /tmp/arc-do.log 2>&1 &
+          ./node_modules/.bin/wrangler dev --config examples/hello-world/wrangler.idempotency.jsonc --local --port 8788 > /tmp/arc-do.log 2>&1 &
           PID=$!
           trap 'kill "$PID" 2>/dev/null || true' EXIT
           key="ci-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
@@ -130,3 +130,75 @@ jobs:
       - name: Execute Arc MCP server/client integration
         working-directory: integration/mcp
         run: node test.mjs
+
+  aws-sdk-floci:
+    name: AWS SDK v3 + Floci
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      AWS_ENDPOINT: http://127.0.0.1:4566
+      FLOCI_LAMBDA_ENDPOINT: http://floci:4566
+      AWS_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 22
+
+      - name: Start Floci with Docker-backed Lambda support
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker network create arc-floci
+          docker run -d \
+            --name floci \
+            --network arc-floci \
+            --network-alias floci \
+            -p 4566:4566 \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            -e FLOCI_DEFAULT_REGION=us-east-1 \
+            -e FLOCI_STORAGE_MODE=memory \
+            -e FLOCI_HOSTNAME=floci \
+            -e FLOCI_BASE_URL=http://floci:4566 \
+            -e FLOCI_SERVICES_LAMBDA_DOCKER_NETWORK=arc-floci \
+            -e FLOCI_SERVICES_LAMBDA_EPHEMERAL=true \
+            floci/floci:2.1.0
+
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent http://127.0.0.1:4566/_localstack/health >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+
+          docker logs floci
+          exit 1
+
+      - run: npm install
+      - run: npm install --no-save typescript@5.8.3
+      - run: npm run build
+
+      - name: Install pinned AWS SDK v3 integration dependencies
+        working-directory: integration/aws
+        run: npm install
+
+      - name: Execute S3, SQS and DynamoDB adapters through AWS SDK v3
+        working-directory: integration/aws
+        run: node test.mjs
+
+      - name: Execute API Gateway v2, Lambda and SQS event source end-to-end
+        working-directory: integration/aws
+        run: node e2e-floci.mjs
+
+      - name: Print Floci logs on failure
+        if: failure()
+        run: docker logs floci || true
+
+      - name: Stop Floci
+        if: always()
+        shell: bash
+        run: |
+          docker rm -f floci 2>/dev/null || true
+          docker network rm arc-floci 2>/dev/null || true

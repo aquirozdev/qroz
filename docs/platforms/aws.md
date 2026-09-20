@@ -1,46 +1,52 @@
 ---
 title: AWS platform
-description: Planned AWS validation surface for Lambda, SQS, S3, DynamoDB-backed idempotency and least-privilege IAM.
+description: AWS portability work for Lambda, API Gateway, SQS, S3, DynamoDB idempotency and tracing.
 ---
 
 # AWS platform
 
-AWS is Arc's next major portability proof. Support is **planned**, not currently implemented.
+AWS is Arc's second-cloud portability proof.
 
-## Runtime baseline
+Status: **v0.8 in progress**.
 
-As of September 2026, AWS Lambda provides managed Node.js 24 on Amazon Linux 2023 and lists Node.js 26 as an upcoming runtime target. Arc's AWS adapter should therefore avoid assumptions tied specifically to Node.js 22.
+## Implemented contract layer
 
-The portable Arc application layer should remain Web Standards-oriented; the Lambda adapter translates API Gateway/Lambda event shapes at the boundary.
+- API Gateway HTTP API v2 → Web Request/Response adapter;
+- SQS producer mapping with 10-message chunking and 0–900 second standard-queue delay validation;
+- SQS Lambda consumer mapping Arc retry outcomes to `batchItemFailures`;
+- S3 Object Storage adapter preserving streaming reads;
+- DynamoDB lease-based idempotency adapter using conditional put/update/delete semantics.
 
-## First target slice
+These remain pre-production adapters. Arc now validates the AWS SDK v3 integration against Floci 2.1.0 in CI for S3, SQS and DynamoDB. That is stronger than interface-only testing, but it is still emulator evidence rather than a claim of production AWS equivalence.
+
+## DynamoDB idempotency model
 
 ```text
-HTTP        → Lambda/API Gateway adapter
-Object data → S3
-Jobs        → SQS + Lambda consumer
-Idempotency → DynamoDB conditional writes (candidate)
-Tracing     → OpenTelemetry/X-Ray-compatible bridge
+claim
+  ├─ conditional PutItem if absent
+  └─ conditional UpdateItem if lease/logical TTL expired
+
+complete
+  └─ conditional UpdateItem where token still owns processing claim
+
+release
+  └─ conditional DeleteItem where token still owns processing claim
 ```
 
-## Why SQS matters first
+DynamoDB TTL is treated as asynchronous physical cleanup only. Arc uses the stored expiration timestamp logically so an expired completed item can be reclaimed even before DynamoDB deletes it.
 
-Arc jobs already model at-least-once delivery and per-message outcomes. Lambda's SQS integration supports partial batch failure reporting, which can map naturally to Arc's per-message ack/retry outcome model.
+## Next gates
 
-The adapter must test:
+1. keep S3/SQS/DynamoDB green through AWS SDK v3 + Floci;
+2. extend Floci coverage to Lambda + API Gateway v2 using its Docker-backed Lambda runtime;
+3. add AWS tracing bridge;
+4. derive IAM requirements from execution-surface capabilities;
+5. reserve real-AWS testing for semantics that cannot be established with contracts, the official SDK, SAM or Floci.
 
-- standard queue retries;
-- partial batch responses;
-- FIFO constraints separately;
-- visibility timeout implications;
-- DLQ/redrive configuration;
-- duplicate delivery/idempotency;
-- batch concurrency and ordering expectations.
+## Runtime lifecycle difference
 
-## IAM
+AWS Lambda encourages reuse of SDK/database clients across warm invocations where safe. This differs from integrations such as Cloudflare Hyperdrive that motivated invocation-scoped providers.
 
-The long-term deployment planner should derive candidate IAM from execution-surface capability requirements and expose the generated policy for review.
+Arc therefore treats lifecycle as a platform/provider decision, not a universal DI scope rule.
 
-## Workflows
-
-Step Functions is a candidate workflow adapter, but workflow semantics will not be stabilized from AWS alone. Cloudflare Workflows or Temporal must exercise the same higher-level contract before portability is claimed.
+See [AWS v0.8 research](../research/2026-09-aws-v08.md).
