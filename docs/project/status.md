@@ -35,7 +35,7 @@ Current repository version: **v0.10 development line**.
 - named contextual endpoint policies over validated input;
 - portable request authentication hook with bearer and cookie-session mechanisms;
 - Cloudflare and AWS per-invocation principal resolution;
-- experimental workflow graph with task/sleep/succeed states, memory execution and bounded retries;
+- experimental workflow graph with task/sleep/succeed states, memory execution and bounded retries;\n- supported workflow subset executed through Cloudflare Workflows in Wrangler's local Workflow runtime;
 - workflow task execution surfaces in deployment planning;
 - AWS Step Functions and Cloudflare Workflows planning for the supported workflow subset;
 - CLI inspect/validate/explain/context/diff/plan;
@@ -54,7 +54,7 @@ This is strong portability evidence, not a claim that a local emulator reproduce
 - Hyperdrive itself remains a deployment integration gate;
 - AWS tracing bridge remains open;
 - deployment planners are reviewable plans, not yet an infrastructure apply engine;
-- workflow provider planning exists, but real durable execution against Cloudflare Workflows and Step Functions is still required before portability claims stabilize;
+- Cloudflare Workflow execution is verified in Wrangler's local Workflow runtime for the supported subset; real Cloudflare account execution and Step Functions execution are still required before portability claims stabilize;
 - pre-1.0 APIs and graph schemas may change.
 
 See [roadmap](./roadmap.md) and [quality gates](./quality-gates.md).

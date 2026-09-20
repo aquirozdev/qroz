@@ -13,7 +13,7 @@ import {
 } from "@arc/core"
 import { executeWorkflow } from "@arc/workflows"
 import { compileAwsStateMachine } from "@arc/workflows-aws"
-import { planCloudflareWorkflow } from "@arc/workflows-cloudflare"
+import { executeCloudflareWorkflow, planCloudflareWorkflow } from "@arc/workflows-cloudflare"
 import { planDeployment } from "@arc/deployment"
 import { storage } from "@arc/storage"
 import application, { auditEntries } from "../dist/app.js"
@@ -157,7 +157,8 @@ test("Cloudflare workflow planner preserves durable step and sleep semantics", (
   assert.deepEqual(plan.states.find((state) => state.name === "audit").retry, {
     limit: 3,
     delay: "1 seconds",
-    backoff: "exponential"
+    backoff: "exponential",
+    maxDelaySeconds: 5
   })
 })
 
@@ -200,4 +201,88 @@ test("workflow input validation fails with a stable framework error", async () =
     () => executeWorkflow(application, WelcomeUser, { id: "", name: "Angel" }),
     (error) => error.code === "ARC2004"
   )
+})
+
+
+test("Cloudflare workflow execution overrides platform default retries", async () => {
+  const Input = object({ value: string() })
+  const singleAttempt = workflow({
+    name: "test.cloudflare.single-attempt",
+    version: 1,
+    input: Input,
+    start: "work",
+    states: {
+      work: workflowTask({
+        end: true,
+        handler(input) { return input }
+      })
+    }
+  })
+  const definition = app({
+    name: "cloudflare-single-attempt",
+    modules: [module({ name: "workflow", endpoints: {}, workflows: { singleAttempt } })]
+  })
+  const calls = []
+  const result = await executeCloudflareWorkflow(
+    definition,
+    singleAttempt,
+    { instanceId: "wf-cloudflare-1", payload: { value: "ok" } },
+    {
+      async do(name, config, handler) {
+        calls.push({ name, config })
+        return handler({ attempt: 1 })
+      },
+      async sleep() {}
+    }
+  )
+
+  assert.equal(result.workflowId, "wf-cloudflare-1")
+  assert.deepEqual(result.output, { value: "ok" })
+  assert.equal(calls[0].config.retries.limit, 1)
+  assert.equal(calls[0].config.retries.delay, 0)
+  assert.equal(calls[0].config.retries.backoff, "constant")
+})
+
+test("Cloudflare workflow execution preserves capped exponential retry delay", async () => {
+  const Input = object({ value: string() })
+  const retrying = workflow({
+    name: "test.cloudflare.retry",
+    version: 1,
+    input: Input,
+    start: "work",
+    states: {
+      work: workflowTask({
+        end: true,
+        retry: {
+          maxAttempts: 4,
+          strategy: "exponential",
+          delaySeconds: 2,
+          maxDelaySeconds: 5
+        },
+        handler(input) { return input }
+      })
+    }
+  })
+  const definition = app({
+    name: "cloudflare-retry",
+    modules: [module({ name: "workflow", endpoints: {}, workflows: { retrying } })]
+  })
+  let retry
+  await executeCloudflareWorkflow(
+    definition,
+    retrying,
+    { instanceId: "wf-cloudflare-retry", payload: { value: "ok" } },
+    {
+      async do(_name, config, handler) {
+        retry = config.retries
+        return handler({ attempt: 1 })
+      },
+      async sleep() {}
+    }
+  )
+
+  assert.equal(retry.limit, 4)
+  assert.equal(await retry.delay({ ctx: { attempt: 1 }, error: new Error("x") }), 2000)
+  assert.equal(await retry.delay({ ctx: { attempt: 2 }, error: new Error("x") }), 4000)
+  assert.equal(await retry.delay({ ctx: { attempt: 3 }, error: new Error("x") }), 5000)
 })

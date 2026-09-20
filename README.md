@@ -34,9 +34,9 @@ Implemented and exercised today:
 - deterministic CLI tools: inspect, validate, explain, context and semantic diff;
 - official MCP v2 read-only integration;
 - endpoint principals, permissions, named contextual policies and portable HTTP authentication composition;
-- experimental workflow graph with deterministic memory execution, AWS Step Functions compilation and Cloudflare Workflows planning.
+- experimental workflow graph with deterministic memory execution, Cloudflare Workflows execution in Wrangler local runtime, and AWS Step Functions compilation.
 
-The current architectural priority is **durable workflow semantics**: preserve an inspectable portable workflow graph while proving real provider execution without pretending provider-specific behavior is identical.
+The current architectural priority is **durable workflow semantics**: preserve an inspectable portable workflow graph while extending provider execution evidence beyond Cloudflare's local Workflow runtime without pretending provider-specific behavior is identical.
 
 ## Documentation
 

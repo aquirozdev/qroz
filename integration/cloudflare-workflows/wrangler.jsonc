@@ -1,0 +1,13 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "arc-cloudflare-workflows-integration",
+  "main": "./worker.mjs",
+  "compatibility_date": "2026-09-19",
+  "workflows": [
+    {
+      "name": "arc-welcome-workflow",
+      "binding": "ARC_WELCOME",
+      "class_name": "ArcWelcomeWorkflow"
+    }
+  ]
+}
