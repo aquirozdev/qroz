@@ -77,6 +77,59 @@ jobs:
           cat /tmp/arc-do.log
           exit 1
 
+  cloudflare-workflows:
+    name: Cloudflare Workflows local execution
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 22
+      - run: npm install
+      - name: Install pinned workflow integration toolchain
+        run: npm install --no-save typescript@5.8.3 wrangler@4.135.0
+      - run: npm run build
+      - name: Execute Arc workflow in Cloudflare Workflows local runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./node_modules/.bin/wrangler dev --config integration/cloudflare-workflows/wrangler.jsonc --local --port 8790 > /tmp/arc-workflows.log 2>&1 &
+          PID=$!
+          trap 'kill "$PID" 2>/dev/null || true' EXIT
+
+          for attempt in $(seq 1 40); do
+            if curl --fail --silent http://127.0.0.1:8790/ >/dev/null; then
+              break
+            fi
+            sleep 1
+          done
+
+          id="ci-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          curl --fail --silent \
+            -X POST \
+            -H 'content-type: application/json' \
+            --data '{"id":"123","name":"Angel"}' \
+            "http://127.0.0.1:8790/workflows/welcome?id=${id}" \
+            | grep -q "\"id\":\"${id}\""
+
+          for attempt in $(seq 1 45); do
+            response=$(curl --fail --silent "http://127.0.0.1:8790/workflows/welcome?id=${id}")
+            if echo "$response" | grep -q '"status":"complete"'; then
+              echo "$response" | grep -q '"message":"welcome:Angel"'
+              exit 0
+            fi
+            if echo "$response" | grep -q '"status":"errored"'; then
+              echo "$response"
+              cat /tmp/arc-workflows.log
+              exit 1
+            fi
+            sleep 1
+          done
+
+          cat /tmp/arc-workflows.log
+          exit 1
+
   postgres-drizzle:
     name: PostgreSQL 18 + Drizzle + pg
     runs-on: ubuntu-latest
