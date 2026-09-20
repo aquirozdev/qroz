@@ -94,14 +94,6 @@ export function createDynamoDbIdempotencyStore(
   const keyAttribute = options.keyAttribute ?? "id"
   const now = options.now ?? Date.now
   const tokenFactory = options.token ?? crypto.randomUUID
-  const names = {
-    "#key": keyAttribute,
-    "#state": "state",
-    "#token": "token",
-    "#lease": "leaseExpiresAt",
-    "#expires": "expiresAt"
-  } as const
-
   const storageKey = (key: string) => `${options.keyPrefix ?? "arc#"}${key}`
   const keyOf = (key: string) => ({ [keyAttribute]: storageKey(key) })
 
@@ -156,7 +148,12 @@ export function createDynamoDbIdempotencyStore(
           Key: keyOf(key),
           UpdateExpression: "SET #state = :processing, #token = :token, #lease = :lease REMOVE #expires",
           ConditionExpression: "(#state = :processing AND #lease <= :now) OR (#state = :completed AND #expires <= :nowSeconds)",
-          ExpressionAttributeNames: names,
+          ExpressionAttributeNames: {
+            "#state": "state",
+            "#token": "token",
+            "#lease": "leaseExpiresAt",
+            "#expires": "expiresAt"
+          },
           ExpressionAttributeValues: {
             ":processing": "processing",
             ":completed": "completed",
@@ -199,7 +196,12 @@ export function createDynamoDbIdempotencyStore(
           Key: keyOf(key),
           UpdateExpression: updateExpression,
           ConditionExpression: "#state = :processing AND #token = :token",
-          ExpressionAttributeNames: names,
+          ExpressionAttributeNames: {
+            "#state": "state",
+            "#token": "token",
+            "#lease": "leaseExpiresAt",
+            "#expires": "expiresAt"
+          },
           ExpressionAttributeValues: values,
           ReturnValuesOnConditionCheckFailure: "ALL_OLD"
         })
@@ -216,7 +218,10 @@ export function createDynamoDbIdempotencyStore(
           TableName: options.tableName,
           Key: keyOf(key),
           ConditionExpression: "#state = :processing AND #token = :token",
-          ExpressionAttributeNames: names,
+          ExpressionAttributeNames: {
+            "#state": "state",
+            "#token": "token"
+          },
           ExpressionAttributeValues: {
             ":processing": "processing",
             ":token": token
