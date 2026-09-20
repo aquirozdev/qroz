@@ -1,11 +1,13 @@
 ---
 title: Roadmap
-description: Evidence-driven sequence for evolving Arc from research framework to credible portable application platform.
+description: Evidence-driven sequence optimized for exceptional DX, truthful application semantics and portable execution.
 ---
 
 # Roadmap
 
-The roadmap is ordered by architectural risk, not feature count.
+The roadmap is ordered by **user value and architectural risk**, not feature count.
+
+Arc has enough foundational primitives to prove the architecture. The next phase deliberately prioritizes product/DX depth before broadening the framework surface.
 
 ## Completed research milestones
 
@@ -27,78 +29,187 @@ Lease-based idempotency, Durable Object adapter and repeatable CI/workerd gates.
 ### v0.6 — lifecycle/database integration
 Provider lifecycle, database capability, PostgreSQL/Drizzle and SQLite Durable Object/workerd.
 
-### v0.7 — trace propagation and read-only MCP
-W3C job-envelope propagation and official MCP v2 read-only integration.
+### v0.7 — trace propagation and read-only agent interface
+W3C job-envelope propagation and read-only MCP integration.
 
 ### v0.8 — second-cloud portability proof
-Completed with API Gateway v2, Lambda, SQS, S3, DynamoDB idempotency, AWS SDK v3 + Floci, and the full API Gateway → Lambda → Arc → SQS → Lambda → Arc Job → DynamoDB/S3 flow.
+API Gateway v2, Lambda, SQS, S3, DynamoDB idempotency, AWS SDK v3 + Floci and end-to-end AWS-shaped execution.
 
-## v0.9 — operation-level access and authorization foundations
+## v0.9 — security semantics
 
 In progress.
 
-Completed framework/infrastructure access:
-- operation-level grants for portable resources;
-- storage and queue operations represented in the Application Graph;
-- runtime enforcement so declared least privilege cannot be bypassed silently;
-- provider-neutral deployment plans;
-- candidate Cloudflare bindings and AWS IAM derived from execution surfaces;
-- warnings for unrestricted resource access.
+Current foundation:
 
-Current application/user authorization slice:
+- operation-level resource grants and runtime enforcement;
+- provider-neutral deployment/IAM/binding plans;
 - portable principal contract;
-- declarative endpoint permissions;
-- named contextual policies evaluated over validated input;
-- portable HTTP authentication hook;
-- bearer and cookie-session authentication mechanisms;
+- endpoint permissions;
+- capability-aware contextual policies;
+- portable authentication composition;
 - Cloudflare/AWS per-invocation identity resolution;
-- runtime 401/403 enforcement;
-- audit-friendly structured authorization decisions with principal claim redaction;
-- graph representation.
+- stable 401/403 semantics;
+- graph representation;
+- auditable authorization decisions with claim-redacted principals.
 
-Still open in v0.9:
-- real external authentication provider integrations;
-- richer policy composition/resource authorization where justified;
-- durable authorization audit sinks/export adapters;
-- principal propagation into jobs/events where justified;
-- agent authorization foundations;
-- known-overgranting policy tests beyond current resource contracts;
-- OTel/ADOT-compatible AWS tracing bridge.
+Before closing this line:
+- explicit credential failure semantics;
+- proof with real external identity integration(s);
+- known-overgranting tests;
+- minimal foundation for service/agent identity and delegated authority;
+- AWS-compatible tracing bridge where needed for end-to-end explainability.
 
-Cloud IAM and end-user authorization must remain separate concepts even if they share a permission vocabulary.
+Do not turn v0.9 into a general policy-language project.
 
-## v0.10 — durable workflows
+## v0.10 — minimal durable execution
 
 In progress.
 
-Implemented research slice:
-- declarative versioned workflow graph;
-- task, sleep and succeed states;
-- deterministic memory executor;
-- bounded retry/backoff semantics;
-- workflow-task capability and deployment surfaces;
-- Application Graph representation;
-- AWS Step Functions compilation for the supported subset;
-- Cloudflare Workflows planning for the supported subset.
+The goal is **not** to build another Temporal/Inngest/Trigger.dev.
 
-Still required:
-- real durable execution integration gates for at least two engines;
-- portable choices/branching;
-- cancellation;
-- compensation/sagas;
-- signals/external events;
-- child workflows;
-- running-instance version/migration model;
-- workflow tracing and operator controls.
+Stabilize only the portable semantics needed by Arc applications:
 
-## v0.11 — deployment model
+- task;
+- sleep/timer;
+- explicit choice/branching;
+- wait/signal or approval;
+- bounded retry;
+- succeed/fail;
+- cancellation semantics where provider evidence supports them.
 
-Transform Application Graph + platform configuration into a reviewable plan: execution surfaces, resources, bindings, IAM suggestions, breaking-change checks, environment configuration and semantic deployment diff.
+Required evidence:
 
-## v0.12 — developer platform
+- deterministic memory execution;
+- at least two credible provider execution paths;
+- workflow tracing;
+- truthful provider limitations;
+- versioning decision before compatibility claims.
 
-Preview integration, Dev Console, LSP, richer agent context, generated OpenAPI/SDK contracts and docs generation.
+Compensation, child workflows, rich orchestration DSLs and advanced migration systems remain deferred until reference applications demonstrate demand.
+
+## v0.10.5 — Arc DX Preview
+
+This milestone is intentionally before broad deployment automation.
+
+### First-run experience
+
+```bash
+npm create arc@latest
+cd app
+arc dev
+```
+
+should produce a useful local application and open Arc Studio without account, API key or mandatory Docker.
+
+### Arc Studio
+
+Local-first visual projection of the Application Graph and execution data:
+
+- application/module graph;
+- endpoint explorer;
+- API request runner;
+- jobs and workflow instances;
+- resources and operation-level access;
+- auth/policy decisions;
+- traces;
+- semantic change view;
+- source navigation.
+
+Studio must never become a second source of truth.
+
+### Error experience
+
+Every stable Arc error should have:
+
+- short human explanation;
+- machine code;
+- responsible semantic owner;
+- declared vs attempted behavior where relevant;
+- actionable fixes;
+- source navigation metadata where practical.
+
+### DX performance budgets
+
+Establish representative benchmark applications and regression budgets for:
+
+- incremental development rebuild;
+- graph regeneration;
+- CLI inspect;
+- test client startup;
+- TypeScript diagnostics;
+- Studio update latency.
+
+Avoid type-level designs that require the TypeScript compiler to infer the entire application to type one endpoint.
+
+## v0.11 — change and deployment experience
+
+Transform Application Graph + environment/platform configuration into a reviewable semantic plan.
+
+The primary user experience is a **Git-like application diff**, not cloud-provider forms.
+
+It should explain:
+
+- endpoints/execution surfaces added or removed;
+- resource dependencies;
+- operation/IAM changes;
+- configuration/secret requirements without exposing secret values;
+- compatibility risks;
+- security privilege expansion;
+- provider-specific consequences.
+
+Arc may export or integrate with external IaC. It does not need to become a full IaC engine.
+
+## v0.12 — agent-native developer experience
+
+Upgrade the machine interface around the same application model:
+
+- current MCP/protocol compatibility;
+- progressive context/tool discovery;
+- module-scoped context;
+- safe mutating operations;
+- service/agent identity;
+- delegated authority;
+- approval-required actions;
+- authorization/audit integration;
+- generated agent instructions/context artifacts.
+
+MCP is an adapter, not the product. CLI, APIs and future protocols should be able to consume the same model.
+
+## v0.13 — ecosystem and developer platform
+
+Only after the local product is excellent:
+
+- generated OpenAPI and SDK contracts;
+- LSP/editor integrations;
+- preview environments;
+- documentation generation;
+- richer platform integrations;
+- optional hosted collaboration/operations surfaces.
+
+## Explicit non-goals for the near term
+
+Do not prioritize:
+
+- a custom ORM;
+- an Arc identity provider;
+- an Arc LLM/agent SDK;
+- a general-purpose IaC replacement;
+- every durable-workflow feature;
+- additional cloud providers before AWS + Cloudflare tell us something architecturally new;
+- benchmark-driven HTTP micro-optimizations at the expense of DX.
 
 ## 1.0 readiness gates
 
-A 1.0 discussion begins only after two serious cloud/runtime implementations, stable graph/API compatibility policies, security/auth models, production-grade jobs/idempotency, workflow decision, public docs, release process and a representative production-scale reference application.
+A 1.0 discussion begins only after:
+
+- the ordinary CRUD/SaaS experience is excellent;
+- two serious runtime/provider implementations remain green;
+- API and graph compatibility policies exist;
+- security/auth models are coherent;
+- jobs/idempotency are production credible;
+- durable workflow scope is explicitly decided;
+- local Arc Studio and CLI explain the same application truthfully;
+- DX performance budgets are enforced;
+- semantic change/deployment review is credible;
+- public docs and release process are mature;
+- at least one representative production-scale application validates the model.

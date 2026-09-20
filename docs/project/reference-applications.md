@@ -298,18 +298,27 @@ Every applicable reference app should run a reusable matrix covering:
 
 ## Execution order
 
-Do not implement these applications in numerical order. Work by architectural risk:
+Do not implement these applications in numerical order. Product experience now interrupts feature breadth deliberately:
 
-1. CRUD + SaaS authorization;
-2. webhook + request idempotency;
-3. transaction-aware events/outbox;
-4. scheduling/cache/locks/rate limiting;
-5. signed file uploads and large import/export;
-6. durable workflows with two engines;
-7. realtime with provider-specific state;
-8. public API contracts/OpenAPI/SDK;
-9. agent authorization and mutation approval;
-10. global/high-throughput/privacy proofs;
-11. operations/deployment proof across the corpus.
+1. CRUD + SaaS authorization and authorization-decision evidence;
+2. minimal durable workflow proof on two credible execution paths;
+3. **DX proof across apps 01, 02 and 04**: create → dev → test → inspect → diagnose in Arc Studio/CLI;
+4. semantic deployment/security diff using app 20 as the change-lifecycle harness;
+5. webhook + request idempotency and transaction-aware effects;
+6. public API contracts/OpenAPI/SDK where they improve real developer workflows;
+7. agent authorization and mutation approval over the same Application Graph;
+8. scheduling/cache/locks/rate limiting only when blocked apps justify them;
+9. files/import/realtime/high-throughput/global/privacy proofs as evidence demands.
 
-Every new framework abstraction should name the reference application and failure case that required it.
+### Cross-cutting DX acceptance
+
+Apps 01, 02 and 04 are also the canonical UX corpus. For each, Arc must prove:
+
+- a new developer can identify the application shape without reading framework internals;
+- the common path uses little ceremony;
+- invalid capability/auth/policy behavior produces actionable errors;
+- the CLI and Arc Studio explain the same semantics;
+- source → graph → trace/decision → deployment impact is navigable;
+- representative editor/typecheck/dev-loop latency remains within published budgets.
+
+Every new framework abstraction should name the reference application, user workflow and failure case that required it.
