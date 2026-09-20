@@ -305,10 +305,16 @@ export function createWebRuntime<ExecutionContext extends WebExecutionContext = 
           }
 
           for (const policy of declaredPolicies) {
+            const policyOwner = `${matched.route.moduleName}.${matched.route.endpointName}.policy:${policy.name}`
+            const policyResolver = createCapabilityResolver(built, policy.requires ?? [], policyOwner)
+            for (const requirement of policy.requires ?? []) {
+              policyResolver.use(requirementCapability(requirement))
+            }
             const allowed = await policy.evaluate({
               principal,
               request,
-              input: { params, body, query }
+              input: { params, body, query },
+              ...policyResolver
             })
             if (!allowed) {
               return Response.json({ error: "Permission denied", code: "ARC3002", policy: policy.name }, { status: 403 })
