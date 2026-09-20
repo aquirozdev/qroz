@@ -614,6 +614,9 @@ export function buildApplication(application: AppDefinition, options: BuildAppli
         if (state.kind === "arc.workflow-task") {
           for (const requirement of state.requires ?? []) registerCapability(requirementCapability(requirement), owner)
           validateRequiredCapabilities(providers, state.requires ?? [], owner, options.allowMissingCapabilities ?? false)
+          if (state.retry && (!Number.isInteger(state.retry.maxAttempts) || state.retry.maxAttempts < 1)) {
+            throw new ArcError("ARC1011", `Workflow task '${owner}' retry maxAttempts must be a positive integer`, { owner })
+          }
           const terminal = state.end === true
           if (terminal === Boolean(state.next)) {
             throw new ArcError("ARC1011", `Workflow task '${owner}' must declare exactly one of next or end`, { owner })
