@@ -118,6 +118,17 @@ Sources:
 
 Implication for Arc: agent-native cannot mean agent-unrestricted. The reference corpus must test bounded tools, approvals, audit, identity propagation, sensitive-context controls and deterministic machine interfaces.
 
+### Browser applications need explicit session and OAuth security
+
+OWASP's session guidance emphasizes secure cookie attributes, session lifecycle and avoiding credentials in browser storage. RFC 9700 is the OAuth 2.0 Security Best Current Practice, and RFC 10017 (August 2026) is the current BCP for browser-based OAuth applications.
+
+Sources:
+- https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html
+- https://datatracker.ietf.org/doc/html/rfc9700
+- https://datatracker.ietf.org/doc/html/rfc10017
+
+Implication for Arc: the corpus must include secure cookie/session behavior, CSRF-sensitive browser mutations, OAuth callback/state/PKCE integration boundaries and a BFF-style application.
+
 ## Derived rule
 
 Arc should call itself production-ready only when a representative corpus demonstrates that the same semantic application model survives:
