@@ -24,6 +24,15 @@
       "@arc/auth": [
         "packages/auth/src/index.ts"
       ],
+      "@arc/workflows": [
+        "packages/workflows/src/index.ts"
+      ],
+      "@arc/workflows-aws": [
+        "packages/workflows-aws/src/index.ts"
+      ],
+      "@arc/workflows-cloudflare": [
+        "packages/workflows-cloudflare/src/index.ts"
+      ],
       "@arc/runtime-web": [
         "packages/runtime-web/src/index.ts"
       ],
