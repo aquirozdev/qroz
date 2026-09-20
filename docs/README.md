@@ -13,6 +13,7 @@ This directory is the canonical product and engineering knowledge base for Arc. 
 - [Mental model](./getting-started/mental-model.md) — understand what Arc is before learning packages.
 - [Vision](./project/vision.md) — the full product thesis.
 - [System architecture](./architecture/system-overview.md) — how the pieces fit.
+- [Testing applications](./guides/testing-applications.md) — outside-in TDD with the in-memory runtime.
 - [Roadmap](./project/roadmap.md) — current sequence and release gates.
 - [Current status](./project/status.md) — what is implemented and verified today.
 
