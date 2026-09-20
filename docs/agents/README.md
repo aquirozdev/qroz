@@ -17,7 +17,14 @@ The goal is not to make an AI agent omnipotent. The goal is to make architecture
 - `arc diff --json`;
 - `arc explain --json`;
 - read-only MCP v2 integration;
-- stable framework error codes.
+- stable framework error codes;
+- repository instructions and reusable skills compatible with Codex, Claude Code, OpenCode, and GitHub Copilot.
+
+## Repository agent compatibility
+
+See [multi-agent compatibility](./multi-agent-compatibility.md) for the canonical `AGENTS.md`, Claude adapter, shared skills, specialist agents, and why Arc does not rely on symlinks.
+
+GitHub-specific agent workflows are documented in [GitHub agents and repository instructions](./github-copilot.md).
 
 ## Design rules
 
@@ -28,5 +35,6 @@ The goal is not to make an AI agent omnipotent. The goal is to make architecture
 5. Mutations require explicit authorization/approval models.
 6. Secret values are never returned as architecture context.
 7. Agent convenience does not bypass application invariants.
+8. Repository agent instructions have one canonical source and compatibility adapters are mechanically checked.
 
 See [MCP](./mcp.md) and [security boundaries](../architecture/security-and-agent-boundaries.md).
