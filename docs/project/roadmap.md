@@ -198,6 +198,23 @@ Do not prioritize:
 - additional cloud providers before AWS + Cloudflare tell us something architecturally new;
 - benchmark-driven HTTP micro-optimizations at the expense of DX.
 
+## Public beta release track
+
+Public package publication is now a separate track from full production readiness.
+
+Before the first public beta:
+
+- select the final project/package identity and replace the Arc codename;
+- choose and commit the repository license;
+- make every publishable package registry-safe and metadata-complete;
+- prove clean install/scaffold/dev/test from packed artifacts;
+- declare and test Node/TypeScript/OS compatibility;
+- publish canonical documentation;
+- use npm trusted publishing with provenance;
+- document pre-1.0 compatibility and migration expectations.
+
+The executable checklist is [Public beta readiness](./public-beta-readiness.md).
+
 ## 1.0 readiness gates
 
 A 1.0 discussion begins only after:
@@ -208,7 +225,8 @@ A 1.0 discussion begins only after:
 - security/auth models are coherent;
 - jobs/idempotency are production credible;
 - durable workflow scope is explicitly decided;
-- local Arc Studio and CLI explain the same application truthfully;\n- canonical DX claims have reproducible browser evidence;
+- local Arc Studio and CLI explain the same application truthfully;
+- canonical DX claims have reproducible browser evidence;
 - DX performance budgets are enforced;
 - semantic change/deployment review is credible;
 - public docs and release process are mature;
