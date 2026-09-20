@@ -1,4 +1,4 @@
-import { capability, endpoint, job, module, type JobEnvelope } from "@arc/core"
+import { access, capability, endpoint, job, module, type JobEnvelope } from "@arc/core"
 import { queue } from "@arc/queue"
 import { idempotencyStore } from "@arc/idempotency"
 import { object, string } from "./schema.js"
@@ -41,7 +41,7 @@ export const DeliverNotification = job({
 export const enqueueNotification = endpoint({
   method: "POST",
   path: "/notifications",
-  requires: [notificationsQueue],
+  requires: [access(notificationsQueue, "publish")],
   input: { body: NotificationBody },
   output: NotificationResult,
   async handler(ctx) {
