@@ -312,7 +312,7 @@ export function createWebRuntime<ExecutionContext extends WebExecutionContext = 
               ...decisionBase,
               kind: "authentication",
               outcome: "allow",
-              principal: decisionPrincipal
+              ...(decisionPrincipal ? { principal: decisionPrincipal } : {})
             })
           }
           for (const permission of declaredPermissions) {
@@ -327,7 +327,7 @@ export function createWebRuntime<ExecutionContext extends WebExecutionContext = 
               ...decisionBase,
               kind: "permission",
               outcome: allowed ? "allow" : "deny",
-              principal: decisionPrincipal,
+              ...(decisionPrincipal ? { principal: decisionPrincipal } : {}),
               permission
             })
             if (!allowed) {
@@ -351,7 +351,7 @@ export function createWebRuntime<ExecutionContext extends WebExecutionContext = 
               ...decisionBase,
               kind: "policy",
               outcome: allowed ? "allow" : "deny",
-              principal: decisionPrincipal,
+              ...(decisionPrincipal ? { principal: decisionPrincipal } : {}),
               policy: policy.name
             })
             if (!allowed) {
