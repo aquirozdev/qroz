@@ -11,50 +11,30 @@ export default app({
 })
 ```
 
-Application code declares intent:
-
-```ts
-export const createUser = endpoint({
-  method: "POST",
-  path: "/users",
-  input: { body: CreateUser },
-  output: User,
-  requires: [usersDatabase],
-  emits: [UserCreated],
-  dispatches: [SendWelcomeEmail],
-
-  async handler(ctx) {
-    const db = ctx.use(usersDatabase)
-    const user = await createUserRecord(db, ctx.input.body)
-    await ctx.events.emit(UserCreated, { id: user.id })
-    await ctx.jobs.dispatch(SendWelcomeEmail, { userId: user.id })
-    return user
-  }
-})
-```
-
-Runtime/platform composition supplies concrete implementations without changing the domain model.
-
-## Current research line — v0.7
+## Current research line — v0.8
 
 Implemented and exercised today:
 
 - explicit app/module/endpoint/event/listener/job model;
 - Standard-Schema-compatible validation;
 - Web Standards HTTP runtime;
-- memory + Cloudflare Worker runtimes;
+- memory, Cloudflare Worker and AWS Lambda/API Gateway adapters;
 - typed capabilities, providers and invocation lifecycle;
-- Application Graph schema v3;
-- object storage and queue abstractions with memory/Cloudflare adapters;
-- typed jobs, retries, poison-message handling and durable lease-based idempotency;
+- deterministic Application Graph schema v3;
+- object storage with memory/R2/S3 adapters;
+- queue producer with memory/Cloudflare/SQS adapters;
+- typed jobs with memory, Cloudflare and Lambda/SQS consumers;
+- retries, poison-message handling and partial batch failure mapping;
+- durable lease-based idempotency with memory, SQLite Durable Object and DynamoDB adapters;
 - SQLite Durable Object idempotency executed in workerd;
+- AWS SDK v3 + Floci integration for S3, SQS and DynamoDB;
+- full zero-cost AWS-shaped flow in Docker: API Gateway v2 → Lambda Node 24 → Arc → SQS → Lambda → Arc Job → DynamoDB/S3;
 - PostgreSQL 18 + Drizzle + pg integration in CI;
 - semantic tracing and W3C job-envelope trace propagation;
 - deterministic CLI tools: inspect, validate, explain, context and semantic diff;
-- official MCP v2 read-only integration;
-- GitHub CI gates for strict TypeScript, workerd, Durable Objects, PostgreSQL and MCP.
+- official MCP v2 read-only integration.
 
-The next major proof is **AWS Lambda + SQS/S3**, so Arc can validate its portability model against a second external cloud instead of refining Cloudflare-shaped abstractions indefinitely.
+The next architectural priority is **operation-level resource access/grants**, so the Application Graph can distinguish reads/writes/publishes and later produce honest least-privilege IAM/deployment plans.
 
 ## Documentation
 
@@ -68,19 +48,8 @@ Recommended entry points:
 - [System architecture](./docs/architecture/system-overview.md)
 - [Roadmap](./docs/project/roadmap.md)
 - [Current status](./docs/project/status.md)
+- [Support matrix](./docs/project/support-matrix.md)
 - [Quality gates](./docs/project/quality-gates.md)
-- [Competitive landscape](./docs/project/competitive-landscape.md)
-- [Research baseline](./docs/research/2026-09-platform-baseline.md)
-
-## Repository
-
-```text
-packages/      framework/runtime/resource packages
-examples/      executable applications and contract tests
-integration/   external SDK/service integration gates
-docs/          canonical product/engineering documentation
-docs/decisions architecture decision records
-```
 
 ## Verify
 
@@ -88,7 +57,5 @@ docs/decisions architecture decision records
 npm install
 npm run verify
 ```
-
-`verify` includes TypeScript checks, the automated suite and documentation integrity checks.
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) before architectural changes.
