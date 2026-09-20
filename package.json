@@ -8,7 +8,7 @@
     "clean": "find packages examples -type d -name dist -prune -exec rm -rf {} +",
     "build": "tsc -b",
     "typecheck": "tsc -b --pretty false",
-    "test": "npm run build && node --test examples/hello-world/test/*.test.mjs",
+    "test": "npm run build && node --test examples/*/test/*.test.mjs",
     "docs:check": "node scripts/check-docs.mjs",
     "agents:check": "node scripts/check-agent-compat.mjs",
     "verify": "npm run clean && npm run typecheck && npm test && npm run docs:check && npm run agents:check",

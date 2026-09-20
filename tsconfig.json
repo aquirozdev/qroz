@@ -71,6 +71,9 @@
       "path": "./examples/hello-world"
     },
     {
+      "path": "./examples/taskboard"
+    },
+    {
       "path": "./packages/jobs"
     },
     {
