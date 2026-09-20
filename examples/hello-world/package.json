@@ -22,6 +22,7 @@
     "@arc/jobs-aws-sqs": "file:../../packages/jobs-aws-sqs",
     "@arc/idempotency": "file:../../packages/idempotency",
     "@arc/idempotency-memory": "file:../../packages/idempotency-memory",
-    "@arc/idempotency-cloudflare-do": "file:../../packages/idempotency-cloudflare-do"
+    "@arc/idempotency-cloudflare-do": "file:../../packages/idempotency-cloudflare-do",
+    "@arc/idempotency-dynamodb": "file:../../packages/idempotency-dynamodb"
   }
 }

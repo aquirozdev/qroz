@@ -1,6 +1,6 @@
 ---
 title: AWS platform
-description: AWS portability work for Lambda, API Gateway, SQS, S3, DynamoDB-backed idempotency and tracing.
+description: AWS portability work for Lambda, API Gateway, SQS, S3, DynamoDB idempotency and tracing.
 ---
 
 # AWS platform
@@ -14,18 +14,34 @@ Status: **v0.8 in progress**.
 - API Gateway HTTP API v2 → Web Request/Response adapter;
 - SQS producer mapping with 10-message chunking and 0–900 second standard-queue delay validation;
 - SQS Lambda consumer mapping Arc retry outcomes to `batchItemFailures`;
-- S3 Object Storage adapter preserving streaming reads.
+- S3 Object Storage adapter preserving streaming reads;
+- DynamoDB lease-based idempotency adapter using conditional put/update/delete semantics.
 
-These are initially contract-tested adapters. Real AWS SDK/service gates are required before this page marks them integration-verified.
+These remain contract-tested adapters until AWS SDK and real-service gates pass.
+
+## DynamoDB idempotency model
+
+```text
+claim
+  ├─ conditional PutItem if absent
+  └─ conditional UpdateItem if lease/logical TTL expired
+
+complete
+  └─ conditional UpdateItem where token still owns processing claim
+
+release
+  └─ conditional DeleteItem where token still owns processing claim
+```
+
+DynamoDB TTL is treated as asynchronous physical cleanup only. Arc uses the stored expiration timestamp logically so an expired completed item can be reclaimed even before DynamoDB deletes it.
 
 ## Next gates
 
-1. bind S3/SQS adapters to AWS SDK for JavaScript v3;
+1. bind S3/SQS/DynamoDB adapters to AWS SDK for JavaScript v3;
 2. execute representative operations against an AWS-compatible integration environment;
-3. add a real AWS environment gate for semantics that local emulators cannot prove;
-4. implement DynamoDB lease-based idempotency;
-5. add AWS tracing bridge;
-6. derive IAM requirements from execution-surface capabilities.
+3. add a real AWS environment gate for semantics emulators cannot prove;
+4. add AWS tracing bridge;
+5. derive IAM requirements from execution-surface capabilities.
 
 ## Runtime lifecycle difference
 

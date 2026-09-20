@@ -18,6 +18,7 @@
     { "path": "./packages/idempotency" },
     { "path": "./packages/idempotency-memory" },
     { "path": "./packages/idempotency-cloudflare-do" },
+    { "path": "./packages/idempotency-dynamodb" },
     { "path": "./examples/hello-world" },
     { "path": "./packages/jobs" },
     { "path": "./packages/jobs-memory" },
