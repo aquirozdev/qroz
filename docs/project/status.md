@@ -5,7 +5,7 @@ description: Current implementation and verification state of Arc.
 
 # Current status
 
-Current repository version: **0.8 research line**.
+Current repository version: **v0.9 development line**.
 
 ## Implemented and verified
 
@@ -28,11 +28,14 @@ Current repository version: **0.8 research line**.
 - PostgreSQL 18 + Drizzle + pg integration;
 - semantic tracing contract and Cloudflare custom spans;
 - W3C trace context through job envelopes;
-- deterministic Application Graph schema v3;
-- CLI inspect/validate/explain/context/diff;
+- deterministic Application Graph schema v5 with operation-level resource access and endpoint authorization metadata;
+- provider-neutral deployment plans plus AWS IAM and Cloudflare binding planners;
+- runtime-enforced resource operation grants;
+- portable endpoint principal/permission authorization foundations;
+- CLI inspect/validate/explain/context/diff/plan;
 - read-only MCP v2.
 
-## What v0.8 proves
+## What the current v0.9 line proves
 
 The same Arc application semantics execute across Cloudflare-shaped and AWS-shaped environments without domain modules importing provider SDKs. AWS validation uses the official AWS SDK v3 plus Floci's Docker-backed Lambda runtime with Node.js 24.
 
@@ -40,11 +43,12 @@ This is strong portability evidence, not a claim that a local emulator reproduce
 
 ## Important limits
 
-- resource dependencies are capability-granular, not yet operation-granular; honest least-privilege IAM generation needs a finer access model;
+- authorization currently accepts runtime principals and declared permission names, but authentication providers, richer policies and principal propagation through non-HTTP surfaces remain open;
 - R2/Cloudflare Queues still need deeper official end-to-end integration coverage;
 - Hyperdrive itself remains a deployment integration gate;
-- AWS tracing bridge and IAM/deployment planning are not implemented yet;
-- workflows/auth/policies remain planned;
+- AWS tracing bridge remains open;
+- deployment planners are reviewable plans, not yet an infrastructure apply engine;
+- durable workflows remain planned;
 - pre-1.0 APIs and graph schemas may change.
 
 See [roadmap](./roadmap.md) and [quality gates](./quality-gates.md).

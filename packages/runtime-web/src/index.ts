@@ -6,6 +6,8 @@ import {
   type EventDefinition,
   type JobDefinition,
   type Provider,
+  type Principal,
+  type MaybePromise,
   ArcError,
   ValidationError,
   buildApplication,
@@ -118,6 +120,12 @@ export interface ArcRuntime<ExecutionContext = undefined> {
 
 export interface WebExecutionContext {
   readonly providers?: readonly Provider<any>[]
+  readonly principal?: Principal
+  readonly authorize?: (
+    principal: Principal,
+    permission: string,
+    context: { readonly request: Request; readonly module: string; readonly endpoint: string }
+  ) => MaybePromise<boolean>
   readonly tracer?: ArcTracer
   readonly dispose?: () => import("@arc/core").MaybePromise<void>
 }
@@ -274,6 +282,27 @@ export function createWebRuntime<ExecutionContext extends WebExecutionContext = 
           ? await validateSchema(endpoint.input.body, rawBody)
           : rawBody
 
+        const principal = context?.principal
+        const declaredPermissions = endpoint.auth?.permissions ?? []
+        const authenticationRequired = endpoint.auth?.required ?? declaredPermissions.length > 0
+        if (authenticationRequired && !principal) {
+          return Response.json({ error: "Authentication required", code: "ARC3001" }, { status: 401 })
+        }
+        if (principal) {
+          for (const permission of declaredPermissions) {
+            const allowed = context?.authorize
+              ? await context.authorize(principal, permission, {
+                  request,
+                  module: matched.route.moduleName,
+                  endpoint: matched.route.endpointName
+                })
+              : principal.permissions?.includes(permission) ?? false
+            if (!allowed) {
+              return Response.json({ error: "Permission denied", code: "ARC3002", permission }, { status: 403 })
+            }
+          }
+        }
+
         const resolver = createCapabilityResolver(
           built,
           endpoint.requires ?? [],
@@ -289,6 +318,7 @@ export function createWebRuntime<ExecutionContext extends WebExecutionContext = 
           "http.route": endpoint.path
         }, async () => endpoint.handler({
           request,
+          ...(principal ? { principal } : {}),
           input: { params, body, query },
           ...resolver,
           events: createEventPublisher(endpoint.emits ?? [], `${matched.route.moduleName}.${matched.route.endpointName}`),

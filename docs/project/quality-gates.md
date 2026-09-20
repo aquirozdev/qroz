@@ -28,15 +28,17 @@ Every change preserves:
 
 | Area | Portable/memory | Cloudflare | AWS |
 | --- | --- | --- | --- |
-| HTTP | verified | workerd verified | planned |
-| Storage | memory contract | R2 adapter contract | planned S3 |
-| Queue producer | memory contract | adapter contract | planned SQS |
-| Job consumer | memory verified | adapter + semantics verified | planned SQS/Lambda |
-| Durable idempotency | memory verified | SQLite DO in workerd | planned |
-| Database lifecycle | verified | Hyperdrive path designed; deployment gate pending | planned |
+| HTTP | verified | workerd verified | API Gateway v2/Lambda verified via Floci |
+| Storage | memory contract | R2 adapter contract | S3 verified via AWS SDK v3 + Floci |
+| Queue producer | memory contract | adapter contract | SQS verified via AWS SDK v3 + Floci |
+| Job consumer | memory verified | adapter + semantics verified | Lambda/SQS event source verified via Floci |
+| Durable idempotency | memory verified | SQLite DO in workerd | DynamoDB conditional semantics verified via SDK + Floci |
+| Database lifecycle | verified | Hyperdrive path designed; deployment gate pending | not yet targeted |
 | PostgreSQL/Drizzle | CI integration verified | Hyperdrive real-network gate pending | n/a |
-| Semantic tracing | recording tracer | custom-span bridge | planned |
-| Job trace propagation | verified | envelope propagation verified | planned |
+| Semantic tracing | recording tracer | custom-span bridge | AWS OTel/ADOT bridge planned |
+| Job trace propagation | verified | envelope propagation verified | envelope portable; AWS span linkage planned |
+| Operation-level resource access | verified | binding plan verified | IAM plan verified |
+| Endpoint authorization foundations | verified | runtime-neutral contract | runtime-neutral contract |
 | MCP | official v2 integration | Web Standards compatible | runtime-neutral |
 
 ## Before production claims

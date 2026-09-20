@@ -1,8 +1,8 @@
 import type { AppDefinition } from "@arc/core"
-import { createMemoryRuntime, type ArcRuntime } from "@arc/runtime-memory"
+import { createMemoryRuntime, type ArcRuntime, type MemoryRuntimeOptions } from "@arc/runtime-memory"
 
-export function createTestRuntime(application: AppDefinition) {
-  return createMemoryRuntime(application)
+export function createTestRuntime(application: AppDefinition, options: MemoryRuntimeOptions = {}) {
+  return createMemoryRuntime(application, options)
 }
 
 export async function probeRuntimeContract(runtime: ArcRuntime) {

@@ -35,23 +35,30 @@ Completed with API Gateway v2, Lambda, SQS, S3, DynamoDB idempotency, AWS SDK v3
 
 ## v0.9 — operation-level access and authorization foundations
 
-Highest current priority.
+In progress.
 
-Framework/infrastructure access:
-- evolve capability dependencies from resource-level to operation-level grants;
-- represent storage read/write/delete, queue publish/consume and other provider-neutral actions in the Application Graph;
-- preserve simple ergonomics for applications that do not need deployment planning;
-- derive candidate Cloudflare bindings/AWS IAM from execution surfaces;
-- test generated policies for known overgranting cases;
-- add an OTel/ADOT-compatible AWS tracing bridge.
+Completed framework/infrastructure access:
+- operation-level grants for portable resources;
+- storage and queue operations represented in the Application Graph;
+- runtime enforcement so declared least privilege cannot be bypassed silently;
+- provider-neutral deployment plans;
+- candidate Cloudflare bindings and AWS IAM derived from execution surfaces;
+- warnings for unrestricted resource access.
 
-Application/user authorization:
-- principal/auth contracts;
-- policies/permissions;
-- execution-context identity;
-- provider adapters;
-- graph representation;
-- agent authorization foundations.
+Current application/user authorization slice:
+- portable principal contract;
+- declarative endpoint permissions;
+- HTTP execution-context identity;
+- runtime 401/403 enforcement;
+- graph representation.
+
+Still open in v0.9:
+- authentication provider contracts/adapters;
+- richer policy/resource authorization beyond static permission names;
+- principal propagation into jobs/events where justified;
+- agent authorization foundations;
+- known-overgranting policy tests beyond current resource contracts;
+- OTel/ADOT-compatible AWS tracing bridge.
 
 Cloud IAM and end-user authorization must remain separate concepts even if they share a permission vocabulary.
 

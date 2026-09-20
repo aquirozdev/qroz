@@ -11,7 +11,7 @@ test("CLI emits deterministic JSON application graph", () => {
     encoding: "utf8"
   })
   const graph = JSON.parse(output)
-  assert.equal(graph.schemaVersion, 4)
+  assert.equal(graph.schemaVersion, 5)
   assert.equal(graph.name, "example")
   assert.equal(graph.modules[0].endpoints[0].path, "/users/:id")
   assert.deepEqual(graph.modules[0].endpoints[0].requires, ["users.repository"])

@@ -297,3 +297,38 @@ test("merges multiple operation grants declared for the same capability", async 
   assert.equal(response.status, 200)
   assert.deepEqual(await response.json(), { ok: "yes" })
 })
+
+
+test("enforces declarative endpoint authentication and permissions", async () => {
+  const Output = object({ principal: string() })
+  const secured = endpoint({
+    method: "GET",
+    path: "/secured",
+    auth: { required: true, permissions: ["users.read"] },
+    output: Output,
+    handler(ctx) { return { principal: ctx.principal.id } }
+  })
+  const securedApp = app({
+    name: "secured",
+    modules: [module({ name: "secured", endpoints: { secured } })]
+  })
+
+  const anonymous = await createTestRuntime(securedApp).fetch(new Request("https://app.test/secured"))
+  assert.equal(anonymous.status, 401)
+  assert.deepEqual(await anonymous.json(), { error: "Authentication required", code: "ARC3001" })
+
+  const denied = await createTestRuntime(securedApp, {
+    context: { principal: { id: "user-1", permissions: [] } }
+  }).fetch(new Request("https://app.test/secured"))
+  assert.equal(denied.status, 403)
+  assert.deepEqual(await denied.json(), { error: "Permission denied", code: "ARC3002", permission: "users.read" })
+
+  const allowed = await createTestRuntime(securedApp, {
+    context: { principal: { id: "user-1", permissions: ["users.read"] } }
+  }).fetch(new Request("https://app.test/secured"))
+  assert.equal(allowed.status, 200)
+  assert.deepEqual(await allowed.json(), { principal: "user-1" })
+
+  const graphEndpoint = inspect(securedApp).modules[0].endpoints[0]
+  assert.deepEqual(graphEndpoint.auth, { required: true, permissions: ["users.read"] })
+})
