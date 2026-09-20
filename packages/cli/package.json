@@ -6,7 +6,8 @@
     "arc": "./bin/arc.mjs"
   },
   "dependencies": {
-    "@arc/core": "file:../core"
+    "@arc/core": "file:../core",
+    "@arc/deployment": "file:../deployment"
   },
   "files": [
     "bin"

@@ -1,4 +1,4 @@
-import { endpoint, module } from "@arc/core"
+import { access, endpoint, module } from "@arc/core"
 import { readStorageText, storage } from "@arc/storage"
 import { object, string } from "./schema.js"
 
@@ -12,7 +12,7 @@ export const putFile = endpoint({
   method: "POST",
   path: "/files",
   status: 201,
-  requires: [filesStorage],
+  requires: [access(filesStorage, "write")],
   input: { body: PutFileBody },
   output: FileResult,
   async handler(ctx) {
@@ -25,7 +25,7 @@ export const putFile = endpoint({
 export const getFile = endpoint({
   method: "GET",
   path: "/files/:key",
-  requires: [filesStorage],
+  requires: [access(filesStorage, "read")],
   input: { params: FileParams },
   output: FileResult,
   async handler(ctx) {

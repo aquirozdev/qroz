@@ -11,10 +11,17 @@ test("CLI emits deterministic JSON application graph", () => {
     encoding: "utf8"
   })
   const graph = JSON.parse(output)
-  assert.equal(graph.schemaVersion, 3)
+  assert.equal(graph.schemaVersion, 4)
   assert.equal(graph.name, "example")
   assert.equal(graph.modules[0].endpoints[0].path, "/users/:id")
   assert.deepEqual(graph.modules[0].endpoints[0].requires, ["users.repository"])
+  const files = graph.modules.find((item) => item.name === "files")
+  assert.deepEqual(files.endpoints.find((item) => item.name === "putFile").access, [
+    { capability: "storage.files", operations: ["write"] }
+  ])
+  assert.deepEqual(files.endpoints.find((item) => item.name === "getFile").access, [
+    { capability: "storage.files", operations: ["read"] }
+  ])
 })
 
 test("CLI validates an application", () => {
@@ -59,4 +66,23 @@ test("CLI diff compares applications semantically", () => {
   assert.ok(diff.routes.added.includes("GET /health"))
   assert.ok(diff.routes.removed.includes("GET /users/:id"))
   assert.ok(diff.capabilities.removed.includes("users.repository"))
+})
+
+
+test("CLI plan exposes execution surfaces and least-privilege resource operations", () => {
+  const output = execFileSync(process.execPath, [cli, "plan", app, "--json"], {
+    cwd: new URL("../../..", import.meta.url),
+    encoding: "utf8"
+  })
+  const plan = JSON.parse(output)
+  assert.equal(plan.schemaVersion, 1)
+  const write = plan.surfaces.find((surface) => surface.id === "endpoint:files.putFile")
+  assert.deepEqual(write.resourceAccess[0].operations, ["write"])
+  const job = plan.surfaces.find((surface) => surface.id === "job:notifications.DeliverNotification")
+  assert.deepEqual(job.triggers[0], {
+    capability: "queue.jobs.notifications",
+    resourceType: "message-queue",
+    operation: "consume",
+    reason: "job-transport"
+  })
 })

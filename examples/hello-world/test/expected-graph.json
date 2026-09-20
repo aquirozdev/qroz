@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 3,
+  "schemaVersion": 4,
   "name": "example",
   "capabilities": [
     {
@@ -21,6 +21,11 @@
         "put",
         "delete",
         "streaming"
+      ],
+      "operations": [
+        "read",
+        "write",
+        "delete"
       ]
     },
     {
@@ -31,6 +36,9 @@
       "features": [
         "send",
         "delay"
+      ],
+      "operations": [
+        "publish"
       ]
     },
     {
@@ -41,6 +49,9 @@
       "features": [
         "send",
         "delay"
+      ],
+      "operations": [
+        "publish"
       ]
     },
     {
@@ -52,6 +63,11 @@
         "atomic-claim",
         "lease",
         "completion"
+      ],
+      "operations": [
+        "claim",
+        "complete",
+        "release"
       ]
     },
     {
@@ -99,7 +115,8 @@
           "hasParamsSchema": true,
           "hasBodySchema": false,
           "hasQuerySchema": false,
-          "hasOutputSchema": true
+          "hasOutputSchema": true,
+          "access": []
         },
         {
           "name": "createUser",
@@ -119,7 +136,8 @@
           "hasParamsSchema": false,
           "hasBodySchema": true,
           "hasQuerySchema": false,
-          "hasOutputSchema": true
+          "hasOutputSchema": true,
+          "access": []
         },
         {
           "name": "searchUsers",
@@ -134,7 +152,8 @@
           "hasParamsSchema": false,
           "hasBodySchema": false,
           "hasQuerySchema": true,
-          "hasOutputSchema": true
+          "hasOutputSchema": true,
+          "access": []
         }
       ],
       "listeners": [
@@ -146,7 +165,8 @@
             "audit.sink"
           ],
           "emits": [],
-          "dispatches": []
+          "dispatches": [],
+          "access": []
         }
       ],
       "jobs": []
@@ -167,7 +187,15 @@
           "hasParamsSchema": false,
           "hasBodySchema": true,
           "hasQuerySchema": false,
-          "hasOutputSchema": true
+          "hasOutputSchema": true,
+          "access": [
+            {
+              "capability": "storage.files",
+              "operations": [
+                "write"
+              ]
+            }
+          ]
         },
         {
           "name": "getFile",
@@ -182,7 +210,15 @@
           "hasParamsSchema": true,
           "hasBodySchema": false,
           "hasQuerySchema": false,
-          "hasOutputSchema": true
+          "hasOutputSchema": true,
+          "access": [
+            {
+              "capability": "storage.files",
+              "operations": [
+                "read"
+              ]
+            }
+          ]
         }
       ],
       "listeners": [],
@@ -204,7 +240,15 @@
           "hasParamsSchema": false,
           "hasBodySchema": true,
           "hasQuerySchema": false,
-          "hasOutputSchema": true
+          "hasOutputSchema": true,
+          "access": [
+            {
+              "capability": "queue.notifications",
+              "operations": [
+                "publish"
+              ]
+            }
+          ]
         },
         {
           "name": "dispatchNotification",
@@ -222,7 +266,8 @@
           "hasParamsSchema": false,
           "hasBodySchema": true,
           "hasQuerySchema": false,
-          "hasOutputSchema": true
+          "hasOutputSchema": true,
+          "access": []
         }
       ],
       "listeners": [],
@@ -245,7 +290,8 @@
             "leaseSeconds": 30,
             "ttlSeconds": 86400
           },
-          "hasInputSchema": true
+          "hasInputSchema": true,
+          "access": []
         }
       ]
     }

@@ -4,6 +4,7 @@ import { createMcpHandler, McpServer } from "@modelcontextprotocol/server"
 import * as z from "zod/v4"
 import application from "../../examples/hello-world/dist/app.js"
 import { explainError, inspect, inspectModuleContext } from "../../packages/core/dist/index.js"
+import { planDeployment } from "../../packages/deployment/dist/index.js"
 
 function jsonResult(value) {
   return {
@@ -19,6 +20,11 @@ function createArcMcpServer() {
     description: "Return Arc's deterministic Application Graph.",
     inputSchema: z.object({})
   }, async () => jsonResult(inspect(application)))
+
+  server.registerTool("arc.plan", {
+    description: "Return Arc's provider-neutral deployment plan and execution-surface resource access.",
+    inputSchema: z.object({})
+  }, async () => jsonResult(planDeployment(application)))
 
   server.registerTool("arc.context", {
     description: "Return compact semantic context for one Arc module.",
@@ -50,12 +56,19 @@ await client.connect(transport)
 
 const listed = await client.listTools()
 const names = listed.tools.map((tool) => tool.name).sort()
-assert.deepEqual(names, ["arc.context", "arc.explain", "arc.inspect"])
+assert.deepEqual(names, ["arc.context", "arc.explain", "arc.inspect", "arc.plan"])
 
 const inspectResult = await client.callTool({ name: "arc.inspect", arguments: {} })
 const graph = JSON.parse(inspectResult.content[0].text)
 assert.equal(graph.name, "example")
 assert.ok(graph.modules.some((mod) => mod.name === "users"))
+
+const planResult = await client.callTool({ name: "arc.plan", arguments: {} })
+const plan = JSON.parse(planResult.content[0].text)
+assert.ok(plan.surfaces.some((surface) =>
+  surface.id === "endpoint:files.putFile" &&
+  surface.resourceAccess.some((access) => access.operations.includes("write"))
+))
 
 const contextResult = await client.callTool({ name: "arc.context", arguments: { module: "users" } })
 const context = JSON.parse(contextResult.content[0].text)
