@@ -34,7 +34,8 @@ const files = {
     type: "module",
     scripts: {
       build: "tsc -p tsconfig.json",
-      dev: "npm run build && arc dev dist/app.js",
+      "build:watch": "tsc -p tsconfig.json --watch --preserveWatchOutput",
+      dev: "npm run build && arc dev dist/app.js --watch --build \"npm run build:watch\"",
       test: "npm run build && node --test test/*.test.mjs"
     },
     dependencies: {
