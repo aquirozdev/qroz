@@ -15,10 +15,10 @@ async function availablePort() {
   return port
 }
 
-async function waitForServer(url, child) {
+async function waitForServer(url, child, diagnostics = () => "") {
   const deadline = Date.now() + 8_000
   while (Date.now() < deadline) {
-    if (child.exitCode !== null) throw new Error(`arc dev exited early with code ${child.exitCode}`)
+    if (child.exitCode !== null) throw new Error(`arc dev exited early with code ${child.exitCode}: ${diagnostics()}`)
     try {
       const response = await fetch(url)
       if (response.ok) return response
@@ -47,7 +47,7 @@ test("arc dev serves the application and Studio from the same Application Graph"
   child.stderr.on("data", (chunk) => { stderr += chunk })
 
   try {
-    const graphResponse = await waitForServer(`http://127.0.0.1:${port}/__arc/api/graph`, child)
+    const graphResponse = await waitForServer(`http://127.0.0.1:${port}/__arc/api/graph`, child, () => stderr)
     const graph = await graphResponse.json()
     assert.equal(graph.name, "taskboard")
     assert.equal(graph.modules.find((item) => item.name === "tasks")?.endpoints.length, 2)
@@ -92,7 +92,10 @@ test("arc dev records authorization denials without exposing principal claims", 
   ], { cwd: process.cwd(), stdio: ["ignore", "pipe", "pipe"] })
 
   try {
-    await waitForServer(`http://127.0.0.1:${port}/__arc/api/graph`, child)
+    let stderr = ""
+    child.stderr.setEncoding("utf8")
+    child.stderr.on("data", (chunk) => { stderr += chunk })
+    await waitForServer(`http://127.0.0.1:${port}/__arc/api/graph`, child, () => stderr)
     const denied = await fetch(`http://127.0.0.1:${port}/projects/project-a`, {
       method: "PATCH",
       headers: { "content-type": "application/json" },
