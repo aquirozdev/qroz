@@ -48,7 +48,7 @@ export const renameProject = endpoint({
     permissions: ["projects.update"],
     policies: [{
       name: "projects.member",
-      requires: [access(membershipRepository, "read")],
+      requires: [projectRepository, access(membershipRepository, "read")],
       async evaluate(ctx) {
         const project = await ctx.use(projectRepository).find(ctx.input.params.id)
         if (!project) return false
