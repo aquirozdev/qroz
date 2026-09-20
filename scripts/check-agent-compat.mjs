@@ -40,7 +40,25 @@ const requiredAdapters = {
 for (const [dir, expected] of Object.entries(requiredAdapters)) {
   const names = new Set(await readdir(join(root, dir)))
   for (const file of expected) {
-    if (!names.has(file)) failures.push(`missing agent adapter: ${dir}/${file}`)
+    if (!names.has(file)) {
+      failures.push(`missing agent adapter: ${dir}/${file}`)
+      continue
+    }
+
+    const adapter = await readFile(join(root, dir, file), "utf8")
+    if (dir === ".codex/agents") {
+      for (const field of ["name =", "description =", "developer_instructions ="]) {
+        if (!adapter.includes(field)) failures.push(`${dir}/${file} missing Codex field: ${field}`)
+      }
+    } else if (dir === ".claude/agents") {
+      if (!adapter.startsWith("---\n") || !adapter.includes("\nname: ") || !adapter.includes("\ndescription: ")) {
+        failures.push(`${dir}/${file} has invalid Claude agent frontmatter`)
+      }
+    } else if (dir === ".opencode/agents") {
+      if (!adapter.startsWith("---\n") || !adapter.includes("\ndescription: ") || !adapter.includes("\nmode: ")) {
+        failures.push(`${dir}/${file} has invalid OpenCode agent frontmatter`)
+      }
+    }
   }
 }
 
