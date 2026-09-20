@@ -57,7 +57,7 @@ export function capability<T, Operation extends string = never>(
 ): Capability<T, Operation> {
   const operationMethods = metadata?.operationMethods
     ? Object.freeze(Object.fromEntries(
-        Object.entries(metadata.operationMethods).map(([operation, methods]) => [
+        Object.entries(metadata.operationMethods as Readonly<Record<string, readonly string[]>>).map(([operation, methods]) => [
           operation,
           Object.freeze([...(methods ?? [])])
         ])
@@ -115,11 +115,14 @@ export function requirementOperations(
 
 export interface Provider<T = unknown> {
   readonly kind: "arc.provider"
-  readonly capability: Capability<T>
+  readonly capability: Capability<T, any>
   readonly value: T
 }
 
-export function provide<T>(target: Capability<T>, value: T): Provider<T> {
+export function provide<T, Operation extends string>(
+  target: Capability<T, Operation>,
+  value: T
+): Provider<T> {
   return Object.freeze({ kind: "arc.provider" as const, capability: target, value })
 }
 
@@ -229,7 +232,7 @@ export interface JobDefinition<InputSchema extends StandardSchemaLike = Standard
   readonly kind: "arc.job"
   readonly name: string
   readonly version: number
-  readonly transport: Capability<JobTransport>
+  readonly transport: Capability<JobTransport, any>
   readonly input: InputSchema
   readonly requires?: readonly CapabilityRequirement<any, any>[]
   readonly retry?: JobRetryPolicy
@@ -415,7 +418,7 @@ export function buildApplication(application: AppDefinition, options: BuildAppli
   const providers = new Map<symbol, Provider<any>>()
   const capabilityNames = new Map<string, symbol>()
 
-  const registerCapability = (target: Capability<any>, owner: string) => {
+  const registerCapability = (target: Capability<any, any>, owner: string) => {
     const existing = capabilityNames.get(target.name)
     if (existing && existing !== target.id) {
       throw new ArcError("ARC1006", `Capability name '${target.name}' refers to multiple tokens`, { capability: target.name, owner })
@@ -627,7 +630,7 @@ export interface ApplicationGraph {
 
 export function inspect(application: AppDefinition): ApplicationGraph {
   const configured = new Set((application.providers ?? []).map((item) => item.capability.id))
-  const capabilities = new Map<symbol, Capability<any>>()
+  const capabilities = new Map<symbol, Capability<any, any>>()
   for (const provider of application.providers ?? []) capabilities.set(provider.capability.id, provider.capability)
   for (const mod of application.modules) {
     for (const ep of Object.values(mod.endpoints)) {
