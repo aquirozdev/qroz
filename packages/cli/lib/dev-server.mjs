@@ -3,6 +3,7 @@ import { spawn } from "node:child_process"
 import { explainError, inspect } from "@arc/core"
 import { createWebRuntime } from "@arc/runtime-web"
 import { createRecordingTracer } from "@arc/telemetry"
+import { planDeployment } from "@arc/deployment"
 
 const STUDIO_PREFIX = "/__arc"
 
@@ -26,14 +27,14 @@ function studioHtml(appName) {
   <div class="brand">Arc Studio</div>
   <div class="app" id="app-name"></div>
   <div class="status"><span class="dot"></span>Local runtime connected</div>
-  <div class="nav"><button class="active">Overview</button><button>Requests</button><button>Security</button><button>Deploy</button></div>
+  <div class="nav"><button class="active" data-target="overview">Overview</button><button data-target="request-runner">Requests</button><button data-target="security">Security</button><button data-target="deploy">Deploy</button></div>
 </aside>
-<main>
+<main id="overview">
   <div class="eyebrow">Application</div>
   <div class="title" id="title">Loading…</div>
   <section class="metrics" id="metrics"></section>
   <section class="grid">
-    <div class="card wide"><h2>Request runner</h2>
+    <div class="card wide" id="request-runner"><h2>Request runner</h2>
       <div class="runner">
         <select id="runner-method"><option>GET</option><option>POST</option><option>PUT</option><option>PATCH</option><option>DELETE</option></select>
         <input id="runner-path" value="/" aria-label="Request path">
@@ -46,8 +47,9 @@ function studioHtml(appName) {
     <div class="card"><h2>Modules & endpoints</h2><div id="modules"></div></div>
     <div class="card"><h2>Capabilities</h2><div id="capabilities"></div></div>
     <div class="card"><h2>Recent requests</h2><div id="requests"></div></div>
-    <div class="card"><h2>Authorization decisions</h2><div id="decisions"></div></div>
+    <div class="card" id="security"><h2>Authorization decisions</h2><div id="decisions"></div></div>
     <div class="card wide"><h2>Recent traces</h2><div id="traces"></div></div>
+    <div class="card wide" id="deploy"><h2>Deployment plan</h2><div id="deployment"></div></div>
   </section>
 </main>
 </div>
@@ -55,6 +57,12 @@ function studioHtml(appName) {
 const initialName=${escaped};
 document.getElementById("app-name").textContent=initialName;
 function el(tag,cls,text){const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n}
+for(const button of document.querySelectorAll(".nav button")){
+ button.addEventListener("click",()=>{
+  document.querySelectorAll(".nav button").forEach(item=>item.classList.toggle("active",item===button));
+  document.getElementById(button.dataset.target)?.scrollIntoView({behavior:"smooth",block:"start"});
+ });
+}
 async function explain(code){
  if(!code||!/^ARC\\d{4}$/.test(code)) return;
  const res=await fetch("/__arc/api/explain?code="+encodeURIComponent(code));
@@ -102,16 +110,21 @@ async function load(){
  await loadActivity();
 }
 async function loadActivity(){
- const [requestsResponse,decisionsResponse,tracesResponse]=await Promise.all([fetch("/__arc/api/requests"),fetch("/__arc/api/decisions"),fetch("/__arc/api/traces")]);
+ const [requestsResponse,decisionsResponse,tracesResponse,planResponse]=await Promise.all([fetch("/__arc/api/requests"),fetch("/__arc/api/decisions"),fetch("/__arc/api/traces"),fetch("/__arc/api/plan")]);
  const requests=await requestsResponse.json();
  const decisions=await decisionsResponse.json();
  const traces=await tracesResponse.json();
+ const plan=await planResponse.json();
  const requestNode=document.getElementById("requests");
  requestNode.replaceChildren(...(requests.length?requests.slice(-8).reverse().map(item=>{const row=el("div","resource");row.append(el("span","",item.method+" "+item.path),el("span","pill",item.status+" · "+item.durationMs+"ms"));return row}):[el("div","empty","No application requests yet")]));
  const decisionNode=document.getElementById("decisions");
  decisionNode.replaceChildren(...(decisions.length?decisions.slice(-8).reverse().map(item=>{const row=el("div","resource");const label=item.kind+(item.permission?" · "+item.permission:item.policy?" · "+item.policy:"");row.append(el("span","",label),el("span","pill",item.outcome));return row}):[el("div","empty","No authorization decisions yet")]));
  const traceNode=document.getElementById("traces");
  traceNode.replaceChildren(...(traces.length?traces.slice(-10).reverse().map(item=>{const row=el("div","resource");const owner=item.attributes?.["arc.endpoint"]||item.attributes?.["arc.listener"]||item.attributes?.["arc.workflow"]||item.requestId;row.append(el("span","",item.name+(owner?" · "+owner:"")),el("span","pill",item.requestId));return row}):[el("div","empty","No spans recorded yet")]));
+ const deploymentNode=document.getElementById("deployment");
+ const deploymentRows=plan.surfaces.map(surface=>{const row=el("div","resource");const access=surface.resourceAccess.length?surface.resourceAccess.map(item=>item.capability+" ["+(item.unrestricted?"*":item.operations.join(","))+"]").join(" · "):"no resource grants";row.append(el("span","",surface.id),el("span","pill",access));return row});
+ for(const warning of plan.warnings){const row=el("div","explain",warning.code+" — "+warning.message);row.style.display="block";deploymentRows.unshift(row)}
+ deploymentNode.replaceChildren(...(deploymentRows.length?deploymentRows:[el("div","empty","No execution surfaces")]))
 }
 load().catch(err=>{document.getElementById("title").textContent="Studio unavailable";document.getElementById("modules").textContent=err.message})
 </script>
@@ -168,6 +181,7 @@ export async function runDev(application, options = {}) {
   }
 
   const graph = inspect(application)
+  const deploymentPlan = planDeployment(application)
   const requestLog = []
   const decisionLog = []
   const traceLog = []
@@ -186,6 +200,12 @@ export async function runDev(application, options = {}) {
         response.statusCode = 200
         response.setHeader("content-type", "application/json; charset=utf-8")
         response.end(JSON.stringify(graph))
+        return
+      }
+      if (pathname === `${STUDIO_PREFIX}/api/plan`) {
+        response.statusCode = 200
+        response.setHeader("content-type", "application/json; charset=utf-8")
+        response.end(JSON.stringify(deploymentPlan))
         return
       }
       if (pathname === `${STUDIO_PREFIX}/api/requests`) {
