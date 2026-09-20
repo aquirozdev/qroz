@@ -39,8 +39,10 @@
     {
       "title": "Reference",
       "pages": [
+        "reference/glossary.md",
         "reference/package-map.md",
         "reference/cli.md",
+        "reference/errors.md",
         "reference/application-graph.md"
       ]
     },
@@ -65,8 +67,11 @@
         "project/principles.md",
         "project/non-goals.md",
         "project/status.md",
+        "project/support-matrix.md",
         "project/roadmap.md",
         "project/quality-gates.md",
+        "project/compatibility-policy.md",
+        "project/production-readiness.md",
         "project/competitive-landscape.md",
         "project/documentation-strategy.md",
         "project/release-process.md"
