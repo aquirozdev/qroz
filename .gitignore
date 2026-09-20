@@ -9,3 +9,4 @@ dist/
 coverage/
 .wrangler/
 .dev.vars
+\n.release-evidence/\n
