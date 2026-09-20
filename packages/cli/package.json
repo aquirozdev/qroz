@@ -1,15 +1,15 @@
 {
   "name": "@arc/cli",
-  "version": "0.4.0",
+  "version": "0.1.0-beta.0",
   "type": "module",
   "bin": {
     "arc": "./bin/arc.mjs"
   },
   "dependencies": {
-    "@arc/core": "file:../core",
-    "@arc/deployment": "file:../deployment",
-    "@arc/runtime-web": "file:../runtime-web",
-    "@arc/telemetry": "file:../telemetry"
+    "@arc/core": "0.1.0-beta.0",
+    "@arc/deployment": "0.1.0-beta.0",
+    "@arc/runtime-web": "0.1.0-beta.0",
+    "@arc/telemetry": "0.1.0-beta.0"
   },
   "files": [
     "bin",
@@ -17,5 +17,28 @@
   ],
   "scripts": {
     "build": "node --check bin/arc.mjs"
+  },
+  "description": "Arc CLI and local Arc Studio developer experience.",
+  "keywords": [
+    "typescript",
+    "backend",
+    "serverless",
+    "application-framework",
+    "developer-tools"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aquirozdev/arc.git",
+    "directory": "packages/cli"
+  },
+  "bugs": {
+    "url": "https://github.com/aquirozdev/arc/issues"
+  },
+  "homepage": "https://github.com/aquirozdev/arc#readme",
+  "engines": {
+    "node": ">=22.14.0 <25"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
