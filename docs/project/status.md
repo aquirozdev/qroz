@@ -5,7 +5,7 @@ description: Current implementation and verification state of Arc.
 
 # Current status
 
-Current repository version: **v0.10 development line**.
+Current repository state: **pre-public-beta development**. Package versions are not yet a coherent public release line.
 
 ## Current product priority
 
@@ -13,11 +13,11 @@ Arc has enough architectural foundation to shift from breadth toward **developer
 
 Near-term sequencing is:
 
-1. finish security/authorization decision semantics;
-2. keep durable workflows to a deliberately small, provider-proven portable subset;
-3. build the Arc DX Preview: `arc dev`, Arc Studio, actionable errors and fast local inspection/testing;
-4. turn Application Graph changes into semantic deployment/security diffs;
-5. expose the same application intelligence safely to agents.
+1. make the framework publishable as a truthful public beta: final identity, license, package metadata, clean-install proof, docs and trusted release pipeline;
+2. finish the Arc DX Preview: source-first dev, navigable Studio, source-aware errors and performance budgets;
+3. keep durable workflows to a deliberately small, provider-proven portable subset;
+4. finish security evidence needed for stronger production claims;
+5. deepen semantic deployment/change review and agent-safe interfaces.
 
 The framework should not expand primitives merely to match competitors. **Arc owns semantics; providers own primitives.**
 
@@ -50,7 +50,8 @@ The framework should not expand primitives merely to match competitors. **Arc ow
 - named contextual endpoint policies over validated input with declared capability dependencies;
 - portable request authentication hook with bearer and cookie-session mechanisms;
 - Cloudflare and AWS per-invocation principal resolution;
-- experimental workflow graph with task/sleep/succeed states, memory execution and bounded retries;\n- supported workflow subset executed through Cloudflare Workflows in Wrangler's local Workflow runtime;
+- experimental workflow graph with task/sleep/succeed states, memory execution and bounded retries;
+- supported workflow subset executed through Cloudflare Workflows in Wrangler's local Workflow runtime;
 - workflow task execution surfaces in deployment planning;
 - AWS Step Functions and Cloudflare Workflows planning for the supported workflow subset;
 - CLI inspect/validate/explain/context/diff/plan;
