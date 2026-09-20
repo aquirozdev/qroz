@@ -39,6 +39,44 @@ function fail(message, code = 1) {
   process.exit(code)
 }
 
+function errorPayload(error) {
+  return error && typeof error === "object" && "toJSON" in error
+    ? error.toJSON()
+    : { message: error instanceof Error ? error.message : String(error) }
+}
+
+function printDetails(details) {
+  if (!details || typeof details !== "object") return
+  const entries = Object.entries(details).filter(([, value]) => value !== undefined)
+  if (!entries.length) return
+  console.error("\nContext")
+  for (const [key, value] of entries) {
+    const rendered = typeof value === "string" ? value : JSON.stringify(value)
+    console.error(`  ${key}: ${rendered}`)
+  }
+}
+
+function reportError(error) {
+  const payload = errorPayload(error)
+  if (json) {
+    console.error(JSON.stringify({ ok: false, error: payload }))
+    process.exit(1)
+  }
+
+  const descriptor = payload.code ? explainError(payload.code) : undefined
+  if (!descriptor) {
+    console.error(`arc: ${payload.message}`)
+    process.exit(1)
+  }
+
+  console.error(`${descriptor.code} — ${descriptor.title}\n`)
+  console.error(payload.message)
+  printDetails(payload.details)
+  console.error("\nHow to fix")
+  console.error(`  ${descriptor.remediation}`)
+  process.exit(1)
+}
+
 async function loadApplication(appPath) {
   const url = pathToFileURL(resolve(process.cwd(), appPath)).href
   const loaded = await import(url)
@@ -198,10 +236,7 @@ if (command === "dev") {
     })
     await new Promise(() => {})
   } catch (error) {
-    const payload = error && typeof error === "object" && "toJSON" in error ? error.toJSON() : { message: error instanceof Error ? error.message : String(error) }
-    if (json) console.error(JSON.stringify({ ok: false, error: payload }))
-    else console.error(`arc: ${payload.code ? `${payload.code} ` : ""}${payload.message}`)
-    process.exit(1)
+    reportError(error)
   }
 }
 
@@ -267,10 +302,7 @@ if (command === "diff") {
     }
     process.exit(0)
   } catch (error) {
-    const payload = error && typeof error === "object" && "toJSON" in error ? error.toJSON() : { message: error instanceof Error ? error.message : String(error) }
-    if (json) console.error(JSON.stringify({ ok: false, error: payload }))
-    else console.error(`arc: ${payload.code ? `${payload.code} ` : ""}${payload.message}`)
-    process.exit(1)
+    reportError(error)
   }
 }
 
@@ -302,10 +334,7 @@ if (command === "plan") {
     }
     process.exit(0)
   } catch (error) {
-    const payload = error && typeof error === "object" && "toJSON" in error ? error.toJSON() : { message: error instanceof Error ? error.message : String(error) }
-    if (json) console.error(JSON.stringify({ ok: false, error: payload }))
-    else console.error(`arc: ${payload.code ? `${payload.code} ` : ""}${payload.message}`)
-    process.exit(1)
+    reportError(error)
   }
 }
 
@@ -319,10 +348,7 @@ if (command === "context") {
     console.log(json ? JSON.stringify(context, null, 2) : printContext(context) ?? "")
     process.exit(0)
   } catch (error) {
-    const payload = error && typeof error === "object" && "toJSON" in error ? error.toJSON() : { message: error instanceof Error ? error.message : String(error) }
-    if (json) console.error(JSON.stringify({ ok: false, error: payload }))
-    else console.error(`arc: ${payload.code ? `${payload.code} ` : ""}${payload.message}`)
-    process.exit(1)
+    reportError(error)
   }
 }
 
@@ -370,8 +396,5 @@ try {
     }
   }
 } catch (error) {
-  const payload = error && typeof error === "object" && "toJSON" in error ? error.toJSON() : { message: error instanceof Error ? error.message : String(error) }
-  if (json) console.error(JSON.stringify({ ok: false, error: payload }))
-  else console.error(`arc: ${payload.code ? `${payload.code} ` : ""}${payload.message}`)
-  process.exit(1)
+  reportError(error)
 }
