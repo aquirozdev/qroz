@@ -32,7 +32,7 @@ export interface EndpointPolicyContext<
   ParamsSchema extends StandardSchemaLike | EmptySchema = undefined,
   BodySchema extends StandardSchemaLike | EmptySchema = undefined,
   QuerySchema extends StandardSchemaLike | EmptySchema = undefined
-> {
+> extends CapabilityResolver {
   readonly principal: Principal
   readonly request: Request
   readonly input: {
@@ -48,7 +48,18 @@ export interface EndpointPolicy<
   QuerySchema extends StandardSchemaLike | EmptySchema = undefined
 > {
   readonly name: string
+  readonly requires?: readonly CapabilityRequirement<any, any>[]
   readonly evaluate: (context: EndpointPolicyContext<ParamsSchema, BodySchema, QuerySchema>) => MaybePromise<boolean>
+}
+
+export function policy<
+  ParamsSchema extends StandardSchemaLike | EmptySchema = undefined,
+  BodySchema extends StandardSchemaLike | EmptySchema = undefined,
+  QuerySchema extends StandardSchemaLike | EmptySchema = undefined
+>(
+  definition: EndpointPolicy<ParamsSchema, BodySchema, QuerySchema>
+): EndpointPolicy<ParamsSchema, BodySchema, QuerySchema> {
+  return Object.freeze({ ...definition })
 }
 
 export interface EndpointAuthorization<
@@ -561,6 +572,11 @@ export function buildApplication(application: AppDefinition, options: BuildAppli
 
     for (const [endpointName, ep] of Object.entries(mod.endpoints)) {
       for (const requirement of ep.requires ?? []) registerCapability(requirementCapability(requirement), `${mod.name}.${endpointName}`)
+      for (const policy of ep.auth?.policies ?? []) {
+        for (const requirement of policy.requires ?? []) {
+          registerCapability(requirementCapability(requirement), `${mod.name}.${endpointName}.policy:${policy.name}`)
+        }
+      }
       for (const dispatched of ep.dispatches ?? []) registerCapability(dispatched.transport, `${mod.name}.${endpointName}`)
       const routeKey = `${ep.method} ${ep.path}`
       if (routeKeys.has(routeKey)) {
@@ -568,6 +584,14 @@ export function buildApplication(application: AppDefinition, options: BuildAppli
       }
       routeKeys.add(routeKey)
       validateRequiredCapabilities(providers, ep.requires ?? [], `${mod.name}.${endpointName}`, options.allowMissingCapabilities ?? false)
+      for (const policy of ep.auth?.policies ?? []) {
+        validateRequiredCapabilities(
+          providers,
+          policy.requires ?? [],
+          `${mod.name}.${endpointName}.policy:${policy.name}`,
+          options.allowMissingCapabilities ?? false
+        )
+      }
       validateRequiredCapabilities(providers, (ep.dispatches ?? []).map((item) => item.transport), `${mod.name}.${endpointName}`, options.allowMissingCapabilities ?? false)
     }
 
@@ -828,6 +852,12 @@ export function inspect(application: AppDefinition): ApplicationGraph {
   for (const mod of application.modules) {
     for (const ep of Object.values(mod.endpoints)) {
       for (const requirement of ep.requires ?? []) { const target = requirementCapability(requirement); capabilities.set(target.id, target) }
+      for (const policy of ep.auth?.policies ?? []) {
+        for (const requirement of policy.requires ?? []) {
+          const target = requirementCapability(requirement)
+          capabilities.set(target.id, target)
+        }
+      }
       for (const dispatched of ep.dispatches ?? []) capabilities.set(dispatched.transport.id, dispatched.transport)
     }
     for (const item of Object.values(mod.listeners ?? {})) {
@@ -876,8 +906,14 @@ export function inspect(application: AppDefinition): ApplicationGraph {
             policies: (ep.auth.policies ?? []).map((policy) => policy.name)
           }
         } : {}),
-        requires: (ep.requires ?? []).map((item) => requirementCapability(item).name),
-        access: (ep.requires ?? [])
+        requires: [...new Set([
+          ...(ep.requires ?? []),
+          ...(ep.auth?.policies ?? []).flatMap((policy) => policy.requires ?? [])
+        ].map((item) => requirementCapability(item).name))],
+        access: [
+          ...(ep.requires ?? []),
+          ...(ep.auth?.policies ?? []).flatMap((policy) => policy.requires ?? [])
+        ]
           .filter((item) => item.kind === "arc.capability-access")
           .map((item) => ({ capability: item.capability.name, operations: [...item.operations] })),
         emits: (ep.emits ?? []).map((item) => ({ event: item.name, version: item.version })),
