@@ -97,6 +97,7 @@ if (command === "dev") {
       port: parsed.options.get("--port"),
       open: !parsed.flags.has("--no-open")
     })
+    await new Promise(() => {})
   } catch (error) {
     const payload = error && typeof error === "object" && "toJSON" in error ? error.toJSON() : { message: error instanceof Error ? error.message : String(error) }
     if (json) console.error(JSON.stringify({ ok: false, error: payload }))
