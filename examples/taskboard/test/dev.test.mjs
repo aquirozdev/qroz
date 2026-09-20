@@ -68,6 +68,11 @@ test("arc dev serves the application and Studio from the same Application Graph"
     assert.equal(requests.at(-1)?.method, "GET")
     assert.equal(requests.at(-1)?.path, "/tasks/task-1")
     assert.equal(requests.at(-1)?.status, 200)
+
+    const traces = await fetch(`http://127.0.0.1:${port}/__arc/api/traces`).then((response) => response.json())
+    assert.equal(traces.at(-1)?.name, "arc.endpoint")
+    assert.equal(traces.at(-1)?.attributes?.["arc.endpoint"], "getTask")
+    assert.equal(traces.at(-1)?.requestId, requests.at(-1)?.id)
   } finally {
     child.kill("SIGTERM")
     await Promise.race([

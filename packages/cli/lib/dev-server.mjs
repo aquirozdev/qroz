@@ -2,6 +2,7 @@ import { createServer } from "node:http"
 import { spawn } from "node:child_process"
 import { explainError, inspect } from "@arc/core"
 import { createWebRuntime } from "@arc/runtime-web"
+import { createRecordingTracer } from "@arc/telemetry"
 
 const STUDIO_PREFIX = "/__arc"
 
@@ -46,6 +47,7 @@ function studioHtml(appName) {
     <div class="card"><h2>Capabilities</h2><div id="capabilities"></div></div>
     <div class="card"><h2>Recent requests</h2><div id="requests"></div></div>
     <div class="card"><h2>Authorization decisions</h2><div id="decisions"></div></div>
+    <div class="card wide"><h2>Recent traces</h2><div id="traces"></div></div>
   </section>
 </main>
 </div>
@@ -100,13 +102,16 @@ async function load(){
  await loadActivity();
 }
 async function loadActivity(){
- const [requestsResponse,decisionsResponse]=await Promise.all([fetch("/__arc/api/requests"),fetch("/__arc/api/decisions")]);
+ const [requestsResponse,decisionsResponse,tracesResponse]=await Promise.all([fetch("/__arc/api/requests"),fetch("/__arc/api/decisions"),fetch("/__arc/api/traces")]);
  const requests=await requestsResponse.json();
  const decisions=await decisionsResponse.json();
+ const traces=await tracesResponse.json();
  const requestNode=document.getElementById("requests");
  requestNode.replaceChildren(...(requests.length?requests.slice(-8).reverse().map(item=>{const row=el("div","resource");row.append(el("span","",item.method+" "+item.path),el("span","pill",item.status+" · "+item.durationMs+"ms"));return row}):[el("div","empty","No application requests yet")]));
  const decisionNode=document.getElementById("decisions");
  decisionNode.replaceChildren(...(decisions.length?decisions.slice(-8).reverse().map(item=>{const row=el("div","resource");const label=item.kind+(item.permission?" · "+item.permission:item.policy?" · "+item.policy:"");row.append(el("span","",label),el("span","pill",item.outcome));return row}):[el("div","empty","No authorization decisions yet")]));
+ const traceNode=document.getElementById("traces");
+ traceNode.replaceChildren(...(traces.length?traces.slice(-10).reverse().map(item=>{const row=el("div","resource");const owner=item.attributes?.["arc.endpoint"]||item.attributes?.["arc.listener"]||item.attributes?.["arc.workflow"]||item.requestId;row.append(el("span","",item.name+(owner?" · "+owner:"")),el("span","pill",item.requestId));return row}):[el("div","empty","No spans recorded yet")]));
 }
 load().catch(err=>{document.getElementById("title").textContent="Studio unavailable";document.getElementById("modules").textContent=err.message})
 </script>
@@ -165,6 +170,7 @@ export async function runDev(application, options = {}) {
   const graph = inspect(application)
   const requestLog = []
   const decisionLog = []
+  const traceLog = []
   let requestSequence = 0
   const server = createServer(async (request, response) => {
     try {
@@ -194,6 +200,12 @@ export async function runDev(application, options = {}) {
         response.end(JSON.stringify(decisionLog))
         return
       }
+      if (pathname === `${STUDIO_PREFIX}/api/traces`) {
+        response.statusCode = 200
+        response.setHeader("content-type", "application/json; charset=utf-8")
+        response.end(JSON.stringify(traceLog))
+        return
+      }
       if (pathname === `${STUDIO_PREFIX}/api/explain`) {
         const code = new URL(request.url ?? "/", `http://127.0.0.1:${runtimePort}`).searchParams.get("code")
         const descriptor = code ? explainError(code) : undefined
@@ -206,8 +218,10 @@ export async function runDev(application, options = {}) {
       const requestId = `req_${++requestSequence}`
       const started = performance.now()
       const localDecisions = []
+      const tracer = createRecordingTracer()
       let runtimeError
       const runtime = createWebRuntime(application, {
+        tracer,
         onAuthorizationDecision(decision) {
           localDecisions.push(decision)
         },
@@ -235,6 +249,8 @@ export async function runDev(application, options = {}) {
       if (requestLog.length > 100) requestLog.splice(0, requestLog.length - 100)
       for (const decision of localDecisions) decisionLog.push({ requestId, at: new Date().toISOString(), ...decision })
       if (decisionLog.length > 200) decisionLog.splice(0, decisionLog.length - 200)
+      for (const span of tracer.spans) traceLog.push({ requestId, at: new Date().toISOString(), ...span })
+      if (traceLog.length > 300) traceLog.splice(0, traceLog.length - 300)
       await sendWebResponse(webResponse, response)
     } catch (error) {
       response.statusCode = 500
