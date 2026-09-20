@@ -23,6 +23,9 @@
     "@arc/idempotency": "file:../../packages/idempotency",
     "@arc/idempotency-memory": "file:../../packages/idempotency-memory",
     "@arc/idempotency-cloudflare-do": "file:../../packages/idempotency-cloudflare-do",
-    "@arc/idempotency-dynamodb": "file:../../packages/idempotency-dynamodb"
+    "@arc/idempotency-dynamodb": "file:../../packages/idempotency-dynamodb",
+    "@arc/deployment": "file:../../packages/deployment",
+    "@arc/deployment-aws": "file:../../packages/deployment-aws",
+    "@arc/deployment-cloudflare": "file:../../packages/deployment-cloudflare"
   }
 }
