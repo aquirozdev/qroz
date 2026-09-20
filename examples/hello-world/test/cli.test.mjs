@@ -11,7 +11,7 @@ test("CLI emits deterministic JSON application graph", () => {
     encoding: "utf8"
   })
   const graph = JSON.parse(output)
-  assert.equal(graph.schemaVersion, 6)
+  assert.equal(graph.schemaVersion, 7)
   assert.equal(graph.name, "example")
   assert.equal(graph.modules[0].endpoints[0].path, "/users/:id")
   assert.deepEqual(graph.modules[0].endpoints[0].requires, ["users.repository"])
@@ -22,6 +22,9 @@ test("CLI emits deterministic JSON application graph", () => {
   assert.deepEqual(files.endpoints.find((item) => item.name === "getFile").access, [
     { capability: "storage.files", operations: ["read"] }
   ])
+  const workflows = graph.modules.find((item) => item.name === "workflow-examples")
+  assert.equal(workflows.workflows[0].workflow, "users.welcome")
+  assert.equal(workflows.workflows[0].start, "prepare")
 })
 
 test("CLI validates an application", () => {
