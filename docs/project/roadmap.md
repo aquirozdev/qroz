@@ -48,13 +48,16 @@ Completed framework/infrastructure access:
 Current application/user authorization slice:
 - portable principal contract;
 - declarative endpoint permissions;
-- HTTP execution-context identity;
+- named contextual policies evaluated over validated input;
+- portable HTTP authentication hook;
+- bearer and cookie-session authentication mechanisms;
+- Cloudflare/AWS per-invocation identity resolution;
 - runtime 401/403 enforcement;
 - graph representation.
 
 Still open in v0.9:
-- authentication provider contracts/adapters;
-- richer policy/resource authorization beyond static permission names;
+- real external authentication provider integrations;
+- richer policy composition/resource authorization where justified;
 - principal propagation into jobs/events where justified;
 - agent authorization foundations;
 - known-overgranting policy tests beyond current resource contracts;
