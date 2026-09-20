@@ -71,6 +71,8 @@ Before assigning an issue to a coding agent, make sure it contains:
 
 Agents should create PRs; they should not close roadmap issues merely because code was generated. CI + human review determine completion.
 
+For GitHub Copilot cloud agent specifically, assign an issue only after it is agent-ready. GitHub documents that the agent receives the issue title/body/comments that exist **at assignment time** and then opens a PR; follow-up instructions added later should be given on that pull request rather than relying on new issue comments. When assigning, choose the specialist Arc custom agent that matches the task where useful.
+
 ## Automation
 
 Use built-in Project workflows for:
