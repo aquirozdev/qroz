@@ -318,7 +318,6 @@ export interface WorkflowTaskState {
   readonly kind: "arc.workflow-task"
   readonly requires?: readonly CapabilityRequirement<any, any>[]
   readonly retry?: WorkflowRetryPolicy
-  readonly timeoutSeconds?: number
   readonly next?: string
   readonly end?: boolean
   readonly handler: (input: unknown, ctx: WorkflowTaskContext) => MaybePromise<unknown>
@@ -811,7 +810,6 @@ export interface ApplicationGraph {
         next?: string
         end?: boolean
         seconds?: number
-        timeoutSeconds?: number
         retry?: WorkflowRetryPolicy
         requires: string[]
         access: Array<{ capability: string; operations: string[] }>
@@ -931,7 +929,6 @@ export function inspect(application: AppDefinition): ApplicationGraph {
               : "succeed" as const,
           ...(state.kind === "arc.workflow-task" && state.next ? { next: state.next } : {}),
           ...(state.kind === "arc.workflow-task" && state.end ? { end: true } : {}),
-          ...(state.kind === "arc.workflow-task" && state.timeoutSeconds !== undefined ? { timeoutSeconds: state.timeoutSeconds } : {}),
           ...(state.kind === "arc.workflow-task" && state.retry ? { retry: state.retry } : {}),
           ...(state.kind === "arc.workflow-sleep" ? { seconds: state.seconds, next: state.next } : {}),
           requires: state.kind === "arc.workflow-task"
