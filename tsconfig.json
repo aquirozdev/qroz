@@ -1,31 +1,92 @@
 {
   "files": [],
   "references": [
-    { "path": "./packages/core" },
-    { "path": "./packages/runtime-web" },
-    { "path": "./packages/runtime-memory" },
-    { "path": "./packages/runtime-cloudflare" },
-    { "path": "./packages/runtime-aws" },
-    { "path": "./packages/storage" },
-    { "path": "./packages/storage-memory" },
-    { "path": "./packages/storage-r2" },
-    { "path": "./packages/storage-s3" },
-    { "path": "./packages/testing" },
-    { "path": "./packages/queue" },
-    { "path": "./packages/queue-memory" },
-    { "path": "./packages/queue-cloudflare" },
-    { "path": "./packages/queue-sqs" },
-    { "path": "./packages/idempotency" },
-    { "path": "./packages/idempotency-memory" },
-    { "path": "./packages/idempotency-cloudflare-do" },
-    { "path": "./packages/idempotency-dynamodb" },
-    { "path": "./examples/hello-world" },
-    { "path": "./packages/jobs" },
-    { "path": "./packages/jobs-memory" },
-    { "path": "./packages/jobs-cloudflare" },
-    { "path": "./packages/jobs-aws-sqs" },
-    { "path": "./packages/database" },
-    { "path": "./packages/telemetry" },
-    { "path": "./packages/telemetry-cloudflare" }
+    {
+      "path": "./packages/core"
+    },
+    {
+      "path": "./packages/runtime-web"
+    },
+    {
+      "path": "./packages/runtime-memory"
+    },
+    {
+      "path": "./packages/runtime-cloudflare"
+    },
+    {
+      "path": "./packages/runtime-aws"
+    },
+    {
+      "path": "./packages/storage"
+    },
+    {
+      "path": "./packages/storage-memory"
+    },
+    {
+      "path": "./packages/storage-r2"
+    },
+    {
+      "path": "./packages/storage-s3"
+    },
+    {
+      "path": "./packages/testing"
+    },
+    {
+      "path": "./packages/queue"
+    },
+    {
+      "path": "./packages/queue-memory"
+    },
+    {
+      "path": "./packages/queue-cloudflare"
+    },
+    {
+      "path": "./packages/queue-sqs"
+    },
+    {
+      "path": "./packages/idempotency"
+    },
+    {
+      "path": "./packages/idempotency-memory"
+    },
+    {
+      "path": "./packages/idempotency-cloudflare-do"
+    },
+    {
+      "path": "./packages/idempotency-dynamodb"
+    },
+    {
+      "path": "./examples/hello-world"
+    },
+    {
+      "path": "./packages/jobs"
+    },
+    {
+      "path": "./packages/jobs-memory"
+    },
+    {
+      "path": "./packages/jobs-cloudflare"
+    },
+    {
+      "path": "./packages/jobs-aws-sqs"
+    },
+    {
+      "path": "./packages/database"
+    },
+    {
+      "path": "./packages/telemetry"
+    },
+    {
+      "path": "./packages/telemetry-cloudflare"
+    },
+    {
+      "path": "./packages/deployment"
+    },
+    {
+      "path": "./packages/deployment-aws"
+    },
+    {
+      "path": "./packages/deployment-cloudflare"
+    }
   ]
 }
