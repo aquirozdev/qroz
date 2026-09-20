@@ -12,9 +12,10 @@ This directory is the canonical product and engineering knowledge base for Arc. 
 - [Getting started](./getting-started/README.md) — learn the API from the user's point of view.
 - [Mental model](./getting-started/mental-model.md) — understand what Arc is before learning packages.
 - [Vision](./project/vision.md) — the full product thesis.
+- [Design principles](./project/principles.md) — non-negotiable product, DX and architecture rules.
 - [System architecture](./architecture/system-overview.md) — how the pieces fit.
 - [Testing applications](./guides/testing-applications.md) — outside-in TDD with the in-memory runtime.
-- [Roadmap](./project/roadmap.md) — current sequence and release gates.
+- [Roadmap](./project/roadmap.md) — current sequence, including the Arc DX Preview milestone.
 - [Current status](./project/status.md) — what is implemented and verified today.
 - [Production readiness](./project/production-readiness.md) — evidence gates before Arc can make production claims.
 - [Reference applications](./project/reference-applications.md) — executable product corpus from simple CRUD to workflows, realtime and agents.

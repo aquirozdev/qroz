@@ -1,8 +1,10 @@
-# Arc — portable TypeScript application framework
+# Arc — application framework for humans and agents
 
 > **Research project / codename.** Arc is pre-1.0 and its public API may change.
 
-Arc is a serverless-first TypeScript application framework for **humans and AI agents**. The goal is Laravel-level application ergonomics with explicit distributed-system semantics, Web Standards portability, typed capabilities, a machine-readable Application Graph, and provider-native escape hatches.
+Arc explores a TypeScript application framework that stays **simple at the beginning, explicit as applications grow, and understandable to both humans and coding agents**.
+
+The product goal is not to win on routing benchmarks or reproduce every cloud primitive. Arc owns **application semantics**; providers own **infrastructure primitives**.
 
 ```ts
 export default app({
@@ -11,32 +13,51 @@ export default app({
 })
 ```
 
-## Current research line — v0.10
+From that application source Arc builds a truthful, machine-readable **Application Graph** used by runtime enforcement, tests, developer tooling, deployment planning, security analysis and agent context.
 
-Implemented and exercised today:
+## Product direction
 
-- explicit app/module/endpoint/event/listener/job model;
+Arc is optimizing for a developer experience with five properties:
+
+- **simple like a minimal Web framework** for small applications;
+- **productive like a batteries-included framework** without mandatory decorators or ceremony;
+- **structured as the application grows** without requiring an architectural rewrite;
+- **visual and explainable** through a local-first Arc Studio and deterministic CLI;
+- **transparent rather than magical**: important behavior must be explainable from source, graph, trace or deployment plan.
+
+The current priority is therefore **product/DX depth**, not framework surface-area growth.
+
+Near-term work focuses on:
+
+1. finish authorization decision semantics and security foundations;
+2. keep a deliberately small portable durable-workflow subset with real provider evidence;
+3. make `arc dev`, errors, inspection, testing and Arc Studio exceptional;
+4. turn deployment/security changes into reviewable semantic diffs;
+5. expose the same application intelligence safely to coding agents.
+
+## Implemented research foundation
+
+Today the repository includes:
+
+- app/module/endpoint/event/listener/job definitions;
 - Standard-Schema-compatible validation;
 - Web Standards HTTP runtime;
 - memory, Cloudflare Worker and AWS Lambda/API Gateway adapters;
-- typed capabilities, providers and invocation lifecycle;
-- deterministic Application Graph schema v3;
-- object storage with memory/R2/S3 adapters;
-- queue producer with memory/Cloudflare/SQS adapters;
-- typed jobs with memory, Cloudflare and Lambda/SQS consumers;
-- retries, poison-message handling and partial batch failure mapping;
-- durable lease-based idempotency with memory, SQLite Durable Object and DynamoDB adapters;
-- SQLite Durable Object idempotency executed in workerd;
-- AWS SDK v3 + Floci integration for S3, SQS and DynamoDB;
-- full zero-cost AWS-shaped flow in Docker: API Gateway v2 → Lambda Node 24 → Arc → SQS → Lambda → Arc Job → DynamoDB/S3;
-- PostgreSQL 18 + Drizzle + pg integration in CI;
-- semantic tracing and W3C job-envelope trace propagation;
-- deterministic CLI tools: inspect, validate, explain, context and semantic diff;
-- official MCP v2 read-only integration;
-- endpoint principals, permissions, named contextual policies and portable HTTP authentication composition;
-- experimental workflow graph with deterministic memory execution, Cloudflare Workflows execution in Wrangler local runtime, and AWS Step Functions compilation.
+- typed capabilities/providers and invocation lifecycle;
+- deterministic Application Graph schema v7;
+- object storage, queues, jobs and durable idempotency across portable/Cloudflare/AWS-shaped environments;
+- PostgreSQL + Drizzle integration;
+- semantic tracing and W3C job-envelope propagation;
+- CLI inspect/validate/explain/context/diff/plan;
+- read-only MCP integration;
+- endpoint principals, permissions, contextual policies and portable authentication composition;
+- experimental durable workflow graph with memory execution, Cloudflare Workflows local execution and AWS Step Functions compilation.
 
-The current architectural priority is **durable workflow semantics**: preserve an inspectable portable workflow graph while extending provider execution evidence beyond Cloudflare's local Workflow runtime without pretending provider-specific behavior is identical.
+## Product rule
+
+**Arc owns semantics. Providers own primitives.**
+
+Arc should not build its own ORM, identity provider, LLM SDK, general-purpose IaC engine or workflow engine when existing tools can implement Arc capabilities. Arc should make those tools coherent through one application model.
 
 ## Documentation
 
@@ -47,6 +68,7 @@ Recommended entry points:
 - [Getting started](./docs/getting-started/README.md)
 - [Mental model](./docs/getting-started/mental-model.md)
 - [Product vision](./docs/project/vision.md)
+- [Design principles](./docs/project/principles.md)
 - [System architecture](./docs/architecture/system-overview.md)
 - [Roadmap](./docs/project/roadmap.md)
 - [Current status](./docs/project/status.md)

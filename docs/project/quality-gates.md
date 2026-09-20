@@ -1,13 +1,13 @@
 ---
 title: Quality gates
-description: Evidence required before Arc advertises runtime, resource, distributed-system, and agent capabilities.
+description: Evidence required before Arc advertises runtime, resource, developer-experience and agent capabilities.
 ---
 
 # Quality gates
 
 Arc uses evidence gates instead of declaring features complete because code compiles.
 
-## Always-on
+## Always-on architecture gates
 
 Every change preserves:
 
@@ -23,6 +23,35 @@ Every change preserves:
 10. no exactly-once claim without durable proof.
 11. no secret values in graph/agent context.
 12. documentation and ADR update when a change alters architectural contracts.
+13. no dashboard-only semantic state.
+14. no new abstraction whose primary justification is feature-count parity with another framework.
+
+## Developer-experience gates
+
+Public API work must also preserve:
+
+- **progressive disclosure** — simple examples do not inherit advanced-system ceremony;
+- **explainability** — important runtime behavior maps back to source/graph/trace/plan;
+- **actionable errors** — stable errors explain cause, owner and safe next steps;
+- **local-first operation** — core dev/test/inspect workflows require no hosted account;
+- **CLI/UI semantic parity** — Arc Studio consumes the same underlying model;
+- **type-system scalability** — representative large applications remain responsive in editor/typecheck;
+- **feedback performance** — DX latency budgets are measured and regressions are treated as bugs.
+
+## DX benchmark suite required before stabilization
+
+Create representative small, medium and large reference applications and track at minimum:
+
+| Operation | Quality target |
+| --- | --- |
+| test-client startup | effectively immediate for ordinary apps |
+| incremental route/module edit | sub-second, with a stretch goal below 200 ms |
+| graph incremental update | sub-second, with a stretch goal below 100 ms |
+| `arc inspect` medium app | below 500 ms target |
+| Studio semantic refresh | visually immediate |
+| editor diagnostics | no multi-second pauses caused by whole-app inference |
+
+Exact budgets may change after measurement; publishing and regression-testing them is the invariant.
 
 ## Current evidence matrix
 
@@ -33,19 +62,21 @@ Every change preserves:
 | Queue producer | memory contract | adapter contract | SQS verified via AWS SDK v3 + Floci |
 | Job consumer | memory verified | adapter + semantics verified | Lambda/SQS event source verified via Floci |
 | Durable idempotency | memory verified | SQLite DO in workerd | DynamoDB conditional semantics verified via SDK + Floci |
-| Database lifecycle | verified | Hyperdrive path designed; deployment gate pending | not yet targeted |
 | PostgreSQL/Drizzle | CI integration verified | Hyperdrive real-network gate pending | n/a |
-| Semantic tracing | recording tracer | custom-span bridge | AWS OTel/ADOT bridge planned |
-| Job trace propagation | verified | envelope propagation verified | envelope portable; AWS span linkage planned |
-| Operation-level resource access | verified | binding plan verified | IAM plan verified |
-| Endpoint authorization foundations | verified | runtime-neutral contract | runtime-neutral contract |
-| Workflow graph/execution | memory verified | provider plan contract | Step Functions compile contract |
-| MCP | official v2 integration | Web Standards compatible | runtime-neutral |
+| Semantic tracing | recording tracer | custom-span bridge | AWS bridge pending |
+| Operation-level access | verified | binding plan verified | IAM plan verified |
+| Endpoint authorization | verified foundation | runtime-neutral contract | runtime-neutral contract |
+| Workflow graph/execution | memory verified | local provider execution for supported subset | provider execution evidence incomplete |
+| Agent interface | read-only integration | Web-compatible | runtime-neutral |
+| Local product DX | CLI foundation | n/a | n/a |
+| Arc Studio | planned | n/a | n/a |
 
 ## Before production claims
 
 Resource/platform claims require representative failure-path testing: timeout, duplicate delivery, retries, malformed input, disposal, partial batch failure and provider limits where applicable.
 
+Security-sensitive features require denial-path, cross-tenant/authority escalation and secret-redaction tests.
+
 ## Before 1.0
 
-Add package/API compatibility policy, graph JSON Schema, security model, release policy, multi-cloud integration suite and documentation build/link checking.
+Add package/API compatibility policy, graph JSON Schema, security model, release policy, multi-cloud integration suite, documentation build/link checking, DX performance CI and a stable semantic-diff/change-review contract.

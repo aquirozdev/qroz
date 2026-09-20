@@ -7,12 +7,30 @@ description: Risk-ordered framework capabilities derived from Arc's production r
 
 This is not a feature wishlist. Every item is justified by one or more [reference applications](./reference-applications.md) and should enter implementation through an application-facing example plus failing acceptance test.
 
+
+## Priority override — product/DX depth
+
+The roadmap now deliberately interrupts feature expansion after the current security and minimal durable-execution work.
+
+Before broadening the capability list, Arc should prove an exceptional local product experience:
+
+- `npm create arc@latest` → useful app with minimal choices;
+- `arc dev` → fast local runtime + Arc Studio with no hosted account required;
+- application/module/endpoint/resource graph exploration;
+- API request runner and test-client workflow;
+- actionable Arc errors with source ownership and safe fixes;
+- traces and authorization decisions connected to semantic owners;
+- representative DX/typecheck performance budgets;
+- semantic change/deployment/security diff.
+
+New capability work must show that it unlocks a blocked reference application **and** that it does not degrade this experience.
+
 ## P0 — finish ordinary application semantics
 
 ### Authorization policy model
 Reference apps: 03, 04, 13, 19, 21.
 
-Current slice: endpoint policies can declare capability dependencies, resolve them through a constrained runtime resolver, and expose their resource access through the Application Graph/deployment plan. Still needed: richer reusable composition, explicit tenant context where useful, audit-friendly authorization decisions, non-HTTP principal propagation and provider/identity integrations. Cloud IAM remains separate.
+Current slice: endpoint policies can declare capability dependencies, resolve them through a constrained runtime resolver, and expose their resource access through the Application Graph/deployment plan. Audit-friendly authorization decisions are implemented. Still needed: richer reusable composition where justified, explicit tenant context where useful, non-HTTP principal propagation and provider/identity integrations. Cloud IAM remains separate.
 
 ### Request idempotency
 Reference apps: 05, 06, 13, 15.
@@ -61,12 +79,12 @@ Reference app: 21.
 
 Need cookies and session adapter contracts, CSRF primitive for cookie-authenticated mutations, and identity-provider integration boundaries. Arc must not become an OAuth authorization server.
 
-## P2 — distributed-system differentiators
+## P2 — minimal distributed-system differentiators
 
 ### Durable workflows
 Reference apps: 05, 12, 18, 19.
 
-Prototype the same final-user workflow against at least two engines before stabilizing: Cloudflare Workflows and one of Step Functions/Temporal. Cover timers, signals, cancellation, compensation and version/replay rules.
+Keep the portable subset deliberately small. Prove task, timer/sleep, explicit choice, wait/signal or approval, bounded retry and clear completion/failure semantics against at least two credible engines before stabilizing. Defer compensation frameworks, child-workflow systems and rich orchestration DSLs until reference applications require them.
 
 ### Realtime/stateful coordination
 Reference app: 11.
@@ -83,7 +101,7 @@ Reference apps: 09, 16.
 
 First determine whether queue semantics are sufficient. Add a stream abstraction only if ordering/partition/checkpoint semantics cannot be represented honestly.
 
-## P3 — developer platform
+## P3 — developer platform (pulled forward by roadmap)
 
 ### OpenAPI + generated clients
 Reference apps: 02, 13.

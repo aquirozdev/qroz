@@ -7,6 +7,20 @@ description: Current implementation and verification state of Arc.
 
 Current repository version: **v0.10 development line**.
 
+## Current product priority
+
+Arc has enough architectural foundation to shift from breadth toward **developer-experience depth**.
+
+Near-term sequencing is:
+
+1. finish security/authorization decision semantics;
+2. keep durable workflows to a deliberately small, provider-proven portable subset;
+3. build the Arc DX Preview: `arc dev`, Arc Studio, actionable errors and fast local inspection/testing;
+4. turn Application Graph changes into semantic deployment/security diffs;
+5. expose the same application intelligence safely to agents.
+
+The framework should not expand primitives merely to match competitors. **Arc owns semantics; providers own primitives.**
+
 ## Implemented and verified
 
 - application/module/endpoint/event/listener/job definitions;
@@ -32,6 +46,7 @@ Current repository version: **v0.10 development line**.
 - provider-neutral deployment plans plus AWS IAM and Cloudflare binding planners;
 - runtime-enforced resource operation grants;
 - portable endpoint principal/permission authorization foundations;
+- structured authentication/permission/policy authorization decisions with claim-redacted principals;
 - named contextual endpoint policies over validated input with declared capability dependencies;
 - portable request authentication hook with bearer and cookie-session mechanisms;
 - Cloudflare and AWS per-invocation principal resolution;
@@ -41,7 +56,7 @@ Current repository version: **v0.10 development line**.
 - CLI inspect/validate/explain/context/diff/plan;
 - read-only MCP v2.
 
-## What the current v0.9 line proves
+## What the current foundation proves
 
 The same Arc application semantics execute across Cloudflare-shaped and AWS-shaped environments without domain modules importing provider SDKs. AWS validation uses the official AWS SDK v3 plus Floci's Docker-backed Lambda runtime with Node.js 24.
 
