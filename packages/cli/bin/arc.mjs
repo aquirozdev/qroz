@@ -6,6 +6,7 @@ import { fileURLToPath, pathToFileURL } from "node:url"
 import { buildApplication, explainError, inspect, inspectModuleContext } from "@arc/core"
 import { planDeployment } from "@arc/deployment"
 import { runDev } from "../lib/dev-server.mjs"
+import { prepareTypeScriptDev } from "../lib/typescript-dev.mjs"
 
 const args = process.argv.slice(2)
 const command = args[0]
@@ -125,13 +126,18 @@ async function runDevWatch(appPath, options) {
   const absoluteApp = resolve(process.cwd(), appPath)
   const directory = dirname(absoluteApp)
   let child = startDevChild(appPath, options, options.open)
-  const build = options.build
-    ? spawn(options.build, {
+  const build = options.buildCommand
+    ? spawn(options.buildCommand.command, options.buildCommand.args, {
         cwd: process.cwd(),
-        stdio: "inherit",
-        shell: true
+        stdio: "inherit"
       })
-    : undefined
+    : options.build
+      ? spawn(options.build, {
+          cwd: process.cwd(),
+          stdio: "inherit",
+          shell: true
+        })
+      : undefined
 
   let restartTimer
   let restarting = false
@@ -165,7 +171,8 @@ async function runDevWatch(appPath, options) {
 
   if (!options.silent) {
     console.log(`arc: watching ${directory}`)
-    if (options.build) console.log(`arc: build watcher ${options.build}`)
+    if (options.buildCommand) console.log("arc: TypeScript project watcher active")
+    else if (options.build) console.log(`arc: build watcher ${options.build}`)
   }
 
   await new Promise((resolveDone) => {
@@ -323,20 +330,40 @@ function printContext(context) {
 }
 
 if (command === "dev") {
-  if (positional.length !== 1) fail("usage: arc dev <compiled-app.js> [--port <number>] [--no-open] [--watch] [--build <command>]")
+  if (positional.length !== 1) fail("usage: arc dev <app.ts|compiled-app.js> [--port <number>] [--no-open] [--watch] [--build <command>]")
   try {
+    let devAppPath = positional[0]
+    let buildCommand
+    const sourceFirst = /\.(?:cts|mts|tsx|ts)$/.test(devAppPath)
+
+    if (sourceFirst && process.env.ARC_DEV_CHILD !== "1") {
+      const prepared = prepareTypeScriptDev(devAppPath)
+      devAppPath = prepared.compiledPath
+      buildCommand = prepared.watchCommand
+      if (!parsed.flags.has("--watch")) {
+        const application = await loadApplication(devAppPath)
+        buildApplication(application)
+        await runDev(application, {
+          port: parsed.options.get("--port"),
+          open: !parsed.flags.has("--no-open")
+        })
+        await new Promise(() => {})
+      }
+    }
+
     const devOptions = {
       port: parsed.options.get("--port"),
       open: !parsed.flags.has("--no-open"),
-      build: parsed.options.get("--build")
+      build: parsed.options.get("--build"),
+      buildCommand
     }
 
     if (parsed.flags.has("--watch") && process.env.ARC_DEV_CHILD !== "1") {
-      await runDevWatch(positional[0], devOptions)
+      await runDevWatch(devAppPath, devOptions)
       process.exit(0)
     }
 
-    const application = await loadApplication(positional[0])
+    const application = await loadApplication(devAppPath)
     buildApplication(application)
     await runDev(application, devOptions)
     await new Promise(() => {})
@@ -458,7 +485,7 @@ if (command === "context") {
 }
 
 if (!command || positional.length !== 1 || !["inspect", "validate"].includes(command)) {
-  fail("usage: arc <inspect|validate|plan> <compiled-app.js> [--json] | arc dev <app.js> [--port <number>] [--no-open] [--watch] [--build <command>] | arc context <app.js> <module> [--json] | arc diff <before.js> <after.js> [--json] | arc explain <ARCxxxx> [--json]")
+  fail("usage: arc <inspect|validate|plan> <compiled-app.js> [--json] | arc dev <app.ts|app.js> [--port <number>] [--no-open] [--watch] [--build <command>] | arc context <app.js> <module> [--json] | arc diff <before.js> <after.js> [--json] | arc explain <ARCxxxx> [--json]")
 }
 
 try {
