@@ -237,9 +237,20 @@ test("arc dev watches a TypeScript source entry without exposing dist plumbing",
   await writeFile(appPath, `import { app, endpoint, module } from "@arc/core"
 import { message } from "./message.js"
 
+const Output = {
+  "~standard": {
+    version: 1 as const,
+    vendor: "arc-source-first-test",
+    validate(value: unknown) {
+      return { value: value as { message: string } }
+    }
+  }
+}
+
 const version = endpoint({
   method: "GET",
   path: "/version",
+  output: Output,
   handler() {
     return { message }
   }
