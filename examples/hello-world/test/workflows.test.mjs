@@ -157,7 +157,8 @@ test("Cloudflare workflow planner preserves durable step and sleep semantics", (
   assert.deepEqual(plan.states.find((state) => state.name === "audit").retry, {
     limit: 3,
     delay: "1 seconds",
-    backoff: "exponential"
+    backoff: "exponential",
+    maxDelaySeconds: 5
   })
 })
 
