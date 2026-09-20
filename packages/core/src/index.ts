@@ -304,12 +304,20 @@ export interface JobPublisher {
 export interface WorkflowTaskContext extends CapabilityResolver {
   readonly workflowId: string
   readonly state: string
+  readonly attempt: number
+}
+
+export interface WorkflowRetryPolicy {
+  readonly maxAttempts: number
+  readonly strategy?: "fixed" | "exponential"
+  readonly delaySeconds?: number
+  readonly maxDelaySeconds?: number
 }
 
 export interface WorkflowTaskState {
   readonly kind: "arc.workflow-task"
   readonly requires?: readonly CapabilityRequirement<any, any>[]
-  readonly retry?: JobRetryPolicy
+  readonly retry?: WorkflowRetryPolicy
   readonly timeoutSeconds?: number
   readonly next?: string
   readonly end?: boolean
@@ -804,7 +812,7 @@ export interface ApplicationGraph {
         end?: boolean
         seconds?: number
         timeoutSeconds?: number
-        retry?: JobRetryPolicy
+        retry?: WorkflowRetryPolicy
         requires: string[]
         access: Array<{ capability: string; operations: string[] }>
       }>
