@@ -138,7 +138,7 @@ export function createDynamoDbIdempotencyStore(
             leaseExpiresAt
           },
           ConditionExpression: "attribute_not_exists(#key)",
-          ExpressionAttributeNames: names,
+          ExpressionAttributeNames: { "#key": keyAttribute },
           ReturnValuesOnConditionCheckFailure: "ALL_OLD"
         })
         return { acquired: true, token }
