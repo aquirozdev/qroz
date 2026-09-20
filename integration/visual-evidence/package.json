@@ -1,0 +1,11 @@
+{
+  "name": "@arc/integration-visual-evidence",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0"
+  }
+}
