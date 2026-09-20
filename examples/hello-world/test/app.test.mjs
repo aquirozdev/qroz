@@ -260,3 +260,40 @@ test("enforces operation-level resource access so the graph cannot overstate lea
   assert.equal(captured.details.capability, "storage.restricted")
   assert.equal(captured.details.method, "put")
 })
+
+
+test("merges multiple operation grants declared for the same capability", async () => {
+  const { createMemoryStorage } = await import("@arc/storage-memory")
+  const { storage } = await import("@arc/storage")
+  const sharedStorage = storage("multi-access")
+  const Output = object({ ok: string() })
+
+  const ep = endpoint({
+    method: "GET",
+    path: "/multi-access",
+    requires: [
+      access(sharedStorage, "write"),
+      access(sharedStorage, "read")
+    ],
+    output: Output,
+    async handler(ctx) {
+      const store = ctx.use(sharedStorage)
+      await store.put("ok.txt", "yes")
+      const object = await store.get("ok.txt")
+      return { ok: object ? "yes" : "no" }
+    }
+  })
+
+  const multiAccessApp = app({
+    name: "multi-access",
+    providers: [provide(sharedStorage, createMemoryStorage())],
+    modules: [module({ name: "multi-access", endpoints: { ep } })]
+  })
+
+  const { createMemoryRuntime } = await import("@arc/runtime-memory")
+  const response = await createMemoryRuntime(multiAccessApp)
+    .fetch(new Request("https://app.test/multi-access"))
+
+  assert.equal(response.status, 200)
+  assert.deepEqual(await response.json(), { ok: "yes" })
+})
