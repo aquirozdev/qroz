@@ -6,7 +6,7 @@ import {
   type CapabilityRequirement
 } from "@arc/core"
 
-export type ExecutionSurfaceKind = "endpoint" | "listener" | "job"
+export type ExecutionSurfaceKind = "endpoint" | "listener" | "job" | "workflow-task"
 
 export interface PlannedResourceAccess {
   readonly capability: string
@@ -183,6 +183,20 @@ export function planDeployment(application: AppDefinition): DeploymentPlan {
           reason: "job-transport"
         }]
       })
+    }
+
+    for (const [workflowName, workflow] of Object.entries(module.workflows ?? {})) {
+      for (const [stateName, state] of Object.entries(workflow.states)) {
+        if (state.kind !== "arc.workflow-task") continue
+        surfaces.push({
+          id: `workflow-task:${module.name}.${workflowName}.${stateName}`,
+          kind: "workflow-task",
+          module: module.name,
+          name: `${workflowName}.${stateName}`,
+          resourceAccess: mergeAccess(accessFromRequirements(state.requires ?? [])),
+          triggers: []
+        })
+      }
     }
   }
 
