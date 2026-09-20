@@ -7,6 +7,22 @@ export interface Principal {
   readonly claims?: Readonly<Record<string, unknown>>
 }
 
+export type AuthorizationDecisionKind = "authentication" | "permission" | "policy"
+
+export interface AuthorizationDecision {
+  readonly kind: AuthorizationDecisionKind
+  readonly outcome: "allow" | "deny"
+  readonly app: string
+  readonly module: string
+  readonly endpoint: string
+  readonly principal?: {
+    readonly id: string
+    readonly type?: string
+  }
+  readonly permission?: string
+  readonly policy?: string
+}
+
 export type StandardSchemaLike<Input = unknown, Output = Input> = {
   readonly "~standard": {
     readonly version: 1
