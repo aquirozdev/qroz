@@ -1,9 +1,9 @@
 {
   "name": "@arc/deployment-aws",
-  "version": "0.9.0",
+  "version": "0.1.0-beta.0",
   "type": "module",
   "dependencies": {
-    "@arc/deployment": "file:../deployment"
+    "@arc/deployment": "0.1.0-beta.0"
   },
   "exports": {
     ".": {
@@ -11,6 +11,33 @@
       "default": "./dist/index.js"
     }
   },
-  "files": ["dist"],
-  "scripts": { "build": "tsc -b" }
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "description": "AWS deployment planning adapter for Arc.",
+  "keywords": [
+    "typescript",
+    "backend",
+    "serverless",
+    "application-framework",
+    "developer-tools"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aquirozdev/arc.git",
+    "directory": "packages/deployment-aws"
+  },
+  "bugs": {
+    "url": "https://github.com/aquirozdev/arc/issues"
+  },
+  "homepage": "https://github.com/aquirozdev/arc#readme",
+  "engines": {
+    "node": ">=22.14.0 <25"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }
