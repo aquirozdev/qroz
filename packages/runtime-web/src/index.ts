@@ -144,14 +144,15 @@ function requestTraceContext(request: Request): import("@arc/core").TraceContext
   return { traceparent, ...(tracestate ? { tracestate } : {}) }
 }
 
-export interface WebRuntimeOptions {
+export interface WebRuntimeOptions<ExecutionContext extends WebExecutionContext = WebExecutionContext> {
   readonly onError?: (error: unknown) => void
   readonly tracer?: ArcTracer
+  readonly authenticate?: (request: Request, context?: ExecutionContext) => MaybePromise<Principal | undefined>
 }
 
 export function createWebRuntime<ExecutionContext extends WebExecutionContext = WebExecutionContext>(
   application: AppDefinition,
-  options: WebRuntimeOptions = {}
+  options: WebRuntimeOptions<ExecutionContext> = {}
 ): ArcRuntime<ExecutionContext> {
   // Validate structural invariants once. Providers may arrive from the platform per request.
   buildApplication(application, { allowMissingCapabilities: true })
@@ -282,9 +283,10 @@ export function createWebRuntime<ExecutionContext extends WebExecutionContext = 
           ? await validateSchema(endpoint.input.body, rawBody)
           : rawBody
 
-        const principal = context?.principal
+        const principal = context?.principal ?? await options.authenticate?.(request, context)
         const declaredPermissions = endpoint.auth?.permissions ?? []
-        const authenticationRequired = endpoint.auth?.required ?? declaredPermissions.length > 0
+        const declaredPolicies = endpoint.auth?.policies ?? []
+        const authenticationRequired = endpoint.auth?.required ?? (declaredPermissions.length > 0 || declaredPolicies.length > 0)
         if (authenticationRequired && !principal) {
           return Response.json({ error: "Authentication required", code: "ARC3001" }, { status: 401 })
         }
@@ -299,6 +301,17 @@ export function createWebRuntime<ExecutionContext extends WebExecutionContext = 
               : principal.permissions?.includes(permission) ?? false
             if (!allowed) {
               return Response.json({ error: "Permission denied", code: "ARC3002", permission }, { status: 403 })
+            }
+          }
+
+          for (const policy of declaredPolicies) {
+            const allowed = await policy.evaluate({
+              principal,
+              request,
+              input: { params, body, query }
+            })
+            if (!allowed) {
+              return Response.json({ error: "Permission denied", code: "ARC3002", policy: policy.name }, { status: 403 })
             }
           }
         }
