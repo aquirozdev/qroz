@@ -77,6 +77,15 @@
       ],
       "@arc/database": [
         "packages/database/src/index.ts"
+      ],
+      "@arc/deployment": [
+        "packages/deployment/src/index.ts"
+      ],
+      "@arc/deployment-aws": [
+        "packages/deployment-aws/src/index.ts"
+      ],
+      "@arc/deployment-cloudflare": [
+        "packages/deployment-cloudflare/src/index.ts"
       ]
     }
   }
