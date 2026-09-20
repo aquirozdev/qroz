@@ -37,7 +37,16 @@ Task-specific reusable workflows loaded when relevant. Skills contain detail tha
 Current skills:
 
 - architecture change;
+- code review;
 - CI failure debugging.
+
+## Hooks
+
+GitHub Copilot also supports repository hooks under `.github/hooks/*.json` for lifecycle events such as `preToolUse` and `agentStop`.
+
+Arc deliberately does **not** enable hooks yet. Hooks are deterministic enforcement and should be introduced only for a concrete policy that cannot be expressed safely through CI/instructions—for example, denying a known class of destructive commands. A generic `agentStop → npm run verify` hook would be expensive and unreliable in sessions where dependencies/runtime services are not provisioned.
+
+CI remains the merge authority; agent hooks must never become a hidden substitute for repository quality gates.
 
 ## Rule against instruction sprawl
 
