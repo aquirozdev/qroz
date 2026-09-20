@@ -1,6 +1,8 @@
 #!/usr/bin/env node
-import { resolve } from "node:path"
-import { pathToFileURL } from "node:url"
+import { watch } from "node:fs"
+import { spawn } from "node:child_process"
+import { dirname, resolve } from "node:path"
+import { fileURLToPath, pathToFileURL } from "node:url"
 import { buildApplication, explainError, inspect, inspectModuleContext } from "@arc/core"
 import { planDeployment } from "@arc/deployment"
 import { runDev } from "../lib/dev-server.mjs"
@@ -83,6 +85,101 @@ async function loadApplication(appPath) {
   const application = loaded.default
   if (!application || application.kind !== "arc.app") fail(`module '${appPath}' default export is not an Arc application`)
   return application
+}
+
+function devChildArgs(appPath, options, open) {
+  const cliPath = fileURLToPath(import.meta.url)
+  const output = [cliPath, "dev", appPath]
+  if (options.port) output.push("--port", options.port)
+  if (!open) output.push("--no-open")
+  return output
+}
+
+function startDevChild(appPath, options, open) {
+  return spawn(process.execPath, devChildArgs(appPath, options, open), {
+    cwd: process.cwd(),
+    stdio: "inherit",
+    env: { ...process.env, ARC_DEV_CHILD: "1" }
+  })
+}
+
+async function stopChild(child) {
+  if (!child || child.exitCode !== null) return
+  child.kill("SIGTERM")
+  await Promise.race([
+    new Promise((resolveExit) => child.once("exit", resolveExit)),
+    new Promise((resolveTimeout) => setTimeout(resolveTimeout, 1_000))
+  ])
+  if (child.exitCode === null) child.kill("SIGKILL")
+}
+
+function watchDirectory(directory, onChange) {
+  try {
+    return watch(directory, { recursive: true }, (_event, filename) => onChange(filename))
+  } catch {
+    return watch(directory, (_event, filename) => onChange(filename))
+  }
+}
+
+async function runDevWatch(appPath, options) {
+  const absoluteApp = resolve(process.cwd(), appPath)
+  const directory = dirname(absoluteApp)
+  let child = startDevChild(appPath, options, options.open)
+  const build = options.build
+    ? spawn(options.build, {
+        cwd: process.cwd(),
+        stdio: "inherit",
+        shell: true
+      })
+    : undefined
+
+  let restartTimer
+  let restarting = false
+  let restartQueued = false
+  let firstChange = true
+
+  const restart = async () => {
+    if (restarting) {
+      restartQueued = true
+      return
+    }
+    restarting = true
+    await stopChild(child)
+    child = startDevChild(appPath, options, false)
+    if (!options.silent) console.log("arc: application reloaded")
+    restarting = false
+    if (restartQueued) {
+      restartQueued = false
+      await restart()
+    }
+  }
+
+  const watcher = watchDirectory(directory, (filename) => {
+    if (filename && !/\.(?:c|m)?js$/.test(filename)) return
+    clearTimeout(restartTimer)
+    restartTimer = setTimeout(() => {
+      if (firstChange) firstChange = false
+      void restart()
+    }, 120)
+  })
+
+  if (!options.silent) {
+    console.log(`arc: watching ${directory}`)
+    if (options.build) console.log(`arc: build watcher ${options.build}`)
+  }
+
+  await new Promise((resolveDone) => {
+    const cleanup = async () => {
+      clearTimeout(restartTimer)
+      watcher.close()
+      await stopChild(child)
+      if (build && build.exitCode === null) build.kill("SIGTERM")
+      resolveDone()
+    }
+    process.once("SIGINT", cleanup)
+    process.once("SIGTERM", cleanup)
+    child.once("error", cleanup)
+  })
 }
 
 function indexBy(items, key) {
@@ -226,14 +323,22 @@ function printContext(context) {
 }
 
 if (command === "dev") {
-  if (positional.length !== 1) fail("usage: arc dev <compiled-app.js> [--port <number>] [--no-open]")
+  if (positional.length !== 1) fail("usage: arc dev <compiled-app.js> [--port <number>] [--no-open] [--watch] [--build <command>]")
   try {
+    const devOptions = {
+      port: parsed.options.get("--port"),
+      open: !parsed.flags.has("--no-open"),
+      build: parsed.options.get("--build")
+    }
+
+    if (parsed.flags.has("--watch") && process.env.ARC_DEV_CHILD !== "1") {
+      await runDevWatch(positional[0], devOptions)
+      process.exit(0)
+    }
+
     const application = await loadApplication(positional[0])
     buildApplication(application)
-    await runDev(application, {
-      port: parsed.options.get("--port"),
-      open: !parsed.flags.has("--no-open")
-    })
+    await runDev(application, devOptions)
     await new Promise(() => {})
   } catch (error) {
     reportError(error)
@@ -353,7 +458,7 @@ if (command === "context") {
 }
 
 if (!command || positional.length !== 1 || !["inspect", "validate"].includes(command)) {
-  fail("usage: arc <inspect|validate|plan> <compiled-app.js> [--json] | arc dev <app.js> [--port <number>] [--no-open] | arc context <app.js> <module> [--json] | arc diff <before.js> <after.js> [--json] | arc explain <ARCxxxx> [--json]")
+  fail("usage: arc <inspect|validate|plan> <compiled-app.js> [--json] | arc dev <app.js> [--port <number>] [--no-open] [--watch] [--build <command>] | arc context <app.js> <module> [--json] | arc diff <before.js> <after.js> [--json] | arc explain <ARCxxxx> [--json]")
 }
 
 try {

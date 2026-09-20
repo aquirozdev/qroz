@@ -1,6 +1,8 @@
 import assert from "node:assert/strict"
 import { spawn } from "node:child_process"
 import { createServer } from "node:net"
+import { mkdtemp, rm, writeFile } from "node:fs/promises"
+import { join } from "node:path"
 import test from "node:test"
 
 async function availablePort() {
@@ -127,4 +129,84 @@ test("arc dev records authorization denials without exposing principal claims", 
       new Promise((resolve) => setTimeout(resolve, 1_000))
     ])
   }
+})
+
+
+test("arc dev --watch reloads the full compiled module graph", { timeout: 15_000 }, async () => {
+  const root = await mkdtemp(join(process.cwd(), ".arc-watch-"))
+  const appPath = join(root, "app.mjs")
+  const messagePath = join(root, "message.mjs")
+  const port = await availablePort()
+
+  const appSource = `import { app, endpoint, module } from "@arc/core"
+import { message } from "./message.mjs"
+
+const Output = {
+  "~standard": {
+    version: 1,
+    vendor: "arc-watch-test",
+    validate(value) { return { value } }
+  }
+}
+
+const version = endpoint({
+  method: "GET",
+  path: "/version",
+  output: Output,
+  handler() { return { message } }
+})
+
+export default app({
+  name: "watch-test",
+  modules: [module({ name: "system", endpoints: { version } })]
+})
+`
+
+  await writeFile(appPath, appSource, "utf8")
+  await writeFile(messagePath, 'export const message = "one"\n', "utf8")
+
+  const child = spawn(process.execPath, [
+    "packages/cli/bin/arc.mjs",
+    "dev",
+    appPath,
+    "--watch",
+    "--port",
+    String(port),
+    "--no-open"
+  ], {
+    cwd: process.cwd(),
+    stdio: ["ignore", "pipe", "pipe"]
+  })
+
+  let stderr = ""
+  child.stderr.setEncoding("utf8")
+  child.stderr.on("data", (chunk) => { stderr += chunk })
+
+  async function waitForMessage(expected) {
+    const deadline = Date.now() + 8_000
+    while (Date.now() < deadline) {
+      if (child.exitCode !== null) throw new Error(`arc dev --watch exited early: ${stderr}`)
+      try {
+        const response = await fetch(`http://127.0.0.1:${port}/version`)
+        if (response.ok && (await response.json()).message === expected) return
+      } catch {}
+      await new Promise((resolve) => setTimeout(resolve, 75))
+    }
+    throw new Error(`timed out waiting for watched value '${expected}'`)
+  }
+
+  try {
+    await waitForMessage("one")
+    await writeFile(messagePath, 'export const message = "two"\n', "utf8")
+    await waitForMessage("two")
+  } finally {
+    child.kill("SIGTERM")
+    await Promise.race([
+      new Promise((resolve) => child.once("exit", resolve)),
+      new Promise((resolve) => setTimeout(resolve, 1_500))
+    ])
+    await rm(root, { recursive: true, force: true })
+  }
+
+  assert.equal(stderr, "")
 })
