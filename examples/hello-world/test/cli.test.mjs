@@ -67,3 +67,22 @@ test("CLI diff compares applications semantically", () => {
   assert.ok(diff.routes.removed.includes("GET /users/:id"))
   assert.ok(diff.capabilities.removed.includes("users.repository"))
 })
+
+
+test("CLI plan exposes execution surfaces and least-privilege resource operations", () => {
+  const output = execFileSync(process.execPath, [cli, "plan", app, "--json"], {
+    cwd: new URL("../../..", import.meta.url),
+    encoding: "utf8"
+  })
+  const plan = JSON.parse(output)
+  assert.equal(plan.schemaVersion, 1)
+  const write = plan.surfaces.find((surface) => surface.id === "endpoint:files.putFile")
+  assert.deepEqual(write.resourceAccess[0].operations, ["write"])
+  const job = plan.surfaces.find((surface) => surface.id === "job:notifications.DeliverNotification")
+  assert.deepEqual(job.triggers[0], {
+    capability: "queue.jobs.notifications",
+    resourceType: "message-queue",
+    operation: "consume",
+    reason: "job-transport"
+  })
+})
