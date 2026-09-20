@@ -10,6 +10,7 @@ import {
   ValidationError,
   buildApplication,
   createCapabilityResolver,
+  requirementCapability,
   validateSchema
 } from "@arc/core"
 
@@ -167,7 +168,7 @@ export function createWebRuntime<ExecutionContext extends WebExecutionContext = 
         for (const item of matching) {
           const owner = `${item.moduleName}.${item.listenerName}`
           const resolver = createCapabilityResolver(built, item.listener.requires ?? [], owner)
-          for (const target of item.listener.requires ?? []) resolver.use(target)
+          for (const requirement of item.listener.requires ?? []) resolver.use(requirementCapability(requirement))
           const listenerEvents = createEventPublisher(item.listener.emits ?? [], owner)
           const listenerJobs = createJobPublisher(item.listener.dispatches ?? [], owner)
           const tracer = context?.tracer ?? options.tracer ?? noopTracer
@@ -278,7 +279,7 @@ export function createWebRuntime<ExecutionContext extends WebExecutionContext = 
           endpoint.requires ?? [],
           `${matched.route.moduleName}.${matched.route.endpointName}`
         )
-        for (const target of endpoint.requires ?? []) resolver.use(target)
+        for (const requirement of endpoint.requires ?? []) resolver.use(requirementCapability(requirement))
         const tracer = context?.tracer ?? options.tracer ?? noopTracer
         const output = await tracer.enterSpan("arc.endpoint", {
           "arc.app": application.name,
