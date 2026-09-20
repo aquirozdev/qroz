@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { performance } from "node:perf_hooks"
+import { mkdir, writeFile } from "node:fs/promises"
 import { spawn } from "node:child_process"
 import { app, buildApplication, endpoint, inspect, module } from "../packages/core/dist/index.js"
 import { planDeployment } from "../packages/deployment/dist/index.js"
@@ -150,6 +151,8 @@ const report = {
   budgets
 }
 
+await mkdir(".dx-evidence", { recursive: true })
+await writeFile(".dx-evidence/performance.json", JSON.stringify(report, null, 2) + "\n")
 console.log(JSON.stringify(report, null, 2))
 
 if (failures.length) {
