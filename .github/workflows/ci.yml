@@ -69,6 +69,30 @@ jobs:
       - name: Execute packaged-style CLI smoke
         run: node scripts/ci-cli-smoke.mjs
 
+
+  packed-consumer:
+    name: Packed package consumer
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+      - run: npm install
+      - name: Pin verified TypeScript toolchain
+        run: npm install --no-save typescript@5.8.3
+      - name: Build and verify packed packages
+        run: npm run pack:check
+      - name: Upload packed-consumer evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: packed-consumer-evidence
+          path: .release-evidence
+          if-no-files-found: warn
+          retention-days: 14
+
   workerd-smoke:
     name: Cloudflare workerd smoke
     runs-on: ubuntu-latest
