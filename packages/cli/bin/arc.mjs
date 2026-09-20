@@ -2,6 +2,7 @@
 import { resolve } from "node:path"
 import { pathToFileURL } from "node:url"
 import { buildApplication, explainError, inspect, inspectModuleContext } from "@arc/core"
+import { planDeployment } from "@arc/deployment"
 
 const args = process.argv.slice(2)
 const command = args[0]
@@ -101,6 +102,41 @@ if (command === "diff") {
   }
 }
 
+
+if (command === "plan") {
+  if (positional.length !== 1) fail("usage: arc plan <compiled-app.js> [--json]")
+  try {
+    const application = await loadApplication(positional[0])
+    buildApplication(application)
+    const plan = planDeployment(application)
+    if (json) {
+      console.log(JSON.stringify(plan, null, 2))
+    } else {
+      console.log(`${plan.app} deployment plan v${plan.schemaVersion}\n`)
+      for (const surface of plan.surfaces) {
+        console.log(surface.id)
+        for (const access of surface.resourceAccess) {
+          const operations = access.unrestricted ? "*" : access.operations.join(",")
+          console.log(`  resource ${access.capability} [${operations}]`)
+        }
+        for (const trigger of surface.triggers) {
+          console.log(`  trigger  ${trigger.capability} [${trigger.operation}]`)
+        }
+      }
+      if (plan.warnings.length) {
+        console.log("\nwarnings")
+        for (const warning of plan.warnings) console.log(`  ${warning.code} ${warning.message}`)
+      }
+    }
+    process.exit(0)
+  } catch (error) {
+    const payload = error && typeof error === "object" && "toJSON" in error ? error.toJSON() : { message: error instanceof Error ? error.message : String(error) }
+    if (json) console.error(JSON.stringify({ ok: false, error: payload }))
+    else console.error(`arc: ${payload.code ? `${payload.code} ` : ""}${payload.message}`)
+    process.exit(1)
+  }
+}
+
 if (command === "context") {
   if (positional.length !== 2) fail("usage: arc context <compiled-app.js> <module> [--json]")
   try {
@@ -119,7 +155,7 @@ if (command === "context") {
 }
 
 if (!command || positional.length !== 1 || !["inspect", "validate"].includes(command)) {
-  fail("usage: arc <inspect|validate> <compiled-app.js> [--json] | arc context <app.js> <module> [--json] | arc diff <before.js> <after.js> [--json] | arc explain <ARCxxxx> [--json]")
+  fail("usage: arc <inspect|validate|plan> <compiled-app.js> [--json] | arc context <app.js> <module> [--json] | arc diff <before.js> <after.js> [--json] | arc explain <ARCxxxx> [--json]")
 }
 
 try {
