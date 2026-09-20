@@ -13,7 +13,7 @@ export interface CloudflareWorkflowPlan {
         readonly end: boolean
         readonly retry?: {
           readonly limit: number
-          readonly delaySeconds: number
+          readonly delay: string
           readonly backoff: "constant" | "exponential"
         }
       }
@@ -56,7 +56,7 @@ export function planCloudflareWorkflow(workflow: AnyWorkflow): CloudflareWorkflo
         ...(state.retry ? {
           retry: {
             limit: state.retry.maxAttempts,
-            delaySeconds: state.retry.delaySeconds ?? 0,
+            delay: `${state.retry.delaySeconds ?? 0} seconds`,
             backoff: state.retry.strategy === "exponential" ? "exponential" as const : "constant" as const
           }
         } : {})
