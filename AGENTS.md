@@ -55,7 +55,7 @@ Prefer:
 
 The canonical status is `docs/project/status.md`. The v0.9 development line has Cloudflare/workerd, PostgreSQL/Drizzle, MCP v2, AWS Lambda/API Gateway/SQS/S3/DynamoDB through Floci, operation-level resource access, and provider-neutral deployment planning coverage.
 
-Current architectural priority: finish authorization foundations without conflating end-user permissions with cloud IAM, then address the AWS tracing bridge and durable-workflow research.
+Current architectural priority: prove durable workflow execution against real provider runtimes while preserving the declarative Workflow Graph. Do not claim provider parity from compilation/planning alone. Authorization and cloud IAM remain separate models.
 
 ## Documentation rule
 
