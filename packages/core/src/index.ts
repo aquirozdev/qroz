@@ -549,13 +549,24 @@ export function createCapabilityResolver(
   owner = "runtime"
 ): CapabilityResolver {
   const accessById = allowed
-    ? new Map<symbol, readonly string[] | null>(
-        allowed.map((requirement) => {
+    ? (() => {
+        const result = new Map<symbol, readonly string[] | null>()
+        for (const requirement of allowed) {
           const target = requirementCapability(requirement)
           const operations = requirementOperations(requirement)
-          return [target.id, operations ?? null]
-        })
-      )
+          const current = result.get(target.id)
+
+          if (!operations) {
+            result.set(target.id, null)
+            continue
+          }
+          if (current === null) continue
+          result.set(target.id, Object.freeze([
+            ...new Set([...(current ?? []), ...operations])
+          ]))
+        }
+        return result
+      })()
     : undefined
 
   return {
