@@ -58,6 +58,7 @@ Those declarations are executable application metadata. Arc uses them both to ru
 4. [Events, jobs and workflows](../concepts/effects-events-jobs-workflows.md)
 5. [Execution surfaces](../concepts/execution-surfaces.md)
 6. [System architecture](../architecture/system-overview.md)
-7. [Package map](../reference/package-map.md)
+7. [Testing applications](../guides/testing-applications.md)
+8. [Package map](../reference/package-map.md)
 
-The current runnable example lives in `examples/hello-world`.
+Start with `examples/taskboard` for the smallest application-facing example. Use `examples/hello-world` for the broader portability and provider integration suite.
