@@ -18,6 +18,7 @@
     "inspect": "npm run build && node packages/cli/bin/arc.mjs inspect examples/hello-world/dist/app.js",
     "inspect:json": "npm run build && node packages/cli/bin/arc.mjs inspect examples/hello-world/dist/app.js --json",
     "release:check": "node scripts/check-release-readiness.mjs",
-    "dx:performance": "npm run build && node scripts/check-dx-performance.mjs"
+    "dx:performance": "npm run build && node scripts/check-dx-performance.mjs",
+    "pack:check": "npm run build && node scripts/test-packed-consumer.mjs"
   }
 }
