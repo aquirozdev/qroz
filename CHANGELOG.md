@@ -10,7 +10,8 @@
 - Application Graph v7: declarative workflow states, transitions and task dependencies;
 - add deterministic workflow memory execution with bounded retries;
 - add AWS Step Functions compiler and Cloudflare Workflows planner for the experimental portable workflow subset;
-- include workflow tasks as deployment execution surfaces.
+- include workflow tasks as deployment execution surfaces;
+- add structured authorization decision hooks for authentication, permission and policy audit trails without copying arbitrary principal claims.
 
 ## 0.8.0 - second-cloud portability proof
 
