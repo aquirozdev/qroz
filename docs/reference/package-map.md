@@ -38,6 +38,9 @@ description: Current Arc packages and their responsibilities.
 | `@arc/idempotency` | Durable idempotency capability contract |
 | `@arc/idempotency-memory` | Lease store for tests/local |
 | `@arc/idempotency-cloudflare-do` | SQLite Durable Object implementation |
+| `@arc/workflows` | Workflow memory executor and portable execution semantics |
+| `@arc/workflows-aws` | AWS Step Functions definition compiler for the supported workflow subset |
+| `@arc/workflows-cloudflare` | Cloudflare Workflows step planner for the supported workflow subset |
 
 ## Telemetry and agents
 
