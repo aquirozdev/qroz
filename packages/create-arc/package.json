@@ -1,6 +1,6 @@
 {
   "name": "create-arc",
-  "version": "0.1.0",
+  "version": "0.1.0-beta.0",
   "type": "module",
   "bin": {
     "create-arc": "./bin/create-arc.mjs"
@@ -10,5 +10,28 @@
   ],
   "scripts": {
     "build": "node --check bin/create-arc.mjs"
+  },
+  "description": "Scaffold a new Arc TypeScript application.",
+  "keywords": [
+    "typescript",
+    "backend",
+    "serverless",
+    "application-framework",
+    "developer-tools"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aquirozdev/arc.git",
+    "directory": "packages/create-arc"
+  },
+  "bugs": {
+    "url": "https://github.com/aquirozdev/arc/issues"
+  },
+  "homepage": "https://github.com/aquirozdev/arc#readme",
+  "engines": {
+    "node": ">=22.14.0 <25"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
