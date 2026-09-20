@@ -7,6 +7,7 @@ import { createMemoryIdempotencyStore } from "@arc/idempotency-memory"
 import { notifications, notificationsQueue, notificationJobsQueue, notificationDeliverySink, notificationIdempotency, type NotificationMessage } from "./notifications.js"
 import { files, filesStorage } from "./files.js"
 import { auditSink, type AuditSink, userRepository, type User, type UserRepository, users } from "./users.js"
+import { workflowExamples } from "./workflows.js"
 
 const records = new Map<string, User>([["123", { id: "123", name: "Angel" }]])
 let sequence = 0
@@ -38,7 +39,7 @@ export const audit: AuditSink = {
 // Portable application definition: no infrastructure providers.
 export const application = app({
   name: "example",
-  modules: [users, files, notifications]
+  modules: [users, files, notifications, workflowExamples]
 })
 
 export const notificationQueueMemory = createMemoryQueue<NotificationMessage>()
