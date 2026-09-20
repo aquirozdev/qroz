@@ -23,9 +23,25 @@ function rewriteRelativeMarkdownLinks(markdown) {
   })
 }
 
-function titleFromFrontmatter(markdown, fallback) {
-  const match = markdown.match(/^---\n[\s\S]*?^title:\s*(.+?)\s*$[\s\S]*?^---/m)
-  return match?.[1]?.replace(/^["']|["']$/g, "") ?? fallback
+function inferredTitle(markdown, fallback) {
+  const frontmatter = markdown.match(/^---\n[\s\S]*?^title:\s*(.+?)\s*$[\s\S]*?^---/m)
+  if (frontmatter?.[1]) return frontmatter[1].replace(/^["']|["']$/g, "")
+  const heading = markdown.match(/^#\s+(.+)$/m)
+  return heading?.[1]?.trim() || fallback
+}
+
+function ensureStarlightFrontmatter(markdown, fallback) {
+  const title = inferredTitle(markdown, fallback)
+  if (!markdown.startsWith("---\n")) {
+    return `---\ntitle: ${JSON.stringify(title)}\n---\n\n${markdown}`
+  }
+
+  const end = markdown.indexOf("\n---", 4)
+  if (end === -1) return markdown
+  const header = markdown.slice(4, end)
+  if (/^title:\s*/m.test(header)) return markdown
+
+  return `---\ntitle: ${JSON.stringify(title)}\n${header}\n---${markdown.slice(end + 4)}`
 }
 
 async function walk(directory) {
@@ -47,13 +63,17 @@ for (const sourcePath of await walk(sourceRoot)) {
   const sourceRelative = relative(sourceRoot, sourcePath)
   const targetRelative = sourceRelative
   const targetPath = join(targetRoot, targetRelative)
-  const markdown = rewriteRelativeMarkdownLinks(await readFile(sourcePath, "utf8"))
+  const raw = await readFile(sourcePath, "utf8")
+  const markdown = ensureStarlightFrontmatter(
+    rewriteRelativeMarkdownLinks(raw),
+    basename(sourceRelative, ".md")
+  )
 
   await mkdir(dirname(targetPath), { recursive: true })
   await writeFile(targetPath, markdown, "utf8")
 
   pages.push({
-    title: titleFromFrontmatter(markdown, basename(sourceRelative, ".md")),
+    title: inferredTitle(markdown, basename(sourceRelative, ".md")),
     route: routeFor(sourceRelative)
   })
 }
