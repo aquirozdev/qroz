@@ -112,6 +112,8 @@ export function planDeployment(application: AppDefinition): DeploymentPlan {
         })
       }
 
+      const policyRequirements = (endpoint.auth?.policies ?? []).flatMap((policy) => policy.requires ?? [])
+
       surfaces.push({
         id: `endpoint:${module.name}.${name}`,
         kind: "endpoint",
@@ -119,6 +121,7 @@ export function planDeployment(application: AppDefinition): DeploymentPlan {
         name,
         resourceAccess: mergeAccess([
           ...accessFromRequirements(endpoint.requires ?? []),
+          ...accessFromRequirements(policyRequirements),
           ...dispatchAccess
         ]),
         triggers: []
