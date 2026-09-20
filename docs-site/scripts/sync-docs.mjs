@@ -30,6 +30,20 @@ function inferredTitle(markdown, fallback) {
   return heading?.[1]?.trim() || fallback
 }
 
+function normalizeSimpleFrontmatter(header) {
+  return header
+    .split("\n")
+    .map((line) => {
+      const match = line.match(/^(title|description):\s*(.+)$/)
+      if (!match) return line
+      const [, key, raw] = match
+      const value = raw.trim()
+      if (/^(?:"|'|\[|\{|>|\|)/.test(value)) return line
+      return `${key}: ${JSON.stringify(value)}`
+    })
+    .join("\n")
+}
+
 function ensureStarlightFrontmatter(markdown, fallback) {
   const title = inferredTitle(markdown, fallback)
   if (!markdown.startsWith("---\n")) {
@@ -38,10 +52,12 @@ function ensureStarlightFrontmatter(markdown, fallback) {
 
   const end = markdown.indexOf("\n---", 4)
   if (end === -1) return markdown
-  const header = markdown.slice(4, end)
-  if (/^title:\s*/m.test(header)) return markdown
+  let header = normalizeSimpleFrontmatter(markdown.slice(4, end))
+  if (!/^title:\s*/m.test(header)) {
+    header = `title: ${JSON.stringify(title)}\n${header}`
+  }
 
-  return `---\ntitle: ${JSON.stringify(title)}\n${header}\n---${markdown.slice(end + 4)}`
+  return `---\n${header}\n---${markdown.slice(end + 4)}`
 }
 
 async function walk(directory) {
