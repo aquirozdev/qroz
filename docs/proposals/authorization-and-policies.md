@@ -64,7 +64,8 @@ The same capability vocabulary may later authorize mutating MCP tools, but end-u
 - permission or policy denial returns ARC3002 / HTTP 403;
 - named policies evaluate after route/query/body validation and are represented in the Application Graph;
 - bearer and cookie-session mechanisms exercise two HTTP credential shapes without coupling Arc to a specific identity vendor;
-- Cloudflare and AWS HTTP adapters can resolve principals per invocation.
+- Cloudflare and AWS HTTP adapters can resolve principals per invocation;
+- HTTP runtimes can emit structured allow/deny decisions for authentication, permissions and policies without copying arbitrary principal claims into the audit record.
 
 ## Still required before stabilization
 
@@ -72,5 +73,6 @@ The same capability vocabulary may later authorize mutating MCP tools, but end-u
 - explicit invalid/expired credential semantics;
 - machine-to-machine integration evidence beyond synthetic principals;
 - policy composition semantics beyond all-of named policies;
+- durable authorization audit sinks/export adapters and retention guidance;
 - agent authorization/approval/audit rules;
 - a compatibility policy for principal claims and policy metadata.
