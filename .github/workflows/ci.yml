@@ -131,18 +131,18 @@ jobs:
         working-directory: integration/mcp
         run: node test.mjs
 
-  aws-sdk-localstack:
-    name: AWS SDK v3 + LocalStack
+  aws-sdk-floci:
+    name: AWS SDK v3 + Floci
     runs-on: ubuntu-latest
     timeout-minutes: 15
     services:
-      localstack:
-        image: localstack/localstack:2026.08
+      floci:
+        image: floci/floci:2.1.0
         ports:
           - 4566:4566
         env:
-          SERVICES: s3,sqs,dynamodb
-          DEBUG: 0
+          FLOCI_DEFAULT_REGION: us-east-1
+          FLOCI_STORAGE_MODE: memory
     env:
       AWS_ENDPOINT: http://127.0.0.1:4566
       AWS_REGION: us-east-1
@@ -156,12 +156,12 @@ jobs:
       - run: npm install
       - run: npm install --no-save typescript@5.8.3
       - run: npm run build
-      - name: Wait for LocalStack
+      - name: Wait for Floci
         shell: bash
         run: |
           set -euo pipefail
           for attempt in $(seq 1 60); do
-            if curl --fail --silent http://127.0.0.1:4566/_localstack/health >/dev/null; then
+            if timeout 1 bash -c '</dev/tcp/127.0.0.1/4566' 2>/dev/null; then
               exit 0
             fi
             sleep 1
