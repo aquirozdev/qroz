@@ -25,27 +25,92 @@ export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "OPTIONS"
 
 let capabilityCounter = 0
 
-export interface CapabilityMetadata {
+export interface CapabilityMetadata<Operation extends string = string> {
   readonly kind?: "service" | "resource"
   readonly resourceType?: string
   readonly features?: readonly string[]
+  readonly operationMethods?: Readonly<Partial<Record<Operation, readonly string[]>>>
 }
 
-export interface Capability<T> {
+export interface Capability<T, Operation extends string = never> {
   readonly kind: "arc.capability"
   readonly id: symbol
   readonly name: string
-  readonly metadata?: CapabilityMetadata
+  readonly metadata?: CapabilityMetadata<Operation>
   readonly _type?: T
+  readonly _operation?: Operation
 }
 
-export function capability<T>(name: string, metadata?: CapabilityMetadata): Capability<T> {
+export interface CapabilityAccess<T = unknown, Operation extends string = string> {
+  readonly kind: "arc.capability-access"
+  readonly capability: Capability<T, Operation>
+  readonly operations: readonly Operation[]
+}
+
+export type CapabilityRequirement<T = unknown, Operation extends string = string> =
+  | Capability<T, Operation>
+  | CapabilityAccess<T, Operation>
+
+export function capability<T, Operation extends string = never>(
+  name: string,
+  metadata?: CapabilityMetadata<Operation>
+): Capability<T, Operation> {
+  const operationMethods = metadata?.operationMethods
+    ? Object.freeze(Object.fromEntries(
+        Object.entries(metadata.operationMethods).map(([operation, methods]) => [
+          operation,
+          Object.freeze([...(methods ?? [])])
+        ])
+      )) as CapabilityMetadata<Operation>["operationMethods"]
+    : undefined
+
   return Object.freeze({
     kind: "arc.capability" as const,
     id: Symbol(`arc.capability.${name}.${capabilityCounter++}`),
     name,
-    ...(metadata ? { metadata: Object.freeze({ ...metadata, ...(metadata.features ? { features: Object.freeze([...metadata.features]) } : {}) }) } : {})
+    ...(metadata ? {
+      metadata: Object.freeze({
+        ...metadata,
+        ...(metadata.features ? { features: Object.freeze([...metadata.features]) } : {}),
+        ...(operationMethods ? { operationMethods } : {})
+      })
+    } : {})
   })
+}
+
+export function access<T, Operation extends string>(
+  target: Capability<T, Operation>,
+  ...operations: readonly Operation[]
+): CapabilityAccess<T, Operation> {
+  const operationMethods = target.metadata?.operationMethods
+  if (!operationMethods) {
+    throw new Error(`Capability '${target.name}' does not declare operation-level access metadata`)
+  }
+  if (operations.length === 0) {
+    throw new Error(`Capability '${target.name}' access requires at least one operation`)
+  }
+  for (const operation of operations) {
+    if (!(operation in operationMethods)) {
+      throw new Error(`Capability '${target.name}' does not define operation '${operation}'`)
+    }
+  }
+  return Object.freeze({
+    kind: "arc.capability-access" as const,
+    capability: target,
+    operations: Object.freeze([...new Set(operations)])
+  })
+}
+
+export function requirementCapability<T, Operation extends string>(
+  requirement: CapabilityRequirement<T, Operation>
+): Capability<T, Operation> {
+  return requirement.kind === "arc.capability-access" ? requirement.capability : requirement
+}
+
+export function requirementOperations(
+  requirement: CapabilityRequirement<any, any>
+): readonly string[] | undefined {
+  return requirement.kind === "arc.capability-access" ? requirement.operations : undefined
 }
 
 export interface Provider<T = unknown> {
@@ -101,7 +166,7 @@ export function emit<Payload>(definition: EventDefinition<Payload>, payload: Pay
 }
 
 export interface CapabilityResolver {
-  use<T>(target: Capability<T>): T
+  use<T>(target: Capability<T, any>): T
 }
 
 export interface EventPublisher {
@@ -166,7 +231,7 @@ export interface JobDefinition<InputSchema extends StandardSchemaLike = Standard
   readonly version: number
   readonly transport: Capability<JobTransport>
   readonly input: InputSchema
-  readonly requires?: readonly Capability<any>[]
+  readonly requires?: readonly CapabilityRequirement<any, any>[]
   readonly retry?: JobRetryPolicy
   readonly idempotency?: JobIdempotencyPolicy<InputSchema>
   readonly handler: (input: InferOutput<InputSchema>, ctx: JobExecutionContext) => MaybePromise<void>
@@ -218,7 +283,7 @@ export interface EndpointDefinition<
   readonly method: HttpMethod
   readonly path: string
   readonly status?: number
-  readonly requires?: readonly Capability<any>[]
+  readonly requires?: readonly CapabilityRequirement<any, any>[]
   readonly emits?: readonly EventDefinition<any>[]
   readonly dispatches?: readonly AnyJob[]
   readonly input?: {
@@ -249,7 +314,7 @@ export interface ListenerContext extends CapabilityResolver {
 export interface ListenerDefinition<Payload> {
   readonly kind: "arc.listener"
   readonly event: EventDefinition<Payload>
-  readonly requires?: readonly Capability<any>[]
+  readonly requires?: readonly CapabilityRequirement<any, any>[]
   readonly emits?: readonly EventDefinition<any>[]
   readonly dispatches?: readonly AnyJob[]
   readonly handler: (payload: Payload, ctx: ListenerContext) => MaybePromise<void>
@@ -312,6 +377,7 @@ export type ArcErrorCode =
   | "ARC1007"
   | "ARC1008"
   | "ARC1009"
+  | "ARC1010"
   | "ARC2001"
   | "ARC2003"
   | "ARC2002"
@@ -374,7 +440,7 @@ export function buildApplication(application: AppDefinition, options: BuildAppli
     moduleNames.add(mod.name)
 
     for (const [endpointName, ep] of Object.entries(mod.endpoints)) {
-      for (const target of ep.requires ?? []) registerCapability(target, `${mod.name}.${endpointName}`)
+      for (const requirement of ep.requires ?? []) registerCapability(requirementCapability(requirement), `${mod.name}.${endpointName}`)
       for (const dispatched of ep.dispatches ?? []) registerCapability(dispatched.transport, `${mod.name}.${endpointName}`)
       const routeKey = `${ep.method} ${ep.path}`
       if (routeKeys.has(routeKey)) {
@@ -386,7 +452,7 @@ export function buildApplication(application: AppDefinition, options: BuildAppli
     }
 
     for (const [listenerName, item] of Object.entries(mod.listeners ?? {})) {
-      for (const target of item.requires ?? []) registerCapability(target, `${mod.name}.${listenerName}`)
+      for (const requirement of item.requires ?? []) registerCapability(requirementCapability(requirement), `${mod.name}.${listenerName}`)
       for (const dispatched of item.dispatches ?? []) registerCapability(dispatched.transport, `${mod.name}.${listenerName}`)
       validateRequiredCapabilities(providers, item.requires ?? [], `${mod.name}.${listenerName}`, options.allowMissingCapabilities ?? false)
       validateRequiredCapabilities(providers, (item.dispatches ?? []).map((job) => job.transport), `${mod.name}.${listenerName}`, options.allowMissingCapabilities ?? false)
@@ -399,7 +465,7 @@ export function buildApplication(application: AppDefinition, options: BuildAppli
       }
       jobKeys.add(key)
       registerCapability(item.transport, `${mod.name}.${jobName}`)
-      for (const target of item.requires ?? []) registerCapability(target, `${mod.name}.${jobName}`)
+      for (const requirement of item.requires ?? []) registerCapability(requirementCapability(requirement), `${mod.name}.${jobName}`)
       if (item.idempotency) registerCapability(item.idempotency.store, `${mod.name}.${jobName}`)
       validateRequiredCapabilities(
         providers,
@@ -415,11 +481,12 @@ export function buildApplication(application: AppDefinition, options: BuildAppli
 
 function validateRequiredCapabilities(
   providers: ReadonlyMap<symbol, Provider<any>>,
-  required: readonly Capability<any>[],
+  required: readonly CapabilityRequirement<any, any>[],
   owner: string,
   allowMissing: boolean
 ) {
-  for (const target of required) {
+  for (const requirement of required) {
+    const target = requirementCapability(requirement)
     if (!providers.has(target.id) && !allowMissing) {
       throw new ArcError("ARC1004", `${owner} requires capability '${target.name}', but no provider is configured`, {
         owner,
@@ -429,16 +496,68 @@ function validateRequiredCapabilities(
   }
 }
 
+function restrictedCapabilityValue<T>(
+  target: Capability<T, any>,
+  value: T,
+  operations: readonly string[],
+  owner: string
+): T {
+  if ((typeof value !== "object" || value === null) && typeof value !== "function") return value
+
+  const operationMethods = target.metadata?.operationMethods
+  if (!operationMethods) {
+    throw new ArcError("ARC1010", `Capability '${target.name}' cannot enforce operation-level access`, {
+      owner,
+      capability: target.name,
+      operations
+    })
+  }
+
+  const allowedMethods = new Set<string>()
+  for (const operation of operations) {
+    for (const method of operationMethods[operation] ?? []) allowedMethods.add(method)
+  }
+
+  return new Proxy(value as object, {
+    get(targetValue, property, receiver) {
+      const resolved = Reflect.get(targetValue, property, receiver)
+      if (typeof resolved !== "function") return resolved
+
+      const method = String(property)
+      if (!allowedMethods.has(method)) {
+        return () => {
+          throw new ArcError("ARC1010", `${owner} called '${target.name}.${method}()' without declaring the required operation access`, {
+            owner,
+            capability: target.name,
+            method,
+            operations
+          })
+        }
+      }
+
+      return resolved.bind(targetValue)
+    }
+  }) as T
+}
+
 export function createCapabilityResolver(
   built: BuiltApplication,
-  allowed?: readonly Capability<any>[],
+  allowed?: readonly CapabilityRequirement<any, any>[],
   owner = "runtime"
 ): CapabilityResolver {
-  const allowedIds = allowed ? new Set(allowed.map((target) => target.id)) : undefined
+  const accessById = allowed
+    ? new Map<symbol, readonly string[] | null>(
+        allowed.map((requirement) => {
+          const target = requirementCapability(requirement)
+          const operations = requirementOperations(requirement)
+          return [target.id, operations ?? null]
+        })
+      )
+    : undefined
 
   return {
-    use<T>(target: Capability<T>): T {
-      if (allowedIds && !allowedIds.has(target.id)) {
+    use<T>(target: Capability<T, any>): T {
+      if (accessById && !accessById.has(target.id)) {
         throw new ArcError("ARC1005", `${owner} used capability '${target.name}' without declaring it in requires`, {
           owner,
           capability: target.name
@@ -450,13 +569,14 @@ export function createCapabilityResolver(
           capability: target.name
         })
       }
-      return provider.value as T
+      const operations = accessById?.get(target.id)
+      return operations ? restrictedCapabilityValue(target, provider.value as T, operations, owner) : provider.value as T
     }
   }
 }
 
 export interface ApplicationGraph {
-  schemaVersion: 3
+  schemaVersion: 4
   name: string
   capabilities: Array<{
     name: string
@@ -474,6 +594,7 @@ export interface ApplicationGraph {
       path: string
       status: number
       requires: string[]
+      access: Array<{ capability: string; operations: string[] }>
       emits: Array<{ event: string; version: number }>
       dispatches: Array<{ job: string; version: number }>
       hasParamsSchema: boolean
@@ -486,6 +607,7 @@ export interface ApplicationGraph {
       event: string
       version: number
       requires: string[]
+      access: Array<{ capability: string; operations: string[] }>
       emits: Array<{ event: string; version: number }>
       dispatches: Array<{ job: string; version: number }>
     }>
@@ -495,6 +617,7 @@ export interface ApplicationGraph {
       version: number
       transport: string
       requires: string[]
+      access: Array<{ capability: string; operations: string[] }>
       retry?: JobRetryPolicy
       idempotency?: { store: string; leaseSeconds: number; ttlSeconds?: number }
       hasInputSchema: boolean
@@ -508,22 +631,22 @@ export function inspect(application: AppDefinition): ApplicationGraph {
   for (const provider of application.providers ?? []) capabilities.set(provider.capability.id, provider.capability)
   for (const mod of application.modules) {
     for (const ep of Object.values(mod.endpoints)) {
-      for (const target of ep.requires ?? []) capabilities.set(target.id, target)
+      for (const requirement of ep.requires ?? []) { const target = requirementCapability(requirement); capabilities.set(target.id, target) }
       for (const dispatched of ep.dispatches ?? []) capabilities.set(dispatched.transport.id, dispatched.transport)
     }
     for (const item of Object.values(mod.listeners ?? {})) {
-      for (const target of item.requires ?? []) capabilities.set(target.id, target)
+      for (const requirement of item.requires ?? []) { const target = requirementCapability(requirement); capabilities.set(target.id, target) }
       for (const dispatched of item.dispatches ?? []) capabilities.set(dispatched.transport.id, dispatched.transport)
     }
     for (const item of Object.values(mod.jobs ?? {})) {
       capabilities.set(item.transport.id, item.transport)
-      for (const target of item.requires ?? []) capabilities.set(target.id, target)
+      for (const requirement of item.requires ?? []) { const target = requirementCapability(requirement); capabilities.set(target.id, target) }
       if (item.idempotency) capabilities.set(item.idempotency.store.id, item.idempotency.store)
     }
   }
 
   return {
-    schemaVersion: 3,
+    schemaVersion: 4,
     name: application.name,
     capabilities: [...capabilities.values()].map((target) => ({
       name: target.name,
@@ -540,7 +663,10 @@ export function inspect(application: AppDefinition): ApplicationGraph {
         method: ep.method,
         path: ep.path,
         status: ep.status ?? 200,
-        requires: (ep.requires ?? []).map((item) => item.name),
+        requires: (ep.requires ?? []).map((item) => requirementCapability(item).name),
+        access: (ep.requires ?? [])
+          .filter((item) => item.kind === "arc.capability-access")
+          .map((item) => ({ capability: item.capability.name, operations: [...item.operations] })),
         emits: (ep.emits ?? []).map((item) => ({ event: item.name, version: item.version })),
         dispatches: (ep.dispatches ?? []).map((item) => ({ job: item.name, version: item.version })),
         hasParamsSchema: Boolean(ep.input?.params),
@@ -552,7 +678,10 @@ export function inspect(application: AppDefinition): ApplicationGraph {
         name,
         event: item.event.name,
         version: item.event.version,
-        requires: (item.requires ?? []).map((target) => target.name),
+        requires: (item.requires ?? []).map((target) => requirementCapability(target).name),
+        access: (item.requires ?? [])
+          .filter((target) => target.kind === "arc.capability-access")
+          .map((target) => ({ capability: target.capability.name, operations: [...target.operations] })),
         emits: (item.emits ?? []).map((emitted) => ({ event: emitted.name, version: emitted.version })),
         dispatches: (item.dispatches ?? []).map((job) => ({ job: job.name, version: job.version }))
       })),
@@ -561,7 +690,10 @@ export function inspect(application: AppDefinition): ApplicationGraph {
         job: item.name,
         version: item.version,
         transport: item.transport.name,
-        requires: (item.requires ?? []).map((target) => target.name),
+        requires: (item.requires ?? []).map((target) => requirementCapability(target).name),
+        access: (item.requires ?? [])
+          .filter((target) => target.kind === "arc.capability-access")
+          .map((target) => ({ capability: target.capability.name, operations: [...target.operations] })),
         ...(item.retry ? { retry: item.retry } : {}),
         ...(item.idempotency ? {
           idempotency: {
@@ -650,6 +782,7 @@ const ARC_ERROR_CATALOG: Readonly<Record<ArcErrorCode, ArcErrorDescriptor>> = Ob
   ARC1007: { code: "ARC1007", title: "Undeclared event emission", remediation: "Add the event to the endpoint/listener emits list before calling ctx.events.emit()." },
   ARC1008: { code: "ARC1008", title: "Duplicate job definition", remediation: "Give every job name/version pair a unique definition in the application." },
   ARC1009: { code: "ARC1009", title: "Undeclared job dispatch", remediation: "Add the job to dispatches before calling ctx.jobs.dispatch()." },
+  ARC1010: { code: "ARC1010", title: "Undeclared capability operation", remediation: "Declare operation-level access for the resource method or use an unrestricted capability requirement intentionally." },
   ARC2001: { code: "ARC2001", title: "Malformed JSON request", remediation: "Send syntactically valid JSON when using application/json." },
   ARC2003: { code: "ARC2003", title: "Invalid job payload", remediation: "Dispatch a payload accepted by the job input schema and keep producers/consumers on compatible job versions." },
   ARC2002: { code: "ARC2002", title: "Endpoint output contract violation", remediation: "Make the handler return a value accepted by its declared output schema." }
