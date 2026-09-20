@@ -15,6 +15,9 @@ This directory is the canonical product and engineering knowledge base for Arc. 
 - [System architecture](./architecture/system-overview.md) — how the pieces fit.
 - [Roadmap](./project/roadmap.md) — current sequence and release gates.
 - [Current status](./project/status.md) — what is implemented and verified today.
+- [Production readiness](./project/production-readiness.md) — evidence gates before Arc can make production claims.
+- [Reference applications](./project/reference-applications.md) — executable product corpus from simple CRUD to workflows, realtime and agents.
+- [Capability backlog](./project/capability-backlog.md) — risk-ordered implementation work derived from the corpus.
 
 ## Documentation architecture
 
