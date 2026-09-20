@@ -107,6 +107,10 @@ test("arc dev records authorization denials without exposing principal claims", 
     assert.equal(decisions.at(-1)?.kind, "authentication")
     assert.equal(decisions.at(-1)?.outcome, "deny")
     assert.equal("claims" in (decisions.at(-1)?.principal ?? {}), false)
+
+    const explanation = await fetch(`http://127.0.0.1:${port}/__arc/api/explain?code=ARC3001`).then((response) => response.json())
+    assert.equal(explanation.code, "ARC3001")
+    assert.equal(typeof explanation.remediation, "string")
   } finally {
     child.kill("SIGTERM")
     await Promise.race([
