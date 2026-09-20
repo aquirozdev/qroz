@@ -11,9 +11,47 @@ Research date: **2026-09-19**.
 
 The Minimum Common Web API draft dated 31 July 2026 describes the first edition of an Ecma standard for a curated subset of Web Platform APIs in server runtimes, adopted by the Ecma General Assembly in December 2025.
 
-Arc implication: keeping portable runtime boundaries around standard `Request`, `Response`, `Headers`, URL and streams is aligned with an actual standards direction rather than only a framework convention.
+Arc implication: Web-standard `Request`, `Response`, `Headers`, URL and streams remain the correct portable runtime boundary.
 
 Source: https://min-common-api.proposal.wintertc.org/
+
+## Standard Schema
+
+Standard Schema V1 is a common validator interface. The project also defines Standard JSON Schema V1 for entities capable of producing JSON Schema.
+
+Arc implication: keep validation provider-neutral and use Standard JSON Schema opportunistically for generated contracts rather than adding Zod-specific conversion logic.
+
+Sources:
+- https://standardschema.dev/schema
+- https://standardschema.dev/json-schema
+
+## OpenAPI / JSON Schema
+
+OpenAPI 3.2.1 was published on 2026-09-10. OpenAPI 3.2 uses a JSON Schema 2020-12-based dialect. JSON Schema's current published version remains Draft 2020-12.
+
+Arc implication: future HTTP contract generation should target OpenAPI 3.2.x and must distinguish schemas that can be faithfully converted from opaque Standard Schema validators.
+
+Sources:
+- https://spec.openapis.org/oas/v3.2.1.html
+- https://json-schema.org/specification
+
+## AsyncAPI
+
+AsyncAPI 3.1.0 was released in January 2026 and describes message-driven APIs independently of transport.
+
+Arc implication: evaluate AsyncAPI as an export/documentation format for public event/message boundaries; do not make it Arc's internal job/event model.
+
+Sources:
+- https://www.asyncapi.com/blog/release-notes-3.1.0
+- https://www.asyncapi.com/docs/concepts/asyncapi-document
+
+## W3C Trace Context
+
+W3C Trace Context standardizes `traceparent` and `tracestate` propagation. The recommendation also explicitly warns against putting personally identifiable information into `tracestate`.
+
+Arc implication: v0.7 propagation stays standards-compatible and agent/telemetry code must treat trace state as opaque tracing data, not an application metadata carrier.
+
+Source: https://www.w3.org/TR/trace-context/
 
 ## MCP
 
@@ -29,7 +67,7 @@ Sources:
 
 SQLite-backed Durable Objects are GA and Cloudflare recommends SQLite storage for new Durable Object classes.
 
-Arc implication: the SQLite DO remains a credible Cloudflare implementation of coordinated job idempotency state.
+Arc implication: SQLite DO remains a credible Cloudflare implementation of coordinated job idempotency state.
 
 Source: https://developers.cloudflare.com/durable-objects/
 
@@ -53,15 +91,23 @@ Sources:
 - https://opentelemetry.io/docs/specs/semconv/db/database-spans/
 - https://opentelemetry.io/docs/specs/semconv/messaging/
 
-## AWS SQS/Lambda
+## AWS Lambda / SQS
 
-AWS Lambda supports partial batch failure reporting for SQS. AWS Powertools documents that this reduces repeat processing but does not guarantee exactly-once and recommends idempotent processing.
+AWS Lambda currently lists managed Node.js 24 on Amazon Linux 2023 and Node.js 26 as an upcoming November 2026 runtime target. Lambda SQS integrations support partial batch failure reporting. AWS Powertools documents that partial failure handling reduces duplicate processing but does not guarantee exactly-once execution.
 
-Arc implication: the next AWS job adapter can map Arc per-message outcomes to SQS partial batch responses without changing the at-least-once model.
+Arc implication: design the AWS adapter for modern AL2023 runtimes and map Arc per-message outcomes to SQS partial batch responses while retaining idempotency.
 
 Sources:
+- https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html
 - https://docs.aws.amazon.com/powertools/typescript/latest/features/batch/
-- https://docs.aws.amazon.com/powertools/typescript/latest/
+
+## npm package publishing
+
+npm trusted publishing uses OIDC and can automatically generate provenance in supported public publishing workflows. npm currently documents that provenance is not generated when publishing from private repositories.
+
+Arc implication: do not design public release provenance around the current private-repository state without revisiting this constraint.
+
+Source: https://docs.npmjs.com/trusted-publishers/
 
 ## Documentation systems
 

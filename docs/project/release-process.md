@@ -1,6 +1,6 @@
 ---
 title: Release process
-description: Proposed evidence-driven release workflow for Arc research releases and future packages.
+description: Evidence-driven release workflow for Arc research releases and future packages.
 ---
 
 # Release process
@@ -14,7 +14,7 @@ Arc is pre-1.0. Releases communicate research milestones, not compatibility guar
 3. run local `npm run verify`;
 4. open PR;
 5. run platform integration gates in GitHub Actions;
-6. update documentation/ADR/changelog;
+6. update canonical documentation/ADR/changelog;
 7. merge only after relevant gates are green.
 
 ## Release evidence
@@ -29,13 +29,20 @@ A changelog entry should separate:
 
 ## Future package release requirements
 
-Before publishing packages broadly:
+Before broadly publishing `@arc/*` packages:
 
-- workspace package versions managed consistently;
-- changeset/release-note automation;
-- npm provenance/signing strategy;
-- API Extractor or equivalent public-surface verification;
-- generated TypeDoc/reference strategy;
+- consistent workspace package versioning;
+- release-note/changeset automation;
+- npm trusted publishing through OIDC where repository/publication constraints permit it;
+- package provenance strategy;
+- public API surface verification;
+- generated API/reference strategy;
 - compatibility/deprecation policy;
 - canary prereleases;
 - upgrade tests against a reference application.
+
+### Provenance note
+
+npm trusted publishing can automatically generate provenance for supported GitHub/GitLab CI publishing, but npm currently documents that provenance is not generated from **private repositories**. Arc must therefore revisit repository visibility/release provenance before treating public package publishing as production-ready.
+
+No long-lived npm automation token should be introduced merely to make early releases easier.
