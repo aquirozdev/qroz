@@ -1,5 +1,17 @@
 export type MaybePromise<T> = T | Promise<T>
 
+export interface Principal {
+  readonly id: string
+  readonly type?: string
+  readonly permissions?: readonly string[]
+  readonly claims?: Readonly<Record<string, unknown>>
+}
+
+export interface EndpointAuthorization {
+  readonly required?: boolean
+  readonly permissions?: readonly string[]
+}
+
 export type StandardSchemaLike<Input = unknown, Output = Input> = {
   readonly "~standard": {
     readonly version: 1
@@ -267,6 +279,7 @@ export interface EndpointContext<
   QuerySchema extends StandardSchemaLike | EmptySchema
 > extends CapabilityResolver {
   request: Request
+  principal?: Principal
   events: EventPublisher
   jobs: JobPublisher
   input: {
@@ -286,6 +299,7 @@ export interface EndpointDefinition<
   readonly method: HttpMethod
   readonly path: string
   readonly status?: number
+  readonly auth?: EndpointAuthorization
   readonly requires?: readonly CapabilityRequirement<any, any>[]
   readonly emits?: readonly EventDefinition<any>[]
   readonly dispatches?: readonly AnyJob[]
@@ -382,6 +396,8 @@ export type ArcErrorCode =
   | "ARC1009"
   | "ARC1010"
   | "ARC2001"
+  | "ARC3001"
+  | "ARC3002"
   | "ARC2003"
   | "ARC2002"
 
@@ -590,7 +606,7 @@ export function createCapabilityResolver(
 }
 
 export interface ApplicationGraph {
-  schemaVersion: 4
+  schemaVersion: 5
   name: string
   capabilities: Array<{
     name: string
@@ -608,6 +624,7 @@ export interface ApplicationGraph {
       method: HttpMethod
       path: string
       status: number
+      auth?: { required: boolean; permissions: string[] }
       requires: string[]
       access: Array<{ capability: string; operations: string[] }>
       emits: Array<{ event: string; version: number }>
@@ -661,7 +678,7 @@ export function inspect(application: AppDefinition): ApplicationGraph {
   }
 
   return {
-    schemaVersion: 4,
+    schemaVersion: 5,
     name: application.name,
     capabilities: [...capabilities.values()].map((target) => ({
       name: target.name,
@@ -679,6 +696,12 @@ export function inspect(application: AppDefinition): ApplicationGraph {
         method: ep.method,
         path: ep.path,
         status: ep.status ?? 200,
+        ...(ep.auth ? {
+          auth: {
+            required: ep.auth.required ?? Boolean(ep.auth.permissions?.length),
+            permissions: [...(ep.auth.permissions ?? [])]
+          }
+        } : {}),
         requires: (ep.requires ?? []).map((item) => requirementCapability(item).name),
         access: (ep.requires ?? [])
           .filter((item) => item.kind === "arc.capability-access")
@@ -801,7 +824,9 @@ const ARC_ERROR_CATALOG: Readonly<Record<ArcErrorCode, ArcErrorDescriptor>> = Ob
   ARC1010: { code: "ARC1010", title: "Undeclared capability operation", remediation: "Declare operation-level access for the resource method or use an unrestricted capability requirement intentionally." },
   ARC2001: { code: "ARC2001", title: "Malformed JSON request", remediation: "Send syntactically valid JSON when using application/json." },
   ARC2003: { code: "ARC2003", title: "Invalid job payload", remediation: "Dispatch a payload accepted by the job input schema and keep producers/consumers on compatible job versions." },
-  ARC2002: { code: "ARC2002", title: "Endpoint output contract violation", remediation: "Make the handler return a value accepted by its declared output schema." }
+  ARC2002: { code: "ARC2002", title: "Endpoint output contract violation", remediation: "Make the handler return a value accepted by its declared output schema." },
+  ARC3001: { code: "ARC3001", title: "Authentication required", remediation: "Attach an authenticated principal to the execution context before invoking this endpoint." },
+  ARC3002: { code: "ARC3002", title: "Permission denied", remediation: "Grant the principal the declared permission or provide an authorizer that allows it." }
 })
 
 export function explainError(code: ArcErrorCode): ArcErrorDescriptor {
