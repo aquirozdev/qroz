@@ -6,10 +6,10 @@
     {"title":"Architecture","pages":["architecture/system-overview.md","architecture/application-graph.md","architecture/runtime-model.md","architecture/resource-lifecycle.md","architecture/observability.md","architecture/security-and-agent-boundaries.md"]},
     {"title":"Reference","pages":["reference/glossary.md","reference/package-map.md","reference/cli.md","reference/errors.md","reference/application-graph.md"]},
     {"title":"Platforms","pages":["platforms/cloudflare.md","platforms/aws.md"]},
-    {"title":"Agents","pages":["agents/README.md","agents/mcp.md"]},
+    {"title":"Agents","pages":["agents/README.md","agents/mcp.md","agents/github-copilot.md"]},
     {"title":"Proposals","pages":["proposals/README.md","proposals/authorization-and-policies.md","proposals/durable-workflows.md","proposals/deployment-planner.md","proposals/generated-contracts.md","proposals/developer-platform.md"]},
-    {"title":"Project","pages":["project/vision.md","project/principles.md","project/non-goals.md","project/status.md","project/support-matrix.md","project/roadmap.md","project/quality-gates.md","project/compatibility-policy.md","project/production-readiness.md","project/standards-baseline.md","project/competitive-landscape.md","project/documentation-strategy.md","project/release-process.md"]},
-    {"title":"Research","pages":["research/README.md","research/2026-09-platform-baseline.md"]},
+    {"title":"Project","pages":["project/vision.md","project/principles.md","project/non-goals.md","project/status.md","project/support-matrix.md","project/roadmap.md","project/quality-gates.md","project/compatibility-policy.md","project/production-readiness.md","project/standards-baseline.md","project/competitive-landscape.md","project/documentation-strategy.md","project/release-process.md","project/repository-governance.md","project/github-projects.md","project/security-automation.md","project/repository-readiness-checklist.md"]},
+    {"title":"Research","pages":["research/README.md","research/2026-09-platform-baseline.md","research/2026-09-github-agents-and-projects.md"]},
     {"title":"Decisions","pages":["decisions/README.md"]}
   ]
 }
