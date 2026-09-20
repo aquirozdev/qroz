@@ -1,71 +1,62 @@
 # Instructions for coding agents
 
-Arc is developed from final-user examples inward. Do not optimize for adding framework surface; optimize for preserving a small, truthful semantic model.
+Arc is developed from the desired application API inward. Optimize for a small, truthful semantic model — not framework surface area.
 
-## Required loop
+## Read first
 
-Before adding or changing an abstraction:
+Before a substantial change, read:
 
-1. Write/modify an example showing the desired final application API.
+1. `docs/README.md`;
+2. `docs/project/vision.md`;
+3. `docs/project/principles.md`;
+4. `docs/project/status.md`;
+5. `docs/project/roadmap.md`;
+6. relevant architecture/concept pages and ADRs.
+
+## Required development loop
+
+1. Write or update the desired final-user example.
 2. Add an outside-in test that fails for the missing behavior.
-3. If portability is claimed, add/extend a shared contract and run it against at least two implementations.
+3. If portability is claimed, extend a shared contract and exercise multiple implementations.
 4. Implement the smallest coherent behavior.
 5. Run `npm run verify`.
-6. Update Application Graph output if architecture changed.
-7. Update docs/ADR when a decision constrains future design.
+6. Update Application Graph fixtures if semantics changed.
+7. Update canonical docs.
+8. Add an ADR when a decision constrains future architecture.
 
 ## Architectural invariants
 
 Do not:
 
 - introduce decorators/reflection into `@arc/core`;
-- import AWS/Cloudflare/Node vendor types into `@arc/core`;
-- bypass `requires`, `emits`, or `dispatches` metadata;
-- relax strict compiler options;
-- introduce an abstraction from one provider and label it portable;
-- invent a custom ORM/schema/test runner/bundler without evidence;
-- hide provider-specific functionality when an explicit escape hatch is more truthful;
-- create process-global database clients for serverless invocations;
-- claim exactly-once delivery or durable idempotency without a durable enforcement mechanism;
-- add a second tracing backend when a runtime already exposes compatible native tracing primitives.
+- import AWS/Cloudflare/Node vendor APIs into `@arc/core`;
+- bypass `requires`, `emits`, or `dispatches`;
+- weaken TypeScript strictness;
+- label a one-provider abstraction portable;
+- build a custom ORM/schema/test runner/bundler without compelling evidence;
+- hide useful provider-native behavior behind a false common denominator;
+- create process-global DB clients where the provider requires invocation lifecycle;
+- claim exactly-once behavior without proof;
+- expose secret values in graph, CLI, MCP or docs;
+- expose mutating MCP tools before authorization/approval/audit semantics exist.
 
 Prefer:
 
-- Web Standards;
+- TC55/Web Standards-compatible runtime boundaries;
 - deterministic JSON-friendly definitions;
-- semantic capability names;
-- Standard Schema compatible validation;
-- application-specific repository ports;
-- small adapters around vendor SDKs;
+- Standard Schema validation;
+- small vendor adapters;
 - invocation-scoped providers;
-- explicit execution surfaces and least-privilege composition;
+- explicit execution surfaces;
 - contract tests;
-- native platform telemetry bridged through a portable semantic interface.
+- native platform telemetry behind a portable semantic interface.
 
 ## Current status
 
-At v0.4:
+The canonical status is `docs/project/status.md`. At v0.7, Cloudflare/workerd, SQLite Durable Object idempotency, PostgreSQL/Drizzle and MCP v2 have CI integration coverage.
 
-- 43 tests pass;
-- runtime-web/memory/cloudflare adapters exist;
-- storage memory/R2 adapters pass shared contract;
-- queue memory/Cloudflare producer adapters pass shared contract;
-- typed/versioned jobs, memory consumer and Cloudflare Queue consumer exist;
-- job dispatch declarations are enforced and represented in Application Graph schema v2;
-- execution surfaces validate only the providers they actually require;
-- async invocation-scoped providers are supported;
-- portable semantic tracing and Cloudflare custom-span bridging exist;
-- `inspect`, `validate`, `explain`, `context`, `diff` exist;
-- real workerd execution is not yet verified because npm registry DNS is unavailable;
-- durable idempotency and cross-process trace propagation are not implemented yet.
+Current architectural priority: prove a second cloud with AWS Lambda + SQS/S3, then build auth/policies, durable workflows and the deployment model.
 
-## Current priority
+## Documentation rule
 
-1. Real workerd integration via official Cloudflare tooling.
-2. Drizzle + `pg` + PostgreSQL/Hyperdrive vertical slice using invocation-scoped clients.
-3. Durable idempotency contract/store and W3C trace-context propagation for jobs.
-4. Read-only MCP v2 server over the Application Graph.
-5. SQS adapter as the second external queue/consumer implementation before stabilizing advanced job semantics.
-6. Auth/policies and durable Workflows only after the above gates are green.
-
-Read `docs/ROADMAP.md`, `docs/QUALITY-GATES.md`, `docs/JOBS.md`, `docs/OBSERVABILITY.md`, and relevant ADRs before large changes.
+Do not add a second explanation of an existing concept. Update the canonical page and link to it. Time-sensitive external facts go under `docs/research/`. Run `npm run docs:check`.

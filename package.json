@@ -12,7 +12,8 @@
     "build": "tsc -b",
     "typecheck": "tsc -b --pretty false",
     "test": "npm run build && node --test examples/hello-world/test/*.test.mjs",
-    "verify": "npm run clean && npm run typecheck && npm test",
+    "docs:check": "node scripts/check-docs.mjs",
+    "verify": "npm run clean && npm run typecheck && npm test && npm run docs:check",
     "inspect": "npm run build && node packages/cli/bin/arc.mjs inspect examples/hello-world/dist/app.js",
     "inspect:json": "npm run build && node packages/cli/bin/arc.mjs inspect examples/hello-world/dist/app.js --json"
   }
