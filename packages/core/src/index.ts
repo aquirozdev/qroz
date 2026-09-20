@@ -906,10 +906,10 @@ export function inspect(application: AppDefinition): ApplicationGraph {
             policies: (ep.auth.policies ?? []).map((policy) => policy.name)
           }
         } : {}),
-        requires: [
+        requires: [...new Set([
           ...(ep.requires ?? []),
           ...(ep.auth?.policies ?? []).flatMap((policy) => policy.requires ?? [])
-        ].map((item) => requirementCapability(item).name),
+        ].map((item) => requirementCapability(item).name))],
         access: [
           ...(ep.requires ?? []),
           ...(ep.auth?.policies ?? []).flatMap((policy) => policy.requires ?? [])
