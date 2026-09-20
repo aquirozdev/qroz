@@ -27,11 +27,18 @@ export interface ObjectStorage {
   native?(): unknown
 }
 
-export function storage(name: string): Capability<ObjectStorage> {
-  return capability<ObjectStorage>(`storage.${name}`, {
+export type StorageAccess = "read" | "write" | "delete"
+
+export function storage(name: string): Capability<ObjectStorage, StorageAccess> {
+  return capability<ObjectStorage, StorageAccess>(`storage.${name}`, {
     kind: "resource",
     resourceType: "object-storage",
-    features: ["get", "head", "put", "delete", "streaming"]
+    features: ["get", "head", "put", "delete", "streaming"],
+    operationMethods: {
+      read: ["get", "head"],
+      write: ["put"],
+      delete: ["delete"]
+    }
   })
 }
 
