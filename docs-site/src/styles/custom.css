@@ -1,0 +1,15 @@
+:root {
+  --sl-content-width: 52rem;
+}
+
+.hero {
+  border-bottom: 1px solid var(--sl-color-gray-5);
+}
+
+.sl-markdown-content table {
+  width: 100%;
+}
+
+.sl-markdown-content code {
+  font-variant-ligatures: none;
+}
