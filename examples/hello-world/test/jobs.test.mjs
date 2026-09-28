@@ -181,7 +181,7 @@ test("undeclared job dispatch fails so the graph cannot lie", async () => {
   const instrumented = createMemoryRuntime(definition, { onError(error) { captured = error } })
   const response = await instrumented.fetch(new Request("https://app.test/hidden-job", { method: "POST" }))
   assert.equal(response.status, 500)
-  assert.equal(captured?.code, "ARC1009")
+  assert.equal(captured?.code, "QROZ1009")
 })
 
 test("duplicate job name/version pairs fail at build time", async () => {
@@ -196,7 +196,7 @@ test("duplicate job name/version pairs fail at build time", async () => {
       module({ name: "b", endpoints: {}, jobs: { Two } })
     ]
   })
-  assert.throws(() => buildApplication(definition), (error) => error.code === "ARC1008")
+  assert.throws(() => buildApplication(definition), (error) => error.code === "QROZ1008")
 })
 
 test("Cloudflare job consumer disposes invocation provider scopes", async () => {
