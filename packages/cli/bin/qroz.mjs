@@ -374,7 +374,7 @@ if (command === "dev") {
 
 if (command === "explain") {
   const code = positional[0]
-  if (!code || !/^QROZ\d{4}$/.test(code)) fail("usage: qroz explain <ARCxxxx> [--json]")
+  if (!code || !/^ARC\d{4}$/.test(code)) fail("usage: qroz explain <ARCxxxx> [--json]")
   const descriptor = explainError(code)
   if (!descriptor) fail(`unknown error code '${code}'`)
   if (json) console.log(JSON.stringify(descriptor, null, 2))
