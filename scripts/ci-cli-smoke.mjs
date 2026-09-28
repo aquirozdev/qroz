@@ -75,7 +75,7 @@ child.stderr.setEncoding("utf8")
 child.stderr.on("data", (chunk) => { stderr += chunk })
 
 try {
-  const response = await waitFor(`http://127.0.0.1:${port}/__arc/api/graph`, child, () => stderr)
+  const response = await waitFor(`http://127.0.0.1:${port}/__qroz/api/graph`, child, () => stderr)
   const devGraph = await response.json()
   if (devGraph.name !== "taskboard") throw new Error(`unexpected dev graph: ${devGraph.name}`)
 } finally {
