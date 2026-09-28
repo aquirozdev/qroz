@@ -44,7 +44,7 @@ test("rejects malformed JSON", async () => {
     body: "{bad"
   }))
   assert.equal(response.status, 400)
-  assert.deepEqual(await response.json(), { error: "Request body contains invalid JSON", code: "ARC2001" })
+  assert.deepEqual(await response.json(), { error: "Request body contains invalid JSON", code: "QROZ2001" })
 })
 
 test("creates users, publishes an event, and executes listeners", async () => {
@@ -126,7 +126,7 @@ test("fails at build time when a required capability is missing", () => {
     handler() { return { ok: "yes" } }
   })
   const broken = app({ name: "broken", modules: [module({ name: "broken", endpoints: { ep } })] })
-  assert.throws(() => buildApplication(broken), (error) => error.code === "ARC1004")
+  assert.throws(() => buildApplication(broken), (error) => error.code === "QROZ1004")
 })
 
 test("rejects duplicate routes before runtime", () => {
@@ -142,7 +142,7 @@ test("rejects duplicate routes before runtime", () => {
       module({ name: "two", endpoints: { two } })
     ]
   })
-  assert.throws(() => buildApplication(duplicate), (error) => error.code === "ARC1002")
+  assert.throws(() => buildApplication(duplicate), (error) => error.code === "QROZ1002")
 })
 
 test("prevents undeclared capability usage so the graph cannot lie", async () => {
@@ -169,7 +169,7 @@ test("prevents undeclared capability usage so the graph cannot lie", async () =>
   const response = await createMemoryRuntime(sneakyApp, { onError(error) { captured = error } })
     .fetch(new Request("https://app.test/sneaky"))
   assert.equal(response.status, 500)
-  assert.equal(captured.code, "ARC1005")
+  assert.equal(captured.code, "QROZ1005")
 })
 
 test("treats output schema violations as server errors, not bad client input", async () => {
@@ -186,7 +186,7 @@ test("treats output schema violations as server errors, not bad client input", a
   const response = await createMemoryRuntime(badApp, { onError(error) { captured = error } })
     .fetch(new Request("https://app.test/bad-output"))
   assert.equal(response.status, 500)
-  assert.equal(captured.code, "ARC2002")
+  assert.equal(captured.code, "QROZ2002")
 })
 
 
@@ -201,7 +201,7 @@ test("rejects ambiguous capability names so graph identities remain deterministi
     providers: [provide(first, {}), provide(second, {})],
     modules: [module({ name: "ambiguous", endpoints: { one, two } })]
   })
-  assert.throws(() => buildApplication(ambiguous), (error) => error.code === "ARC1006")
+  assert.throws(() => buildApplication(ambiguous), (error) => error.code === "QROZ1006")
 })
 
 
@@ -223,7 +223,7 @@ test("prevents undeclared event emission so the graph remains trustworthy", asyn
   const response = await createMemoryRuntime(ghostApp, { onError(error) { captured = error } })
     .fetch(new Request("https://app.test/ghost"))
   assert.equal(response.status, 500)
-  assert.equal(captured.code, "ARC1007")
+  assert.equal(captured.code, "QROZ1007")
 })
 
 
@@ -256,7 +256,7 @@ test("enforces operation-level resource access so the graph cannot overstate lea
     .fetch(new Request("https://app.test/restricted"))
 
   assert.equal(response.status, 500)
-  assert.equal(captured.code, "ARC1010")
+  assert.equal(captured.code, "QROZ1010")
   assert.equal(captured.details.capability, "storage.restricted")
   assert.equal(captured.details.method, "put")
 })
@@ -315,13 +315,13 @@ test("enforces declarative endpoint authentication and permissions", async () =>
 
   const anonymous = await createTestRuntime(securedApp).fetch(new Request("https://app.test/secured"))
   assert.equal(anonymous.status, 401)
-  assert.deepEqual(await anonymous.json(), { error: "Authentication required", code: "ARC3001" })
+  assert.deepEqual(await anonymous.json(), { error: "Authentication required", code: "QROZ3001" })
 
   const denied = await createTestRuntime(securedApp, {
     context: { principal: { id: "user-1", permissions: [] } }
   }).fetch(new Request("https://app.test/secured"))
   assert.equal(denied.status, 403)
-  assert.deepEqual(await denied.json(), { error: "Permission denied", code: "ARC3002", permission: "users.read" })
+  assert.deepEqual(await denied.json(), { error: "Permission denied", code: "QROZ3002", permission: "users.read" })
 
   const allowed = await createTestRuntime(securedApp, {
     context: { principal: { id: "user-1", permissions: ["users.read"] } }
@@ -370,7 +370,7 @@ test("evaluates named endpoint policies against validated input", async () => {
   assert.equal(denied.status, 403)
   assert.deepEqual(await denied.json(), {
     error: "Permission denied",
-    code: "ARC3002",
+    code: "QROZ3002",
     policy: "accounts.owner"
   })
 
