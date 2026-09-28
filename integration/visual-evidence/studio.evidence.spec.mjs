@@ -4,7 +4,7 @@ import { test, expect } from "@playwright/test"
 test("Qroz Studio produces reviewable evidence from a real application journey", async ({ page }) => {
   await mkdir("evidence", { recursive: true })
 
-  await page.goto("/__arc/")
+  await page.goto("/__qroz/")
 
   await expect(page.getByText("Qroz Studio")).toBeVisible()
   await expect(page.locator("#title")).toHaveText("taskboard")
