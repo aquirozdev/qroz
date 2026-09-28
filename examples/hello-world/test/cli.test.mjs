@@ -37,12 +37,12 @@ test("CLI validates an application", () => {
 
 
 test("CLI explains stable framework error codes for humans and agents", () => {
-  const output = execFileSync(process.execPath, [cli, "explain", "ARC1004", "--json"], {
+  const output = execFileSync(process.execPath, [cli, "explain", "QROZ1004", "--json"], {
     cwd: new URL("../../..", import.meta.url),
     encoding: "utf8"
   })
   const explanation = JSON.parse(output)
-  assert.equal(explanation.code, "ARC1004")
+  assert.equal(explanation.code, "QROZ1004")
   assert.match(explanation.remediation, /Provide the required capability/)
 })
 
