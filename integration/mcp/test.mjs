@@ -13,7 +13,7 @@ function jsonResult(value) {
   }
 }
 
-function createArcMcpServer() {
+function createQrozMcpServer() {
   const server = new McpServer({ name: "qroz", version: "0.7.0" })
 
   server.registerTool("qroz.inspect", {
@@ -36,8 +36,8 @@ function createArcMcpServer() {
   })
 
   server.registerTool("qroz.explain", {
-    description: "Explain a stable ARCxxxx framework error code.",
-    inputSchema: z.object({ code: z.string().regex(/^ARC\d{4}$/) })
+    description: "Explain a stable QROZxxxx framework error code.",
+    inputSchema: z.object({ code: z.string().regex(/^QROZ\d{4}$/) })
   }, async ({ code }) => {
     const descriptor = explainError(code)
     if (!descriptor) return { content: [{ type: "text", text: `Unknown Qroz error code: ${code}` }], isError: true }
@@ -47,7 +47,7 @@ function createArcMcpServer() {
   return server
 }
 
-const handler = createMcpHandler(createArcMcpServer)
+const handler = createMcpHandler(createQrozMcpServer)
 const transport = new StreamableHTTPClientTransport(new URL("http://qroz.test/mcp"), {
   fetch: (url, init) => handler.fetch(new Request(url, init))
 })
@@ -75,9 +75,9 @@ const context = JSON.parse(contextResult.content[0].text)
 assert.equal(context.module.name, "users")
 assert.ok(context.module.endpoints.some((endpoint) => endpoint.path === "/users/:id"))
 
-const explainResult = await client.callTool({ name: "qroz.explain", arguments: { code: "ARC1004" } })
+const explainResult = await client.callTool({ name: "qroz.explain", arguments: { code: "QROZ1004" } })
 const explanation = JSON.parse(explainResult.content[0].text)
-assert.equal(explanation.code, "ARC1004")
+assert.equal(explanation.code, "QROZ1004")
 
 await transport.close()
 console.log("Qroz MCP v2 read-only integration passed")
