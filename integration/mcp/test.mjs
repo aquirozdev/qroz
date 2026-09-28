@@ -37,7 +37,7 @@ function createArcMcpServer() {
 
   server.registerTool("qroz.explain", {
     description: "Explain a stable ARCxxxx framework error code.",
-    inputSchema: z.object({ code: z.string().regex(/^QROZ\d{4}$/) })
+    inputSchema: z.object({ code: z.string().regex(/^ARC\d{4}$/) })
   }, async ({ code }) => {
     const descriptor = explainError(code)
     if (!descriptor) return { content: [{ type: "text", text: `Unknown Qroz error code: ${code}` }], isError: true }
