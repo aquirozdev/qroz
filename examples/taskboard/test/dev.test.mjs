@@ -119,8 +119,8 @@ test("qroz dev records authorization denials without exposing principal claims",
     const renameSurface = plan.surfaces.find((surface) => surface.id === "endpoint:projects.renameProject")
     assert.deepEqual(renameSurface?.resourceAccess.find((item) => item.capability === "tenants.memberships")?.operations, ["read"])
 
-    const explanation = await fetch(`http://127.0.0.1:${port}/__arc/api/explain?code=ARC3001`).then((response) => response.json())
-    assert.equal(explanation.code, "ARC3001")
+    const explanation = await fetch(`http://127.0.0.1:${port}/__arc/api/explain?code=QROZ3001`).then((response) => response.json())
+    assert.equal(explanation.code, "QROZ3001")
     assert.equal(typeof explanation.remediation, "string")
   } finally {
     child.kill("SIGTERM")
