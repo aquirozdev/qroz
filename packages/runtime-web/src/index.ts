@@ -9,7 +9,7 @@ import {
   type Principal,
   type AuthorizationDecision,
   type MaybePromise,
-  ArcError,
+  QrozError,
   ValidationError,
   buildApplication,
   createCapabilityResolver,
@@ -99,7 +99,7 @@ async function parseBody(request: Request): Promise<unknown> {
     try {
       return await request.json()
     } catch {
-      throw new ArcError("ARC2001", "Request body contains invalid JSON")
+      throw new QrozError("QROZ2001", "Request body contains invalid JSON")
     }
   }
   const text = await request.text()
@@ -200,7 +200,7 @@ export function createWebRuntime<ExecutionContext extends WebExecutionContext = 
         return {
           async emit<Payload>(definition: EventDefinition<Payload>, payload: Payload): Promise<void> {
             if (!allowedKeys.has(eventKey(definition))) {
-              throw new ArcError("ARC1007", `${owner} emitted event '${definition.name}@${definition.version}' without declaring it in emits`, {
+              throw new QrozError("QROZ1007", `${owner} emitted event '${definition.name}@${definition.version}' without declaring it in emits`, {
                 owner,
                 event: definition.name,
                 version: definition.version
@@ -216,7 +216,7 @@ export function createWebRuntime<ExecutionContext extends WebExecutionContext = 
         return {
           async dispatch(definition: JobDefinition<any>, payload: unknown, dispatchOptions: { delaySeconds?: number; id?: string } = {}): Promise<string> {
             if (!allowedKeys.has(jobKey(definition))) {
-              throw new ArcError("ARC1009", `${owner} dispatched job '${definition.name}@${definition.version}' without declaring it in dispatches`, {
+              throw new QrozError("QROZ1009", `${owner} dispatched job '${definition.name}@${definition.version}' without declaring it in dispatches`, {
                 owner,
                 job: definition.name,
                 version: definition.version
@@ -228,7 +228,7 @@ export function createWebRuntime<ExecutionContext extends WebExecutionContext = 
               validatedPayload = await validateSchema(definition.input, payload)
             } catch (error) {
               if (error instanceof ValidationError) {
-                throw new ArcError("ARC2003", `Job '${definition.name}@${definition.version}' payload failed its declared schema`, {
+                throw new QrozError("QROZ2003", `Job '${definition.name}@${definition.version}' payload failed its declared schema`, {
                   owner, job: definition.name, version: definition.version, issues: error.issues
                 })
               }
@@ -304,7 +304,7 @@ export function createWebRuntime<ExecutionContext extends WebExecutionContext = 
             kind: "authentication",
             outcome: "deny"
           })
-          return Response.json({ error: "Authentication required", code: "ARC3001" }, { status: 401 })
+          return Response.json({ error: "Authentication required", code: "QROZ3001" }, { status: 401 })
         }
         if (principal) {
           if (authenticationRequired) {
@@ -331,7 +331,7 @@ export function createWebRuntime<ExecutionContext extends WebExecutionContext = 
               permission
             })
             if (!allowed) {
-              return Response.json({ error: "Permission denied", code: "ARC3002", permission }, { status: 403 })
+              return Response.json({ error: "Permission denied", code: "QROZ3002", permission }, { status: 403 })
             }
           }
 
@@ -355,7 +355,7 @@ export function createWebRuntime<ExecutionContext extends WebExecutionContext = 
               policy: policy.name
             })
             if (!allowed) {
-              return Response.json({ error: "Permission denied", code: "ARC3002", policy: policy.name }, { status: 403 })
+              return Response.json({ error: "Permission denied", code: "QROZ3002", policy: policy.name }, { status: 403 })
             }
           }
         }
@@ -387,7 +387,7 @@ export function createWebRuntime<ExecutionContext extends WebExecutionContext = 
           validatedOutput = await validateSchema(endpoint.output, output)
         } catch (error) {
           if (error instanceof ValidationError) {
-            throw new ArcError("ARC2002", "Endpoint output failed its declared schema", {
+            throw new QrozError("QROZ2002", "Endpoint output failed its declared schema", {
               endpoint: `${matched.route.moduleName}.${matched.route.endpointName}`,
               issues: error.issues
             })
@@ -406,7 +406,7 @@ export function createWebRuntime<ExecutionContext extends WebExecutionContext = 
             { status: 400 }
           )
         }
-        if (error instanceof ArcError && error.code === "ARC2001") {
+        if (error instanceof QrozError && error.code === "QROZ2001") {
           return Response.json({ error: error.message, code: error.code }, { status: 400 })
         }
         options.onError?.(error)
