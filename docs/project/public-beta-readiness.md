@@ -11,7 +11,7 @@ This document separates **publishable beta**, **production-credible**, and **1.0
 
 Qroz is not ready for npm publication yet.
 
-The architecture and evidence base are strong enough to justify a public beta effort, but publication is currently blocked by package identity, licensing, release integrity, package metadata, clean-install proof, compatibility coverage and public documentation.
+The architecture and evidence base are strong enough to justify a public beta effort. The product identity is finalized as Qroz; publication is currently blocked by licensing, npm ownership/trusted-publisher setup, release integrity, package metadata, clean-install proof, compatibility coverage and public documentation.
 
 ## Release levels
 
@@ -66,7 +66,7 @@ Production-credible claims additionally require provider failure-path evidence, 
 
 Before any npm publish:
 
-1. choose the final project/package identity;
+1. [done] product identity is finalized as **Qroz**; verify npm ownership/availability for the intended `@qroz/*` packages;
 2. choose and commit an explicit repository license;
 3. normalize package versions into one deliberate prerelease line;
 4. replace internal `file:` dependency specifications with publication-safe version ranges during release preparation;
@@ -141,17 +141,13 @@ Before publication also add/verify:
 
 ## Naming gate
 
-**Qroz is a codename, not the recommended final public identity.**
+**Qroz is the final public identity.**
 
-Reasons:
+The naming decision is closed. Repository-facing product names, CLI commands, package scope, scaffold, Studio, internal dev namespace and stable framework error codes are being normalized to Qroz.
 
-- the established Architect serverless framework already uses the `qroz` CLI and `qroz.codes`;
-- other active projects use “Qroz Framework” for agent tooling;
-- the word is crowded across developer tooling and makes npm/search/discovery ambiguous.
+Remaining release checks are registry ownership/availability and any legal/domain review needed before public publication; they do not reopen product naming.
 
-A rename should happen before package publication, not after users depend on package names.
-
-See the naming decision record before performing a repository-wide rename.
+See the [naming decision](./naming.md).
 
 ## Exit condition
 
