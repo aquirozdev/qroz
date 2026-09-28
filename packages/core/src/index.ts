@@ -509,32 +509,32 @@ export function withProviders<const Modules extends readonly ModuleDefinition[]>
   })
 }
 
-export type ArcErrorCode =
-  | "ARC1001"
-  | "ARC1002"
-  | "ARC1003"
-  | "ARC1004"
-  | "ARC1005"
-  | "ARC1006"
-  | "ARC1007"
-  | "ARC1008"
-  | "ARC1009"
-  | "ARC1010"
-  | "ARC1011"
-  | "ARC2001"
-  | "ARC2004"
-  | "ARC3001"
-  | "ARC3002"
-  | "ARC2003"
-  | "ARC2002"
+export type QrozErrorCode =
+  | "QROZ1001"
+  | "QROZ1002"
+  | "QROZ1003"
+  | "QROZ1004"
+  | "QROZ1005"
+  | "QROZ1006"
+  | "QROZ1007"
+  | "QROZ1008"
+  | "QROZ1009"
+  | "QROZ1010"
+  | "QROZ1011"
+  | "QROZ2001"
+  | "QROZ2004"
+  | "QROZ3001"
+  | "QROZ3002"
+  | "QROZ2003"
+  | "QROZ2002"
 
-export class ArcError extends Error {
-  readonly code: ArcErrorCode
+export class QrozError extends Error {
+  readonly code: QrozErrorCode
   readonly details: Record<string, unknown> | undefined
 
-  constructor(code: ArcErrorCode, message: string, details?: Record<string, unknown>) {
+  constructor(code: QrozErrorCode, message: string, details?: Record<string, unknown>) {
     super(message)
-    this.name = "ArcError"
+    this.name = "QrozError"
     this.code = code
     this.details = details
   }
@@ -565,7 +565,7 @@ export function buildApplication(application: AppDefinition, options: BuildAppli
   const registerCapability = (target: Capability<any, any>, owner: string) => {
     const existing = capabilityNames.get(target.name)
     if (existing && existing !== target.id) {
-      throw new ArcError("ARC1006", `Capability name '${target.name}' refers to multiple tokens`, { capability: target.name, owner })
+      throw new QrozError("QROZ1006", `Capability name '${target.name}' refers to multiple tokens`, { capability: target.name, owner })
     }
     capabilityNames.set(target.name, target.id)
   }
@@ -573,7 +573,7 @@ export function buildApplication(application: AppDefinition, options: BuildAppli
   for (const provider of [...(application.providers ?? []), ...(options.providers ?? [])]) {
     registerCapability(provider.capability, "providers")
     if (providers.has(provider.capability.id)) {
-      throw new ArcError("ARC1003", `Duplicate provider for capability '${provider.capability.name}'`, {
+      throw new QrozError("QROZ1003", `Duplicate provider for capability '${provider.capability.name}'`, {
         capability: provider.capability.name
       })
     }
@@ -582,7 +582,7 @@ export function buildApplication(application: AppDefinition, options: BuildAppli
 
   for (const mod of application.modules) {
     if (moduleNames.has(mod.name)) {
-      throw new ArcError("ARC1001", `Duplicate module name '${mod.name}'`, { module: mod.name })
+      throw new QrozError("QROZ1001", `Duplicate module name '${mod.name}'`, { module: mod.name })
     }
     moduleNames.add(mod.name)
 
@@ -596,7 +596,7 @@ export function buildApplication(application: AppDefinition, options: BuildAppli
       for (const dispatched of ep.dispatches ?? []) registerCapability(dispatched.transport, `${mod.name}.${endpointName}`)
       const routeKey = `${ep.method} ${ep.path}`
       if (routeKeys.has(routeKey)) {
-        throw new ArcError("ARC1002", `Duplicate route '${routeKey}'`, { module: mod.name, endpoint: endpointName })
+        throw new QrozError("QROZ1002", `Duplicate route '${routeKey}'`, { module: mod.name, endpoint: endpointName })
       }
       routeKeys.add(routeKey)
       validateRequiredCapabilities(providers, ep.requires ?? [], `${mod.name}.${endpointName}`, options.allowMissingCapabilities ?? false)
@@ -621,7 +621,7 @@ export function buildApplication(application: AppDefinition, options: BuildAppli
     for (const [jobName, item] of Object.entries(mod.jobs ?? {})) {
       const key = `${item.name}@${item.version}`
       if (jobKeys.has(key)) {
-        throw new ArcError("ARC1008", `Duplicate job definition '${key}'`, { module: mod.name, job: jobName })
+        throw new QrozError("QROZ1008", `Duplicate job definition '${key}'`, { module: mod.name, job: jobName })
       }
       jobKeys.add(key)
       registerCapability(item.transport, `${mod.name}.${jobName}`)
@@ -638,11 +638,11 @@ export function buildApplication(application: AppDefinition, options: BuildAppli
     for (const [workflowName, item] of Object.entries(mod.workflows ?? {})) {
       const key = `${item.name}@${item.version}`
       if (workflowKeys.has(key)) {
-        throw new ArcError("ARC1011", `Duplicate workflow definition '${key}'`, { module: mod.name, workflow: workflowName })
+        throw new QrozError("QROZ1011", `Duplicate workflow definition '${key}'`, { module: mod.name, workflow: workflowName })
       }
       workflowKeys.add(key)
       if (!item.states[item.start]) {
-        throw new ArcError("ARC1011", `Workflow '${key}' starts at unknown state '${item.start}'`, {
+        throw new QrozError("QROZ1011", `Workflow '${key}' starts at unknown state '${item.start}'`, {
           module: mod.name,
           workflow: workflowName,
           state: item.start
@@ -655,24 +655,24 @@ export function buildApplication(application: AppDefinition, options: BuildAppli
           for (const requirement of state.requires ?? []) registerCapability(requirementCapability(requirement), owner)
           validateRequiredCapabilities(providers, state.requires ?? [], owner, options.allowMissingCapabilities ?? false)
           if (state.retry && (!Number.isInteger(state.retry.maxAttempts) || state.retry.maxAttempts < 1)) {
-            throw new ArcError("ARC1011", `Workflow task '${owner}' retry maxAttempts must be a positive integer`, { owner })
+            throw new QrozError("QROZ1011", `Workflow task '${owner}' retry maxAttempts must be a positive integer`, { owner })
           }
           const terminal = state.end === true
           if (terminal === Boolean(state.next)) {
-            throw new ArcError("ARC1011", `Workflow task '${owner}' must declare exactly one of next or end`, { owner })
+            throw new QrozError("QROZ1011", `Workflow task '${owner}' must declare exactly one of next or end`, { owner })
           }
           if (state.next && !item.states[state.next]) {
-            throw new ArcError("ARC1011", `Workflow task '${owner}' points to unknown state '${state.next}'`, {
+            throw new QrozError("QROZ1011", `Workflow task '${owner}' points to unknown state '${state.next}'`, {
               owner,
               next: state.next
             })
           }
         } else if (state.kind === "qroz.workflow-sleep") {
           if (!Number.isFinite(state.seconds) || state.seconds < 0) {
-            throw new ArcError("ARC1011", `Workflow sleep '${owner}' requires non-negative finite seconds`, { owner })
+            throw new QrozError("QROZ1011", `Workflow sleep '${owner}' requires non-negative finite seconds`, { owner })
           }
           if (!item.states[state.next]) {
-            throw new ArcError("ARC1011", `Workflow sleep '${owner}' points to unknown state '${state.next}'`, {
+            throw new QrozError("QROZ1011", `Workflow sleep '${owner}' points to unknown state '${state.next}'`, {
               owner,
               next: state.next
             })
@@ -694,7 +694,7 @@ function validateRequiredCapabilities(
   for (const requirement of required) {
     const target = requirementCapability(requirement)
     if (!providers.has(target.id) && !allowMissing) {
-      throw new ArcError("ARC1004", `${owner} requires capability '${target.name}', but no provider is configured`, {
+      throw new QrozError("QROZ1004", `${owner} requires capability '${target.name}', but no provider is configured`, {
         owner,
         capability: target.name
       })
@@ -712,7 +712,7 @@ function restrictedCapabilityValue<T>(
 
   const operationMethods = target.metadata?.operationMethods
   if (!operationMethods) {
-    throw new ArcError("ARC1010", `Capability '${target.name}' cannot enforce operation-level access`, {
+    throw new QrozError("QROZ1010", `Capability '${target.name}' cannot enforce operation-level access`, {
       owner,
       capability: target.name,
       operations
@@ -732,7 +732,7 @@ function restrictedCapabilityValue<T>(
       const method = String(property)
       if (!allowedMethods.has(method)) {
         return () => {
-          throw new ArcError("ARC1010", `${owner} called '${target.name}.${method}()' without declaring the required operation access`, {
+          throw new QrozError("QROZ1010", `${owner} called '${target.name}.${method}()' without declaring the required operation access`, {
             owner,
             capability: target.name,
             method,
@@ -775,14 +775,14 @@ export function createCapabilityResolver(
   return {
     use<T>(target: Capability<T, any>): T {
       if (accessById && !accessById.has(target.id)) {
-        throw new ArcError("ARC1005", `${owner} used capability '${target.name}' without declaring it in requires`, {
+        throw new QrozError("QROZ1005", `${owner} used capability '${target.name}' without declaring it in requires`, {
           owner,
           capability: target.name
         })
       }
       const provider = built.providers.get(target.id)
       if (!provider) {
-        throw new ArcError("ARC1004", `Capability '${target.name}' has no configured provider`, {
+        throw new QrozError("QROZ1004", `Capability '${target.name}' has no configured provider`, {
           capability: target.name
         })
       }
@@ -1064,34 +1064,34 @@ export async function validateSchema<S extends StandardSchemaLike>(schema: S, va
   return result.value as InferOutput<S>
 }
 
-export interface ArcErrorDescriptor {
-  readonly code: ArcErrorCode
+export interface QrozErrorDescriptor {
+  readonly code: QrozErrorCode
   readonly title: string
   readonly remediation: string
 }
 
-const ARC_ERROR_CATALOG: Readonly<Record<ArcErrorCode, ArcErrorDescriptor>> = Object.freeze({
-  ARC1001: { code: "ARC1001", title: "Duplicate module name", remediation: "Give every module a unique application-level name." },
-  ARC1002: { code: "ARC1002", title: "Duplicate HTTP route", remediation: "Change the method/path pair or remove one of the conflicting endpoints." },
-  ARC1003: { code: "ARC1003", title: "Duplicate capability provider", remediation: "Configure exactly one provider for each capability token in a runtime composition." },
-  ARC1004: { code: "ARC1004", title: "Missing capability provider", remediation: "Provide the required capability in the application or from the runtime adapter." },
-  ARC1005: { code: "ARC1005", title: "Undeclared capability use", remediation: "Add the capability to the endpoint/listener requires list before using ctx.use()." },
-  ARC1006: { code: "ARC1006", title: "Ambiguous capability name", remediation: "Reuse the same capability token or give distinct capabilities unique semantic names." },
-  ARC1007: { code: "ARC1007", title: "Undeclared event emission", remediation: "Add the event to the endpoint/listener emits list before calling ctx.events.emit()." },
-  ARC1008: { code: "ARC1008", title: "Duplicate job definition", remediation: "Give every job name/version pair a unique definition in the application." },
-  ARC1009: { code: "ARC1009", title: "Undeclared job dispatch", remediation: "Add the job to dispatches before calling ctx.jobs.dispatch()." },
-  ARC1010: { code: "ARC1010", title: "Undeclared capability operation", remediation: "Declare operation-level access for the resource method or use an unrestricted capability requirement intentionally." },
-  ARC1011: { code: "ARC1011", title: "Invalid workflow graph", remediation: "Declare a valid start state and ensure every workflow transition targets an existing state with explicit terminal semantics." },
-  ARC2001: { code: "ARC2001", title: "Malformed JSON request", remediation: "Send syntactically valid JSON when using application/json." },
-  ARC2003: { code: "ARC2003", title: "Invalid job payload", remediation: "Dispatch a payload accepted by the job input schema and keep producers/consumers on compatible job versions." },
-  ARC2004: { code: "ARC2004", title: "Invalid workflow input", remediation: "Start the workflow with input accepted by its declared schema." },
-  ARC2002: { code: "ARC2002", title: "Endpoint output contract violation", remediation: "Make the handler return a value accepted by its declared output schema." },
-  ARC3001: { code: "ARC3001", title: "Authentication required", remediation: "Attach an authenticated principal to the execution context before invoking this endpoint." },
-  ARC3002: { code: "ARC3002", title: "Permission denied", remediation: "Grant the principal the declared permission or provide an authorizer that allows it." }
+const QROZ_ERROR_CATALOG: Readonly<Record<QrozErrorCode, QrozErrorDescriptor>> = Object.freeze({
+  QROZ1001: { code: "QROZ1001", title: "Duplicate module name", remediation: "Give every module a unique application-level name." },
+  QROZ1002: { code: "QROZ1002", title: "Duplicate HTTP route", remediation: "Change the method/path pair or remove one of the conflicting endpoints." },
+  QROZ1003: { code: "QROZ1003", title: "Duplicate capability provider", remediation: "Configure exactly one provider for each capability token in a runtime composition." },
+  QROZ1004: { code: "QROZ1004", title: "Missing capability provider", remediation: "Provide the required capability in the application or from the runtime adapter." },
+  QROZ1005: { code: "QROZ1005", title: "Undeclared capability use", remediation: "Add the capability to the endpoint/listener requires list before using ctx.use()." },
+  QROZ1006: { code: "QROZ1006", title: "Ambiguous capability name", remediation: "Reuse the same capability token or give distinct capabilities unique semantic names." },
+  QROZ1007: { code: "QROZ1007", title: "Undeclared event emission", remediation: "Add the event to the endpoint/listener emits list before calling ctx.events.emit()." },
+  QROZ1008: { code: "QROZ1008", title: "Duplicate job definition", remediation: "Give every job name/version pair a unique definition in the application." },
+  QROZ1009: { code: "QROZ1009", title: "Undeclared job dispatch", remediation: "Add the job to dispatches before calling ctx.jobs.dispatch()." },
+  QROZ1010: { code: "QROZ1010", title: "Undeclared capability operation", remediation: "Declare operation-level access for the resource method or use an unrestricted capability requirement intentionally." },
+  QROZ1011: { code: "QROZ1011", title: "Invalid workflow graph", remediation: "Declare a valid start state and ensure every workflow transition targets an existing state with explicit terminal semantics." },
+  QROZ2001: { code: "QROZ2001", title: "Malformed JSON request", remediation: "Send syntactically valid JSON when using application/json." },
+  QROZ2003: { code: "QROZ2003", title: "Invalid job payload", remediation: "Dispatch a payload accepted by the job input schema and keep producers/consumers on compatible job versions." },
+  QROZ2004: { code: "QROZ2004", title: "Invalid workflow input", remediation: "Start the workflow with input accepted by its declared schema." },
+  QROZ2002: { code: "QROZ2002", title: "Endpoint output contract violation", remediation: "Make the handler return a value accepted by its declared output schema." },
+  QROZ3001: { code: "QROZ3001", title: "Authentication required", remediation: "Attach an authenticated principal to the execution context before invoking this endpoint." },
+  QROZ3002: { code: "QROZ3002", title: "Permission denied", remediation: "Grant the principal the declared permission or provide an authorizer that allows it." }
 })
 
-export function explainError(code: ArcErrorCode): ArcErrorDescriptor {
-  return ARC_ERROR_CATALOG[code]
+export function explainError(code: QrozErrorCode): QrozErrorDescriptor {
+  return QROZ_ERROR_CATALOG[code]
 }
 
 export type ValidationIssue = { message: string; path?: readonly unknown[] }
