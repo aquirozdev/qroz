@@ -85,7 +85,7 @@ test("Cloudflare adapter fails closed when a runtime capability is not supplied"
   )
 
   assert.equal(response.status, 500)
-  assert.equal(captured.code, "ARC1004")
+  assert.equal(captured.code, "QROZ1004")
 })
 
 function fakeR2Bucket() {
