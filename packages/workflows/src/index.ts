@@ -1,5 +1,5 @@
 import {
-  ArcError,
+  QrozError,
   ValidationError,
   buildApplication,
   createCapabilityResolver,
@@ -95,7 +95,7 @@ export async function executeWorkflow(
 ): Promise<WorkflowExecutionResult> {
   const workflow = registeredWorkflow(application, definition)
   if (!workflow) {
-    throw new ArcError("ARC1011", `Workflow '${definition.name}@${definition.version}' is not registered in application '${application.name}'`)
+    throw new QrozError("QROZ1011", `Workflow '${definition.name}@${definition.version}' is not registered in application '${application.name}'`)
   }
 
   const built = buildApplication(application, {
@@ -107,7 +107,7 @@ export async function executeWorkflow(
     data = await validateSchema(workflow.input, input)
   } catch (error) {
     if (error instanceof ValidationError) {
-      throw new ArcError("ARC2004", `Workflow '${workflow.name}@${workflow.version}' input failed its declared schema`, {
+      throw new QrozError("QROZ2004", `Workflow '${workflow.name}@${workflow.version}' input failed its declared schema`, {
         workflow: workflow.name,
         version: workflow.version,
         issues: error.issues
@@ -125,7 +125,7 @@ export async function executeWorkflow(
   while (true) {
     transitions += 1
     if (transitions > maxTransitions) {
-      throw new ArcError("ARC1011", `Workflow '${workflow.name}@${workflow.version}' exceeded the transition limit`, {
+      throw new QrozError("QROZ1011", `Workflow '${workflow.name}@${workflow.version}' exceeded the transition limit`, {
         workflow: workflow.name,
         version: workflow.version,
         maxTransitions
@@ -134,7 +134,7 @@ export async function executeWorkflow(
 
     const state = workflow.states[stateName]
     if (!state) {
-      throw new ArcError("ARC1011", `Workflow entered unknown state '${stateName}'`, {
+      throw new QrozError("QROZ1011", `Workflow entered unknown state '${stateName}'`, {
         workflow: workflow.name,
         version: workflow.version,
         state: stateName
