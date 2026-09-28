@@ -1,59 +1,41 @@
 ---
 title: Naming decision
-description: Criteria and collision research for replacing the Qroz codename before public package publication.
+description: Final public identity and naming conventions for Qroz.
 ---
 
 # Naming decision
 
-## Decision status
+## Decision
 
-**Qroz remains a repository codename until a final name is selected. Do not publish public packages under the current Qroz identity.**
+**Qroz is the definitive public product identity.**
 
-## Why Qroz should change
+The earlier Arc codename and Ceryva exploration are retired. The repository owner has explicitly selected Qroz and accepts the previously documented collision/search-discovery tradeoffs.
 
-“Qroz” has unusually high collision risk in developer tooling:
+## Canonical names
 
-- Architect is an established serverless framework whose CLI is `qroz` and whose documentation lives at `qroz.codes`;
-- active agent-framework projects also use Qroz/QROZ branding;
-- “Qroz” is broadly used across software products, making search and package discovery noisy.
+- product: **Qroz**
+- repository: `aquirozdev/qroz`
+- CLI: `qroz`
+- npm scope: `@qroz/*`
+- scaffold package: `create-qroz`
+- Studio: **Qroz Studio**
+- stable framework error prefix: `QROZxxxx`
+- internal Studio/dev namespace: `/__qroz/*`
 
-The cost of renaming grows sharply after npm publication, documentation indexing and third-party integrations, so the right time is now.
+## Consistency rule
 
-## Name requirements
+New public APIs, documentation, examples, automation, agent integrations and diagnostics must use Qroz naming. Arc/Ceryva identifiers are not a supported second naming surface.
 
-The final name should:
+Because the project remains pre-1.0 and has not established a stable public compatibility contract, remaining legacy identifiers should be migrated rather than preserved indefinitely as aliases.
 
-1. be short enough for a CLI;
-2. be easy to pronounce in English and Spanish;
-3. support a clean npm scope and create-* package;
-4. not imply a single cloud, AI model or deployment style;
-5. fit the semantic thesis: clear application structure, truth, graph, execution and explainability;
-6. have low collision risk with frameworks, package managers, databases, cloud platforms and agent products;
-7. support a distinctive visual identity;
-8. survive a basic web/GitHub/npm collision search before adoption.
+## Publication checks that remain separate
 
-## Rejected / high-collision candidates
+Choosing the product name does not by itself prove registry or legal availability. Before public package publication, verify:
 
-- **Qroz** — conflicts directly with Architect's `qroz` CLI and multiple Qroz frameworks.
-- **Kora** — active Java/Kotlin backend framework, offline-first JS framework and Solana infrastructure.
-- **Lattice** — active software-semantics project very close to Qroz's application-meaning thesis.
-- **Velora / Veyra** — active framework/product names.
-- **Anvil** — crowded developer-tooling name.
-- **Auron** — active Apache project and existing software brand.
-- **Kernia** — active authentication framework.
-- **Nuvra** — active autonomous software engineering platform.
-- **Semora** — active software product.
-- **Tessyn** — existing npm/developer-tooling package and product name.
+1. ownership/availability of the intended npm scope and package names;
+2. trusted-publisher configuration for each public package;
+3. selected domains and documentation URLs;
+4. trademark/legal review appropriate to the intended markets;
+5. package metadata, license and release provenance.
 
-## Selection process
-
-Before the rename PR:
-
-1. produce 5–8 coined candidates;
-2. search exact names on npm, GitHub and the public web;
-3. reject names with close developer-tooling collisions;
-4. check likely CLI and package spellings;
-5. perform an external trademark/domain review before commercial branding;
-6. choose one identity and rename repository-facing docs, package scope, CLI, scaffold and Studio together.
-
-The code architecture should not depend on the brand name so this remains an atomic product migration rather than a semantic change.
+Those are release-readiness checks, not reasons to keep the product identity undecided.

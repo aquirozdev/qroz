@@ -5,7 +5,7 @@ import { createWebRuntime } from "@qroz/runtime-web"
 import { createRecordingTracer } from "@qroz/telemetry"
 import { planDeployment } from "@qroz/deployment"
 
-const STUDIO_PREFIX = "/__arc"
+const STUDIO_PREFIX = "/__qroz"
 
 function studioHtml(appName) {
   const escaped = JSON.stringify(appName)
@@ -65,7 +65,7 @@ for(const button of document.querySelectorAll(".nav button")){
 }
 async function explain(code){
  if(!code||!/^QROZ\\d{4}$/.test(code)) return;
- const res=await fetch("/__arc/api/explain?code="+encodeURIComponent(code));
+ const res=await fetch("/__qroz/api/explain?code="+encodeURIComponent(code));
  if(!res.ok)return;
  const descriptor=await res.json();
  const node=document.getElementById("runner-explain");
@@ -91,7 +91,7 @@ document.getElementById("runner-send").addEventListener("click",async()=>{
  }catch(error){output.textContent=String(error)}
 });
 async function load(){
- const res=await fetch("/__arc/api/graph");
+ const res=await fetch("/__qroz/api/graph");
  if(!res.ok) throw new Error("Unable to load Application Graph");
  const g=await res.json();
  document.getElementById("title").textContent=g.name;
@@ -110,7 +110,7 @@ async function load(){
  await loadActivity();
 }
 async function loadActivity(){
- const [requestsResponse,decisionsResponse,tracesResponse,planResponse]=await Promise.all([fetch("/__arc/api/requests"),fetch("/__arc/api/decisions"),fetch("/__arc/api/traces"),fetch("/__arc/api/plan")]);
+ const [requestsResponse,decisionsResponse,tracesResponse,planResponse]=await Promise.all([fetch("/__qroz/api/requests"),fetch("/__qroz/api/decisions"),fetch("/__qroz/api/traces"),fetch("/__qroz/api/plan")]);
  const requests=await requestsResponse.json();
  const decisions=await decisionsResponse.json();
  const traces=await tracesResponse.json();

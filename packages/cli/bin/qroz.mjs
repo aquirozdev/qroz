@@ -100,7 +100,7 @@ function startDevChild(appPath, options, open) {
   return spawn(process.execPath, devChildArgs(appPath, options, open), {
     cwd: process.cwd(),
     stdio: "inherit",
-    env: { ...process.env, ARC_DEV_CHILD: "1" }
+    env: { ...process.env, QROZ_DEV_CHILD: "1" }
   })
 }
 
@@ -336,7 +336,7 @@ if (command === "dev") {
     let buildCommand
     const sourceFirst = /\.(?:cts|mts|tsx|ts)$/.test(devAppPath)
 
-    if (sourceFirst && process.env.ARC_DEV_CHILD !== "1") {
+    if (sourceFirst && process.env.QROZ_DEV_CHILD !== "1") {
       const prepared = prepareTypeScriptDev(devAppPath)
       devAppPath = prepared.compiledPath
       buildCommand = prepared.watchCommand
@@ -358,7 +358,7 @@ if (command === "dev") {
       buildCommand
     }
 
-    if (parsed.flags.has("--watch") && process.env.ARC_DEV_CHILD !== "1") {
+    if (parsed.flags.has("--watch") && process.env.QROZ_DEV_CHILD !== "1") {
       await runDevWatch(devAppPath, devOptions)
       process.exit(0)
     }
@@ -374,7 +374,7 @@ if (command === "dev") {
 
 if (command === "explain") {
   const code = positional[0]
-  if (!code || !/^ARC\d{4}$/.test(code)) fail("usage: qroz explain <ARCxxxx> [--json]")
+  if (!code || !/^QROZ\d{4}$/.test(code)) fail("usage: qroz explain <QROZxxxx> [--json]")
   const descriptor = explainError(code)
   if (!descriptor) fail(`unknown error code '${code}'`)
   if (json) console.log(JSON.stringify(descriptor, null, 2))
@@ -485,7 +485,7 @@ if (command === "context") {
 }
 
 if (!command || positional.length !== 1 || !["inspect", "validate"].includes(command)) {
-  fail("usage: qroz <inspect|validate|plan> <compiled-app.js> [--json] | qroz dev <app.ts|app.js> [--port <number>] [--no-open] [--watch] [--build <command>] | qroz context <app.js> <module> [--json] | qroz diff <before.js> <after.js> [--json] | qroz explain <ARCxxxx> [--json]")
+  fail("usage: qroz <inspect|validate|plan> <compiled-app.js> [--json] | qroz dev <app.ts|app.js> [--port <number>] [--no-open] [--watch] [--build <command>] | qroz context <app.js> <module> [--json] | qroz diff <before.js> <after.js> [--json] | qroz explain <QROZxxxx> [--json]")
 }
 
 try {

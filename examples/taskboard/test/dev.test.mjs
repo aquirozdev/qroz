@@ -49,12 +49,12 @@ test("qroz dev serves the application and Studio from the same Application Graph
   child.stderr.on("data", (chunk) => { stderr += chunk })
 
   try {
-    const graphResponse = await waitForServer(`http://127.0.0.1:${port}/__arc/api/graph`, child, () => stderr)
+    const graphResponse = await waitForServer(`http://127.0.0.1:${port}/__qroz/api/graph`, child, () => stderr)
     const graph = await graphResponse.json()
     assert.equal(graph.name, "taskboard")
     assert.equal(graph.modules.find((item) => item.name === "tasks")?.endpoints.length, 2)
 
-    const studio = await fetch(`http://127.0.0.1:${port}/__arc/`)
+    const studio = await fetch(`http://127.0.0.1:${port}/__qroz/`)
     assert.equal(studio.status, 200)
     assert.match(await studio.text(), /Qroz Studio/)
 
@@ -66,12 +66,12 @@ test("qroz dev serves the application and Studio from the same Application Graph
       completed: false
     })
 
-    const requests = await fetch(`http://127.0.0.1:${port}/__arc/api/requests`).then((response) => response.json())
+    const requests = await fetch(`http://127.0.0.1:${port}/__qroz/api/requests`).then((response) => response.json())
     assert.equal(requests.at(-1)?.method, "GET")
     assert.equal(requests.at(-1)?.path, "/tasks/task-1")
     assert.equal(requests.at(-1)?.status, 200)
 
-    const traces = await fetch(`http://127.0.0.1:${port}/__arc/api/traces`).then((response) => response.json())
+    const traces = await fetch(`http://127.0.0.1:${port}/__qroz/api/traces`).then((response) => response.json())
     assert.equal(traces.at(-1)?.name, "qroz.endpoint")
     assert.equal(traces.at(-1)?.attributes?.["qroz.endpoint"], "getTask")
     assert.equal(traces.at(-1)?.requestId, requests.at(-1)?.id)
@@ -102,7 +102,7 @@ test("qroz dev records authorization denials without exposing principal claims",
     let stderr = ""
     child.stderr.setEncoding("utf8")
     child.stderr.on("data", (chunk) => { stderr += chunk })
-    await waitForServer(`http://127.0.0.1:${port}/__arc/api/graph`, child, () => stderr)
+    await waitForServer(`http://127.0.0.1:${port}/__qroz/api/graph`, child, () => stderr)
     const denied = await fetch(`http://127.0.0.1:${port}/projects/project-a`, {
       method: "PATCH",
       headers: { "content-type": "application/json" },
@@ -110,17 +110,17 @@ test("qroz dev records authorization denials without exposing principal claims",
     })
     assert.equal(denied.status, 401)
 
-    const decisions = await fetch(`http://127.0.0.1:${port}/__arc/api/decisions`).then((response) => response.json())
+    const decisions = await fetch(`http://127.0.0.1:${port}/__qroz/api/decisions`).then((response) => response.json())
     assert.equal(decisions.at(-1)?.kind, "authentication")
     assert.equal(decisions.at(-1)?.outcome, "deny")
     assert.equal("claims" in (decisions.at(-1)?.principal ?? {}), false)
 
-    const plan = await fetch(`http://127.0.0.1:${port}/__arc/api/plan`).then((response) => response.json())
+    const plan = await fetch(`http://127.0.0.1:${port}/__qroz/api/plan`).then((response) => response.json())
     const renameSurface = plan.surfaces.find((surface) => surface.id === "endpoint:projects.renameProject")
     assert.deepEqual(renameSurface?.resourceAccess.find((item) => item.capability === "tenants.memberships")?.operations, ["read"])
 
-    const explanation = await fetch(`http://127.0.0.1:${port}/__arc/api/explain?code=ARC3001`).then((response) => response.json())
-    assert.equal(explanation.code, "ARC3001")
+    const explanation = await fetch(`http://127.0.0.1:${port}/__qroz/api/explain?code=QROZ3001`).then((response) => response.json())
+    assert.equal(explanation.code, "QROZ3001")
     assert.equal(typeof explanation.remediation, "string")
   } finally {
     child.kill("SIGTERM")

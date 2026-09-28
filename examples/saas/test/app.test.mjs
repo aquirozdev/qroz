@@ -36,7 +36,7 @@ test("static permission does not bypass tenant resource policy", async () => {
   assert.equal(response.status, 403)
   assert.deepEqual(await response.json(), {
     error: "Permission denied",
-    code: "ARC3002",
+    code: "QROZ3002",
     policy: "projects.member"
   })
 })
@@ -169,7 +169,7 @@ test("build fails when a policy dependency has no provider", () => {
 
   assert.throws(
     () => buildApplication(broken),
-    (error) => error.code === "ARC1004"
+    (error) => error.code === "QROZ1004"
       && error.details.owner === "projects.renameProject.policy:projects.member"
   )
 })
@@ -213,7 +213,7 @@ test("policy cannot access a capability it did not declare", async () => {
   })
 
   assert.equal(response.status, 500)
-  assert.equal(captured.code, "ARC1005")
+  assert.equal(captured.code, "QROZ1005")
   assert.equal(captured.details.owner, "projects.sneakyEndpoint.policy:projects.sneaky")
   assert.equal(captured.details.capability, "tenants.memberships")
 })
