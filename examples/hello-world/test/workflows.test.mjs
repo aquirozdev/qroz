@@ -103,7 +103,7 @@ test("workflow graphs fail build when transitions are invalid", () => {
 
   assert.throws(
     () => buildApplication(definition),
-    (error) => error.code === "ARC1011"
+    (error) => error.code === "QROZ1011"
   )
 })
 
@@ -199,7 +199,7 @@ test("deployment planning treats workflow tasks as execution surfaces", () => {
 test("workflow input validation fails with a stable framework error", async () => {
   await assert.rejects(
     () => executeWorkflow(application, WelcomeUser, { id: "", name: "Angel" }),
-    (error) => error.code === "ARC2004"
+    (error) => error.code === "QROZ2004"
   )
 })
 
