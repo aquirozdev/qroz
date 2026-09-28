@@ -13,7 +13,7 @@ test("Qroz CLI errors explain what failed and how to fix it", async () => {
       "examples/taskboard/test/fixtures/missing-provider.mjs"
     ], { cwd: process.cwd() }),
     (error) => {
-      assert.match(error.stderr, /ARC1004 — Missing capability provider/)
+      assert.match(error.stderr, /QROZ1004 — Missing capability provider/)
       assert.match(error.stderr, /requires capability 'example\.database', but no provider is configured/)
       assert.match(error.stderr, /Context/)
       assert.match(error.stderr, /owner: items\.list/)
@@ -36,7 +36,7 @@ test("Qroz CLI keeps stable machine-readable error output", async () => {
     (error) => {
       const payload = JSON.parse(error.stderr)
       assert.equal(payload.ok, false)
-      assert.equal(payload.error.code, "ARC1004")
+      assert.equal(payload.error.code, "QROZ1004")
       assert.equal(payload.error.details.capability, "example.database")
       return true
     }
