@@ -1,6 +1,6 @@
 import { noopTracer, type ArcTracer } from "@qroz/telemetry"
 import {
-  ArcError,
+  QrozError,
   ValidationError,
   buildApplication,
   createCapabilityResolver,
@@ -100,7 +100,7 @@ export async function executeJobEnvelope(
     input = await validateSchema(entry.definition.input, envelope.payload)
   } catch (error) {
     const mapped = error instanceof ValidationError
-      ? new ArcError("ARC2003", `Job '${envelope.job}@${envelope.version}' payload failed its declared schema`, {
+      ? new QrozError("QROZ2003", `Job '${envelope.job}@${envelope.version}' payload failed its declared schema`, {
           owner,
           job: envelope.job,
           version: envelope.version,
