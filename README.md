@@ -89,3 +89,7 @@ npm run release:verify
 ```
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) before architectural changes.
+
+## License
+
+Qroz is licensed under the [Apache License 2.0](./LICENSE). See [NOTICE](./NOTICE) for project attribution information.
