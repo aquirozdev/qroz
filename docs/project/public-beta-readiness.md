@@ -11,7 +11,7 @@ This document separates **publishable beta**, **production-credible**, and **1.0
 
 Qroz is not ready for npm publication yet.
 
-The architecture and evidence base are strong enough to justify a public beta effort. The product identity is finalized as Qroz and package publication mechanics are now normalized around one prerelease line. Publication remains blocked by the owner's explicit license choice, npm package ownership/trusted-publisher configuration, and completion of the remaining public documentation/product acceptance gates.
+The architecture and evidence base are strong enough to justify a public beta effort. The product identity is finalized as Qroz and package publication mechanics are now normalized around one prerelease line. Qroz is licensed under Apache-2.0 and package publication mechanics are normalized around one prerelease line. Publication remains blocked by npm package ownership/trusted-publisher configuration and completion of the remaining public documentation/product acceptance gates.
 
 ## Release levels
 
@@ -67,10 +67,10 @@ Production-credible claims additionally require provider failure-path evidence, 
 Before any npm publish:
 
 1. [done] product identity is finalized as **Qroz**; verify npm ownership/availability for the intended `@qroz/*` packages;
-2. choose and commit an explicit repository license;
+2. [done] license Qroz under Apache-2.0 and commit LICENSE/NOTICE;
 3. [done] normalize package versions into one deliberate prerelease line (`0.12.0-beta.1`);
 4. [done] replace internal `file:` dependency specifications with publication-safe version ranges;
-5. [mostly done] add package metadata (license remains intentionally blocked on the owner's explicit choice):
+5. [done] add package metadata:
    - description;
    - keywords;
    - repository;
@@ -133,7 +133,7 @@ The repository owner must make the license decision. This cannot be inferred saf
 
 Before publication also add/verify:
 
-- LICENSE;
+- [done] LICENSE (Apache-2.0);
 - SUPPORT.md;
 - Code of Conduct if community contributions are invited;
 - private vulnerability reporting path;
