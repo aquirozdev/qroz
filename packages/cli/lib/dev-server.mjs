@@ -128,7 +128,14 @@ async function load(){
  const modules=document.getElementById("modules");
  modules.replaceChildren(...g.modules.map(m=>{
   const wrap=el("div","module");
-  wrap.append(el("div","module-name",m.name));
+  const moduleHeading=el("div","module-name",m.name);
+  activate(moduleHeading,()=>showDetails("module "+m.name,[
+   ["endpoints",m.endpoints.map(item=>item.name)],
+   ["listeners",(m.listeners||[]).map(item=>item.name)],
+   ["jobs",(m.jobs||[]).map(item=>item.name)],
+   ["workflows",(m.workflows||[]).map(item=>item.name)]
+  ]));
+  wrap.append(moduleHeading);
   if(!m.endpoints.length)wrap.append(el("div","empty","No HTTP endpoints"));
   for(const r of m.endpoints){
    const row=el("div","route");
@@ -138,6 +145,7 @@ async function load(){
     document.getElementById("runner-path").value=r.path;
     showDetails(m.name+"."+ (r.name||"endpoint"),[
      ["route",r.method+" "+r.path],
+     ["schemas",{params:Boolean(r.hasParamsSchema),body:Boolean(r.hasBodySchema),query:Boolean(r.hasQuerySchema),output:Boolean(r.hasOutputSchema)}],
      ["requires",r.requires||[]],
      ["access",r.access||[]],
      ["auth",r.auth||{}],
@@ -156,6 +164,7 @@ async function load(){
     ["version",workflow.version],
     ["start",workflow.start],
     ["states",workflow.states||[]],
+    ["transitions",(workflow.states||[]).flatMap(state=>state.next?[{from:state.name,to:state.next}]:[])],
     ["module",m.name]
    ]));
    wrap.append(row);
@@ -189,7 +198,14 @@ async function loadActivity(){
  const requestNode=document.getElementById("requests");
  requestNode.replaceChildren(...(requests.length?requests.slice(-8).reverse().map(item=>{const row=el("div","resource");row.append(el("span","",item.method+" "+item.path),el("span","pill",item.status+" · "+item.durationMs+"ms"));return row}):[el("div","empty","No application requests yet")]));
  const decisionNode=document.getElementById("decisions");
- decisionNode.replaceChildren(...(decisions.length?decisions.slice(-8).reverse().map(item=>{const row=el("div","resource");const label=item.kind+(item.permission?" · "+item.permission:item.policy?" · "+item.policy:"");row.append(el("span","",label),el("span","pill",item.outcome));return row}):[el("div","empty","No authorization decisions yet")]));
+ decisionNode.replaceChildren(...(decisions.length?decisions.slice(-8).reverse().map(item=>{
+  const row=el("div","resource");
+  const owner=[item.module,item.endpoint].filter(Boolean).join(".");
+  const rule=item.permission?"permission:"+item.permission:item.policy?"policy:"+item.policy:item.kind;
+  const label=(owner?owner+" · ":"")+rule;
+  row.append(el("span","",label),el("span","pill",item.outcome+" · "+item.requestId));
+  return row;
+ }):[el("div","empty","No authorization decisions yet")]));
  const traceNode=document.getElementById("traces");
  traceNode.replaceChildren(...(traces.length?traces.slice(-10).reverse().map(item=>{const row=el("div","resource");const owner=item.attributes?.["qroz.endpoint"]||item.attributes?.["qroz.listener"]||item.attributes?.["qroz.workflow"]||item.requestId;row.append(el("span","",item.name+(owner?" · "+owner:"")),el("span","pill",item.requestId));return row}):[el("div","empty","No spans recorded yet")]));
  const deploymentNode=document.getElementById("deployment");
