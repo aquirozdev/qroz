@@ -1,9 +1,31 @@
 {
   "name": "@qroz/deployment-cloudflare",
-  "version": "0.9.0",
+  "version": "0.12.0-beta.1",
+  "description": "Cloudflare deployment planning for Qroz applications.",
   "type": "module",
+  "keywords": [
+    "qroz",
+    "typescript",
+    "application-framework"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aquirozdev/qroz.git",
+    "directory": "packages/deployment-cloudflare"
+  },
+  "bugs": {
+    "url": "https://github.com/aquirozdev/qroz/issues"
+  },
+  "homepage": "https://github.com/aquirozdev/qroz#readme",
+  "engines": {
+    "node": ">=22"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "dependencies": {
-    "@qroz/deployment": "file:../deployment"
+    "@qroz/deployment": "^0.12.0-beta.1"
   },
   "exports": {
     ".": {
@@ -11,6 +33,10 @@
       "default": "./dist/index.js"
     }
   },
-  "files": ["dist"],
-  "scripts": { "build": "tsc -b" }
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b"
+  }
 }
