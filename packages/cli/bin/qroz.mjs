@@ -330,7 +330,7 @@ function printContext(context) {
 }
 
 if (command === "dev") {
-  if (positional.length !== 1) fail("usage: qroz dev <app.ts|compiled-app.js> [--port <number>] [--no-open] [--watch] [--build <command>]")
+  if (positional.length !== 1) fail("usage: qroz dev <app.ts|compiled-app.js> [--port <number>] [--no-open] [--watch|--no-watch] [--build <command>]")
   try {
     let devAppPath = positional[0]
     let buildCommand
@@ -340,15 +340,6 @@ if (command === "dev") {
       const prepared = prepareTypeScriptDev(devAppPath)
       devAppPath = prepared.compiledPath
       buildCommand = prepared.watchCommand
-      if (!parsed.flags.has("--watch")) {
-        const application = await loadApplication(devAppPath)
-        buildApplication(application)
-        await runDev(application, {
-          port: parsed.options.get("--port"),
-          open: !parsed.flags.has("--no-open")
-        })
-        await new Promise(() => {})
-      }
     }
 
     const devOptions = {
@@ -358,7 +349,11 @@ if (command === "dev") {
       buildCommand
     }
 
-    if (parsed.flags.has("--watch") && process.env.QROZ_DEV_CHILD !== "1") {
+    const shouldWatch = process.env.QROZ_DEV_CHILD !== "1" && (
+      parsed.flags.has("--watch") || (sourceFirst && !parsed.flags.has("--no-watch"))
+    )
+
+    if (shouldWatch) {
       await runDevWatch(devAppPath, devOptions)
       process.exit(0)
     }
@@ -485,7 +480,7 @@ if (command === "context") {
 }
 
 if (!command || positional.length !== 1 || !["inspect", "validate"].includes(command)) {
-  fail("usage: qroz <inspect|validate|plan> <compiled-app.js> [--json] | qroz dev <app.ts|app.js> [--port <number>] [--no-open] [--watch] [--build <command>] | qroz context <app.js> <module> [--json] | qroz diff <before.js> <after.js> [--json] | qroz explain <QROZxxxx> [--json]")
+  fail("usage: qroz <inspect|validate|plan> <compiled-app.js> [--json] | qroz dev <app.ts|app.js> [--port <number>] [--no-open] [--watch|--no-watch] [--build <command>] | qroz context <app.js> <module> [--json] | qroz diff <before.js> <after.js> [--json] | qroz explain <QROZxxxx> [--json]")
 }
 
 try {
