@@ -18,7 +18,7 @@ function studioHtml(appName) {
 <style>
 :root{color-scheme:dark;--bg:#0b0d10;--panel:#11151a;--panel2:#171c22;--line:#252c35;--text:#f4f7fb;--muted:#93a0b2;--accent:#a7f3d0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text)}button{font:inherit}
-.shell{display:grid;grid-template-columns:240px 1fr;min-height:100vh}.side{border-right:1px solid var(--line);padding:24px 18px;position:sticky;top:0;height:100vh}.brand{font-weight:750;letter-spacing:-.03em;font-size:20px}.app{color:var(--muted);margin-top:4px;font-size:13px}.status{margin:24px 0;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font-size:13px}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#34d399;margin-right:8px}.nav{display:grid;gap:4px}.nav button{border:0;text-align:left;background:transparent;color:var(--muted);padding:9px 10px;border-radius:8px}.nav button.active{color:var(--text);background:var(--panel2)}main{padding:32px;max-width:1280px}.eyebrow{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.12em}.title{font-size:30px;font-weight:720;letter-spacing:-.04em;margin:6px 0 24px}.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:24px}.metric,.card{border:1px solid var(--line);background:var(--panel);border-radius:14px}.metric{padding:16px}.metric strong{display:block;font-size:22px}.metric span{color:var(--muted);font-size:12px}.grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}.card{padding:18px}.card h2{font-size:15px;margin:0 0 14px}.module{border-top:1px solid var(--line);padding:14px 0}.module:first-of-type{border-top:0}.module-name{font-weight:650;margin-bottom:8px}.route{display:grid;grid-template-columns:62px 1fr auto;gap:10px;padding:7px 0;font:13px ui-monospace,SFMono-Regular,Menlo,monospace}.method{color:var(--accent)}.muted{color:var(--muted)}.pill{border:1px solid var(--line);border-radius:999px;padding:2px 7px;color:var(--muted);font:11px ui-monospace,SFMono-Regular,Menlo,monospace}.empty{color:var(--muted);padding:14px 0}.resource{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--line)}.resource:first-of-type{border-top:0}.wide{grid-column:1/-1}.runner{display:grid;grid-template-columns:110px 1fr auto;gap:8px}.runner select,.runner input,.runner textarea{background:#0d1116;color:var(--text);border:1px solid var(--line);border-radius:9px;padding:9px}.runner button{border:1px solid #365647;background:#17392d;color:#d1fae5;border-radius:9px;padding:9px 16px;cursor:pointer}.runner textarea{grid-column:1/-1;min-height:96px;resize:vertical;font:12px ui-monospace,SFMono-Regular,Menlo,monospace}.response{margin-top:12px;background:#0d1116;border:1px solid var(--line);border-radius:10px;padding:12px;white-space:pre-wrap;overflow:auto;min-height:54px;font:12px ui-monospace,SFMono-Regular,Menlo,monospace}.explain{margin-top:10px;padding:10px 12px;border-left:3px solid #fbbf24;background:#1b1810;color:#fef3c7;font-size:13px;display:none}@media(max-width:820px){.shell{grid-template-columns:1fr}.side{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}main{padding:20px}.metrics{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}}
+.shell{display:grid;grid-template-columns:240px 1fr;min-height:100vh}.side{border-right:1px solid var(--line);padding:24px 18px;position:sticky;top:0;height:100vh}.brand{font-weight:750;letter-spacing:-.03em;font-size:20px}.app{color:var(--muted);margin-top:4px;font-size:13px}.status{margin:24px 0;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font-size:13px}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#34d399;margin-right:8px}.nav{display:grid;gap:4px}.nav button{border:0;text-align:left;background:transparent;color:var(--muted);padding:9px 10px;border-radius:8px}.nav button.active{color:var(--text);background:var(--panel2)}main{padding:32px;max-width:1280px}.eyebrow{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.12em}.title{font-size:30px;font-weight:720;letter-spacing:-.04em;margin:6px 0 24px}.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:24px}.metric,.card{border:1px solid var(--line);background:var(--panel);border-radius:14px}.metric{padding:16px}.metric strong{display:block;font-size:22px}.metric span{color:var(--muted);font-size:12px}.grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}.card{padding:18px}.card h2{font-size:15px;margin:0 0 14px}.module{border-top:1px solid var(--line);padding:14px 0}.module:first-of-type{border-top:0}.module-name{font-weight:650;margin-bottom:8px}.route{display:grid;grid-template-columns:62px 1fr auto;gap:10px;padding:7px 0;font:13px ui-monospace,SFMono-Regular,Menlo,monospace}.method{color:var(--accent)}.muted{color:var(--muted)}.pill{border:1px solid var(--line);border-radius:999px;padding:2px 7px;color:var(--muted);font:11px ui-monospace,SFMono-Regular,Menlo,monospace}.empty{color:var(--muted);padding:14px 0}.resource{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--line)}.resource:first-of-type{border-top:0}.clickable{cursor:pointer;border-radius:8px}.clickable:hover,.clickable:focus{background:var(--panel2);outline:1px solid var(--line)}.detail-row{display:grid;grid-template-columns:150px 1fr;gap:12px;padding:8px 0;border-top:1px solid var(--line)}.detail-row:first-child{border-top:0}.detail-key{color:var(--muted);font-size:12px}.detail-value{font:12px ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-wrap;overflow-wrap:anywhere}.wide{grid-column:1/-1}.runner{display:grid;grid-template-columns:110px 1fr auto;gap:8px}.runner select,.runner input,.runner textarea{background:#0d1116;color:var(--text);border:1px solid var(--line);border-radius:9px;padding:9px}.runner button{border:1px solid #365647;background:#17392d;color:#d1fae5;border-radius:9px;padding:9px 16px;cursor:pointer}.runner textarea{grid-column:1/-1;min-height:96px;resize:vertical;font:12px ui-monospace,SFMono-Regular,Menlo,monospace}.response{margin-top:12px;background:#0d1116;border:1px solid var(--line);border-radius:10px;padding:12px;white-space:pre-wrap;overflow:auto;min-height:54px;font:12px ui-monospace,SFMono-Regular,Menlo,monospace}.explain{margin-top:10px;padding:10px 12px;border-left:3px solid #fbbf24;background:#1b1810;color:#fef3c7;font-size:13px;display:none}@media(max-width:820px){.shell{grid-template-columns:1fr}.side{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}main{padding:20px}.metrics{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -45,7 +45,7 @@ function studioHtml(appName) {
       <div class="explain" id="runner-explain"></div>
     </div>
     <div class="card"><h2>Modules & endpoints</h2><div id="modules"></div></div>
-    <div class="card"><h2>Capabilities</h2><div id="capabilities"></div></div>
+    <div class="card"><h2>Capabilities</h2><div id="capabilities"></div></div>\n    <div class="card wide" id="details"><h2>Graph details</h2><div id="detail-content" class="empty">Select an endpoint, capability or workflow to inspect its semantics.</div></div>
     <div class="card"><h2>Recent requests</h2><div id="requests"></div></div>
     <div class="card" id="security"><h2>Authorization decisions</h2><div id="decisions"></div></div>
     <div class="card wide"><h2>Recent traces</h2><div id="traces"></div></div>
@@ -91,9 +91,10 @@ document.getElementById("runner-send").addEventListener("click",async()=>{
  }catch(error){output.textContent=String(error)}
 });
 async function load(){
- const res=await fetch("/__qroz/api/graph");
- if(!res.ok) throw new Error("Unable to load Application Graph");
- const g=await res.json();
+ const [graphResponse,planResponse]=await Promise.all([fetch("/__qroz/api/graph"),fetch("/__qroz/api/plan")]);
+ if(!graphResponse.ok) throw new Error("Unable to load Application Graph");
+ const g=await graphResponse.json();
+ const plan=await planResponse.json();
  document.getElementById("title").textContent=g.name;
  document.getElementById("app-name").textContent=g.name+" · graph v"+g.schemaVersion;
  const endpointCount=g.modules.reduce((n,m)=>n+m.endpoints.length,0);
@@ -102,11 +103,81 @@ async function load(){
  const metrics=[["Modules",g.modules.length],["Endpoints",endpointCount],["Jobs",jobs],["Workflows",workflows]];
  const metricsNode=document.getElementById("metrics");
  metricsNode.replaceChildren(...metrics.map(([label,value])=>{const n=el("div","metric");n.append(el("strong","",String(value)),el("span","",label));return n}));
+
+ const detailNode=document.getElementById("detail-content");
+ function showDetails(title,rows){
+  const heading=el("div","module-name",title);
+  const nodes=[heading];
+  for(const [key,value] of rows){
+   const row=el("div","detail-row");
+   row.append(el("div","detail-key",key),el("div","detail-value",typeof value==="string"?value:JSON.stringify(value,null,2)));
+   nodes.push(row);
+  }
+  detailNode.className="";
+  detailNode.replaceChildren(...nodes);
+  document.getElementById("details").scrollIntoView({behavior:"smooth",block:"nearest"});
+ }
+ function activate(node,handler){
+  node.classList.add("clickable");
+  node.tabIndex=0;
+  node.setAttribute("role","button");
+  node.addEventListener("click",handler);
+  node.addEventListener("keydown",event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();handler()}});
+ }
+
  const modules=document.getElementById("modules");
- modules.replaceChildren(...g.modules.map(m=>{const wrap=el("div","module");wrap.append(el("div","module-name",m.name));if(!m.endpoints.length)wrap.append(el("div","empty","No HTTP endpoints"));for(const r of m.endpoints){const row=el("div","route");row.append(el("span","method",r.method),el("span","",r.path),el("span","pill",r.name||"endpoint"));wrap.append(row)}return wrap}));
+ modules.replaceChildren(...g.modules.map(m=>{
+  const wrap=el("div","module");
+  wrap.append(el("div","module-name",m.name));
+  if(!m.endpoints.length)wrap.append(el("div","empty","No HTTP endpoints"));
+  for(const r of m.endpoints){
+   const row=el("div","route");
+   row.append(el("span","method",r.method),el("span","",r.path),el("span","pill",r.name||"endpoint"));
+   activate(row,()=>{
+    document.getElementById("runner-method").value=r.method;
+    document.getElementById("runner-path").value=r.path;
+    showDetails(m.name+"."+ (r.name||"endpoint"),[
+     ["route",r.method+" "+r.path],
+     ["requires",r.requires||[]],
+     ["access",r.access||[]],
+     ["auth",r.auth||{}],
+     ["emits",r.emits||[]],
+     ["dispatches",r.dispatches||[]],
+     ["module",m.name]
+    ]);
+   });
+   wrap.append(row);
+  }
+  for(const workflow of m.workflows||[]){
+   const row=el("div","resource");
+   row.append(el("span","",workflow.workflow||workflow.name),el("span","pill","workflow"));
+   activate(row,()=>showDetails(m.name+"."+(workflow.name||workflow.workflow),[
+    ["workflow",workflow.workflow],
+    ["version",workflow.version],
+    ["start",workflow.start],
+    ["states",workflow.states||[]],
+    ["module",m.name]
+   ]));
+   wrap.append(row);
+  }
+  return wrap;
+ }));
+
  const caps=document.getElementById("capabilities");
  if(!g.capabilities.length)caps.replaceChildren(el("div","empty","No declared capabilities"));
- else caps.replaceChildren(...g.capabilities.map(c=>{const row=el("div","resource");row.append(el("span","",c.name),el("span","pill",c.resourceType||(c.configured?"configured":"runtime")));return row}));
+ else caps.replaceChildren(...g.capabilities.map(c=>{
+  const row=el("div","resource");
+  row.append(el("span","",c.name),el("span","pill",c.resourceType||(c.configured?"configured":"runtime")));
+  activate(row,()=>{
+   const surfaces=plan.surfaces.filter(surface=>surface.resourceAccess.some(access=>access.capability===c.name));
+   showDetails(c.name,[
+    ["resourceType",c.resourceType||"runtime"],
+    ["configured",Boolean(c.configured)],
+    ["executionSurfaces",surfaces.map(surface=>({id:surface.id,access:surface.resourceAccess.filter(access=>access.capability===c.name)}))]
+   ]);
+  });
+  return row;
+ }));
  await loadActivity();
 }
 async function loadActivity(){
