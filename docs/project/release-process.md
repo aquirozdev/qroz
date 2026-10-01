@@ -27,22 +27,28 @@ A changelog entry should separate:
 - known limits;
 - migration/breaking notes.
 
-## Future package release requirements
+## Public beta package release requirements
 
-Before broadly publishing `@qroz/*` packages:
+The repository now carries the beta publication workflow. Before the first registry publication:
 
-- consistent workspace package versioning;
+- keep every public package on the canonical prerelease line;
 - release-note/changeset automation;
-- npm trusted publishing through OIDC where repository/publication constraints permit it;
-- package provenance strategy;
+- configure npm trusted publishers for every public package; GitHub Actions already uses OIDC with `id-token: write`;
+- preserve npm provenance for every publication;
 - public API surface verification;
 - generated API/reference strategy;
 - compatibility/deprecation policy;
 - canary prereleases;
 - upgrade tests against a reference application.
 
-### Provenance note
+### Canonical beta path
 
-npm trusted publishing can automatically generate provenance for supported GitHub/GitLab CI publishing, but npm currently documents that provenance is not generated from **private repositories**. Qroz must therefore revisit repository visibility/release provenance before treating public package publishing as production-ready.
+1. merge a fully green release candidate;
+2. ensure `npm run release:verify` passes;
+3. create a tag matching the root version, for example `v0.12.0-beta.1`;
+4. let the release workflow verify the tag/version match;
+5. publish public packages with npm trusted publishing/OIDC, provenance and the `beta` dist-tag;
+6. create release notes/GitHub Release from the same versioned commit;
+7. run post-publish install/scaffold smoke evidence before announcing the beta.
 
-No long-lived npm automation token should be introduced merely to make early releases easier.
+No long-lived npm automation token should be introduced. The repository license and npm trusted-publisher configuration remain explicit owner/registry setup gates, not values inferred by automation.
