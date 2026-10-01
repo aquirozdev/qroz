@@ -1,9 +1,32 @@
 {
   "name": "@qroz/storage",
-  "version": "0.4.0",
+  "version": "0.12.0-beta.1",
+  "description": "Portable object-storage semantics for Qroz applications.",
   "type": "module",
+  "license": "Apache-2.0",
+  "keywords": [
+    "qroz",
+    "typescript",
+    "application-framework"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aquirozdev/qroz.git",
+    "directory": "packages/storage"
+  },
+  "bugs": {
+    "url": "https://github.com/aquirozdev/qroz/issues"
+  },
+  "homepage": "https://github.com/aquirozdev/qroz#readme",
+  "engines": {
+    "node": ">=22"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "dependencies": {
-    "@qroz/core": "file:../core"
+    "@qroz/core": "^0.12.0-beta.1"
   },
   "exports": {
     ".": {

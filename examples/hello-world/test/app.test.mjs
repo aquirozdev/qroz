@@ -129,6 +129,22 @@ test("fails at build time when a required capability is missing", () => {
   assert.throws(() => buildApplication(broken), (error) => error.code === "QROZ1004")
 })
 
+test("identifies both owners for duplicate module names", () => {
+  const duplicateModules = app({
+    name: "duplicate-modules",
+    modules: [
+      module({ name: "same", endpoints: {} }),
+      module({ name: "same", endpoints: {} })
+    ]
+  })
+  assert.throws(() => buildApplication(duplicateModules), (error) => {
+    assert.equal(error.code, "QROZ1001")
+    assert.equal(error.details.existingOwner, "application.modules[0](same)")
+    assert.equal(error.details.conflictingOwner, "application.modules[1](same)")
+    return true
+  })
+})
+
 test("rejects duplicate routes before runtime", () => {
   const dep = capability("dep")
   const Output = object({ ok: string() })
@@ -142,7 +158,13 @@ test("rejects duplicate routes before runtime", () => {
       module({ name: "two", endpoints: { two } })
     ]
   })
-  assert.throws(() => buildApplication(duplicate), (error) => error.code === "QROZ1002")
+  assert.throws(() => buildApplication(duplicate), (error) => {
+    assert.equal(error.code, "QROZ1002")
+    assert.equal(error.details.route, "GET /same")
+    assert.equal(error.details.existingOwner, "one.one")
+    assert.equal(error.details.conflictingOwner, "two.two")
+    return true
+  })
 })
 
 test("prevents undeclared capability usage so the graph cannot lie", async () => {
@@ -170,6 +192,8 @@ test("prevents undeclared capability usage so the graph cannot lie", async () =>
     .fetch(new Request("https://app.test/sneaky"))
   assert.equal(response.status, 500)
   assert.equal(captured.code, "QROZ1005")
+  assert.equal(captured.details.attemptedCapability, "hidden")
+  assert.deepEqual(captured.details.declaredCapabilities, ["visible"])
 })
 
 test("treats output schema violations as server errors, not bad client input", async () => {
@@ -258,7 +282,8 @@ test("enforces operation-level resource access so the graph cannot overstate lea
   assert.equal(response.status, 500)
   assert.equal(captured.code, "QROZ1010")
   assert.equal(captured.details.capability, "storage.restricted")
-  assert.equal(captured.details.method, "put")
+  assert.equal(captured.details.attemptedMethod, "put")
+  assert.deepEqual(captured.details.declaredOperations, ["read"])
 })
 
 

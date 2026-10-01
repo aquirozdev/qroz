@@ -5,7 +5,7 @@ description: Current implementation and verification state of Qroz.
 
 # Current status
 
-Current repository state: **pre-public-beta development**. Package versions are not yet a coherent public release line.
+Current repository state: **pre-public-beta consolidation**. Publishable packages are normalized on the coherent `0.12.0-beta.1` prerelease line and licensed under Apache-2.0; publication remains gated by npm registry ownership/trusted-publisher setup and remaining beta acceptance evidence.
 
 ## Current product priority
 

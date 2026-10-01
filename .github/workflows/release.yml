@@ -1,0 +1,52 @@
+name: Release beta
+
+on:
+  push:
+    tags:
+      - "v*-beta.*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Verify release candidate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      - run: npm install
+      - run: npm install --no-save typescript@5.8.3
+      - run: npm run release:verify
+      - name: Ensure tag matches canonical version
+        if: github.ref_type == 'tag'
+        shell: bash
+        run: |
+          version=$(node -p "require('./package.json').version")
+          test "$GITHUB_REF_NAME" = "v$version"
+
+  publish:
+    name: Publish packages with provenance
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: npm
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      - run: npm install
+      - run: npm install --no-save typescript@5.8.3
+      - run: npm run build
+      - name: Publish public beta packages
+        run: node scripts/publish-packages.mjs

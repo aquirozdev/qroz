@@ -528,11 +528,22 @@ export type QrozErrorCode =
   | "QROZ2003"
   | "QROZ2002"
 
+export interface QrozSourceLocation {
+  readonly file: string
+  readonly line?: number
+  readonly column?: number
+}
+
+export interface QrozErrorDetails extends Record<string, unknown> {
+  readonly owner?: string
+  readonly source?: QrozSourceLocation
+}
+
 export class QrozError extends Error {
   readonly code: QrozErrorCode
-  readonly details: Record<string, unknown> | undefined
+  readonly details: QrozErrorDetails | undefined
 
-  constructor(code: QrozErrorCode, message: string, details?: Record<string, unknown>) {
+  constructor(code: QrozErrorCode, message: string, details?: QrozErrorDetails) {
     super(message)
     this.name = "QrozError"
     this.code = code
@@ -555,8 +566,8 @@ export interface BuildApplicationOptions {
 }
 
 export function buildApplication(application: AppDefinition, options: BuildApplicationOptions = {}): BuiltApplication {
-  const moduleNames = new Set<string>()
-  const routeKeys = new Set<string>()
+  const moduleOwners = new Map<string, string>()
+  const routeOwners = new Map<string, string>()
   const jobKeys = new Set<string>()
   const workflowKeys = new Set<string>()
   const providers = new Map<symbol, Provider<any>>()
@@ -580,11 +591,17 @@ export function buildApplication(application: AppDefinition, options: BuildAppli
     providers.set(provider.capability.id, provider)
   }
 
-  for (const mod of application.modules) {
-    if (moduleNames.has(mod.name)) {
-      throw new QrozError("QROZ1001", `Duplicate module name '${mod.name}'`, { module: mod.name })
+  for (const [moduleIndex, mod] of application.modules.entries()) {
+    const moduleOwner = `application.modules[${moduleIndex}](${mod.name})`
+    const existingModuleOwner = moduleOwners.get(mod.name)
+    if (existingModuleOwner) {
+      throw new QrozError("QROZ1001", `Duplicate module name '${mod.name}'`, {
+        module: mod.name,
+        existingOwner: existingModuleOwner,
+        conflictingOwner: moduleOwner
+      })
     }
-    moduleNames.add(mod.name)
+    moduleOwners.set(mod.name, moduleOwner)
 
     for (const [endpointName, ep] of Object.entries(mod.endpoints)) {
       for (const requirement of ep.requires ?? []) registerCapability(requirementCapability(requirement), `${mod.name}.${endpointName}`)
@@ -595,10 +612,16 @@ export function buildApplication(application: AppDefinition, options: BuildAppli
       }
       for (const dispatched of ep.dispatches ?? []) registerCapability(dispatched.transport, `${mod.name}.${endpointName}`)
       const routeKey = `${ep.method} ${ep.path}`
-      if (routeKeys.has(routeKey)) {
-        throw new QrozError("QROZ1002", `Duplicate route '${routeKey}'`, { module: mod.name, endpoint: endpointName })
+      const routeOwner = `${mod.name}.${endpointName}`
+      const existingRouteOwner = routeOwners.get(routeKey)
+      if (existingRouteOwner) {
+        throw new QrozError("QROZ1002", `Duplicate route '${routeKey}'`, {
+          route: routeKey,
+          existingOwner: existingRouteOwner,
+          conflictingOwner: routeOwner
+        })
       }
-      routeKeys.add(routeKey)
+      routeOwners.set(routeKey, routeOwner)
       validateRequiredCapabilities(providers, ep.requires ?? [], `${mod.name}.${endpointName}`, options.allowMissingCapabilities ?? false)
       for (const policy of ep.auth?.policies ?? []) {
         validateRequiredCapabilities(
@@ -735,8 +758,8 @@ function restrictedCapabilityValue<T>(
           throw new QrozError("QROZ1010", `${owner} called '${target.name}.${method}()' without declaring the required operation access`, {
             owner,
             capability: target.name,
-            method,
-            operations
+            attemptedMethod: method,
+            declaredOperations: operations
           })
         }
       }
@@ -772,12 +795,18 @@ export function createCapabilityResolver(
       })()
     : undefined
 
+  const declaredCapabilities = allowed
+    ? Object.freeze([...new Set(allowed.map((item) => requirementCapability(item).name))].sort())
+    : undefined
+
   return {
     use<T>(target: Capability<T, any>): T {
       if (accessById && !accessById.has(target.id)) {
         throw new QrozError("QROZ1005", `${owner} used capability '${target.name}' without declaring it in requires`, {
           owner,
-          capability: target.name
+          capability: target.name,
+          attemptedCapability: target.name,
+          declaredCapabilities
         })
       }
       const provider = built.providers.get(target.id)

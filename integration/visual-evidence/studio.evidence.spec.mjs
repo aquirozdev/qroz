@@ -12,6 +12,13 @@ test("Qroz Studio produces reviewable evidence from a real application journey",
   await expect(page.locator("#modules")).toContainText("/tasks/:id")
   await expect(page.locator("#capabilities")).toContainText("tasks.repository")
 
+  const route = page.locator("#modules .route").filter({ hasText: "/tasks/:id" }).first()
+  await route.click()
+  await expect(page.locator("#detail-content")).toContainText("GET /tasks/:id")
+  await expect(page.locator("#detail-content")).toContainText("tasks.repository")
+  await expect(page.locator("#runner-method")).toHaveValue("GET")
+  await expect(page.locator("#runner-path")).toHaveValue("/tasks/:id")
+
   await page.screenshot({
     path: "evidence/studio-taskboard-overview.png",
     fullPage: true

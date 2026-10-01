@@ -1,9 +1,32 @@
 {
   "name": "@qroz/queue-sqs",
-  "version": "0.8.0",
+  "version": "0.12.0-beta.1",
+  "description": "Amazon SQS queue provider for Qroz.",
   "type": "module",
+  "license": "Apache-2.0",
+  "keywords": [
+    "qroz",
+    "typescript",
+    "application-framework"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aquirozdev/qroz.git",
+    "directory": "packages/queue-sqs"
+  },
+  "bugs": {
+    "url": "https://github.com/aquirozdev/qroz/issues"
+  },
+  "homepage": "https://github.com/aquirozdev/qroz#readme",
+  "engines": {
+    "node": ">=22"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "dependencies": {
-    "@qroz/queue": "file:../queue"
+    "@qroz/queue": "^0.12.0-beta.1"
   },
   "exports": {
     ".": {
@@ -11,6 +34,10 @@
       "default": "./dist/index.js"
     }
   },
-  "files": ["dist"],
-  "scripts": { "build": "tsc -b" }
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b"
+  }
 }

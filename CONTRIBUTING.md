@@ -49,3 +49,7 @@ Follow `docs/project/documentation-strategy.md`. Prefer links over duplicated ex
 ## Compatibility
 
 Qroz is pre-1.0. Breaking changes are possible, but accidental breaking changes are not acceptable. Changes to public APIs, graph schema or message envelopes must be explicit and documented.
+
+## Contributions and license
+
+Qroz is licensed under the Apache License 2.0. By intentionally submitting a contribution for inclusion in Qroz, contributors agree that the contribution is provided under the terms described by the repository's [LICENSE](./LICENSE), consistent with Apache-2.0 section 5 unless a separate written agreement applies.

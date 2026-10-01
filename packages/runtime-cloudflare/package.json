@@ -1,11 +1,34 @@
 {
   "name": "@qroz/runtime-cloudflare",
-  "version": "0.4.0",
+  "version": "0.12.0-beta.1",
+  "description": "Cloudflare Workers runtime adapter for Qroz applications.",
   "type": "module",
+  "license": "Apache-2.0",
+  "keywords": [
+    "qroz",
+    "typescript",
+    "application-framework"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aquirozdev/qroz.git",
+    "directory": "packages/runtime-cloudflare"
+  },
+  "bugs": {
+    "url": "https://github.com/aquirozdev/qroz/issues"
+  },
+  "homepage": "https://github.com/aquirozdev/qroz#readme",
+  "engines": {
+    "node": ">=22"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "dependencies": {
-    "@qroz/core": "file:../core",
-    "@qroz/runtime-web": "file:../runtime-web",
-    "@qroz/telemetry-cloudflare": "file:../telemetry-cloudflare"
+    "@qroz/core": "^0.12.0-beta.1",
+    "@qroz/runtime-web": "^0.12.0-beta.1",
+    "@qroz/telemetry-cloudflare": "^0.12.0-beta.1"
   },
   "exports": {
     ".": {

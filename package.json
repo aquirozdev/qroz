@@ -1,8 +1,26 @@
 {
-  "name": "qroz-framework-poc",
+  "name": "qroz",
   "private": true,
-  "version": "0.8.0",
+  "version": "0.12.0-beta.1",
+  "description": "Qroz application framework for humans and coding agents.",
   "type": "module",
+  "keywords": [
+    "qroz",
+    "typescript",
+    "application-framework",
+    "developer-tools"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aquirozdev/qroz.git"
+  },
+  "bugs": {
+    "url": "https://github.com/aquirozdev/qroz/issues"
+  },
+  "homepage": "https://github.com/aquirozdev/qroz#readme",
+  "engines": {
+    "node": ">=22"
+  },
   "workspaces": [
     "packages/*",
     "examples/*"
@@ -18,7 +36,9 @@
     "inspect": "npm run build && node packages/cli/bin/qroz.mjs inspect examples/hello-world/dist/app.js",
     "inspect:json": "npm run build && node packages/cli/bin/qroz.mjs inspect examples/hello-world/dist/app.js --json",
     "release:check": "node scripts/check-release-readiness.mjs",
+    "release:verify": "npm run verify && npm run pack:check && npm run release:check",
     "dx:performance": "npm run build && node scripts/check-dx-performance.mjs",
     "pack:check": "npm run build && node scripts/test-packed-consumer.mjs"
-  }
+  },
+  "license": "Apache-2.0"
 }
