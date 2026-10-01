@@ -51,4 +51,4 @@ The repository now carries the beta publication workflow. Before the first regis
 6. create release notes/GitHub Release from the same versioned commit;
 7. run post-publish install/scaffold smoke evidence before announcing the beta.
 
-No long-lived npm automation token should be introduced. The repository license and npm trusted-publisher configuration remain explicit owner/registry setup gates, not values inferred by automation.
+No long-lived npm automation token should be introduced. The repository license is fixed as Apache-2.0 and enforced by `npm run release:check`. npm trusted-publisher configuration remains an explicit registry setup gate, not a value inferred by automation.
