@@ -11,7 +11,7 @@ This document separates **publishable beta**, **production-credible**, and **1.0
 
 Qroz is not ready for npm publication yet.
 
-The architecture and evidence base are strong enough to justify a public beta effort. The product identity is finalized as Qroz; publication is currently blocked by licensing, npm ownership/trusted-publisher setup, release integrity, package metadata, clean-install proof, compatibility coverage and public documentation.
+The architecture and evidence base are strong enough to justify a public beta effort. The product identity is finalized as Qroz and package publication mechanics are now normalized around one prerelease line. Publication remains blocked by the owner's explicit license choice, npm package ownership/trusted-publisher configuration, and completion of the remaining public documentation/product acceptance gates.
 
 ## Release levels
 
@@ -60,7 +60,7 @@ Production-credible claims additionally require provider failure-path evidence, 
 | MCP/agents | read-only | current protocol compatibility; mutations remain deferred |
 | docs | canonical Markdown | public docs site, links, search, versioning |
 | upgrade | implicit | pre-1.0 migration policy + release notes |
-| release | absent | trusted publishing/OIDC + Git tag/GitHub Release/npm alignment |
+| release | beta workflow present; registry trust setup pending | trusted publishing/OIDC + Git tag/GitHub Release/npm alignment |
 
 ## Package publication blockers
 
@@ -68,9 +68,9 @@ Before any npm publish:
 
 1. [done] product identity is finalized as **Qroz**; verify npm ownership/availability for the intended `@qroz/*` packages;
 2. choose and commit an explicit repository license;
-3. normalize package versions into one deliberate prerelease line;
-4. replace internal `file:` dependency specifications with publication-safe version ranges during release preparation;
-5. add package metadata:
+3. [done] normalize package versions into one deliberate prerelease line (`0.12.0-beta.1`);
+4. [done] replace internal `file:` dependency specifications with publication-safe version ranges;
+5. [mostly done] add package metadata (license remains intentionally blocked on the owner's explicit choice):
    - description;
    - keywords;
    - repository;
@@ -79,9 +79,9 @@ Before any npm publish:
    - license;
    - supported Node engines;
    - publishConfig/access;
-6. verify every tarball with `npm pack --dry-run`;
-7. install the packed tarballs into a clean external fixture and run a real scaffold/dev/test flow;
-8. publish through npm trusted publishing rather than a long-lived write token.
+6. [done] verify publishable tarballs through the packed-consumer release gate;
+7. [done] install packed tarballs into a clean external fixture and exercise the consumer flow;
+8. [workflow done; registry setup pending] publish through npm trusted publishing/OIDC rather than a long-lived write token.
 
 ## Release integrity
 
