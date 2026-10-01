@@ -1,8 +1,8 @@
 # Qroz — application framework for humans and agents
 
-> **Research project / codename.** Qroz is pre-1.0 and its public API may change.
+> **Pre-1.0 public-beta track.** Qroz is the final product name. Its public API may still change before 1.0.
 
-Qroz explores a TypeScript application framework that stays **simple at the beginning, explicit as applications grow, and understandable to both humans and coding agents**.
+Qroz is a TypeScript application framework designed to stay **simple at the beginning, explicit as applications grow, and understandable to both humans and coding agents**.
 
 The product goal is not to win on routing benchmarks or reproduce every cloud primitive. Qroz owns **application semantics**; providers own **infrastructure primitives**.
 
@@ -35,7 +35,7 @@ Near-term work focuses on:
 4. turn deployment/security changes into reviewable semantic diffs;
 5. expose the same application intelligence safely to coding agents.
 
-## Implemented research foundation
+## Implemented foundation
 
 Today the repository includes:
 
@@ -80,6 +80,12 @@ Recommended entry points:
 ```bash
 npm install
 npm run verify
+```
+
+For release preparation:
+
+```bash
+npm run release:verify
 ```
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) before architectural changes.
