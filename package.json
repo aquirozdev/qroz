@@ -39,5 +39,6 @@
     "release:verify": "npm run verify && npm run pack:check && npm run release:check",
     "dx:performance": "npm run build && node scripts/check-dx-performance.mjs",
     "pack:check": "npm run build && node scripts/test-packed-consumer.mjs"
-  }
+  },
+  "license": "Apache-2.0"
 }
