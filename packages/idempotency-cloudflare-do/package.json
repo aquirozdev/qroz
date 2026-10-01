@@ -1,9 +1,31 @@
 {
   "name": "@qroz/idempotency-cloudflare-do",
-  "version": "0.6.0",
+  "version": "0.12.0-beta.1",
+  "description": "Cloudflare Durable Object idempotency provider for Qroz.",
   "type": "module",
+  "keywords": [
+    "qroz",
+    "typescript",
+    "application-framework"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aquirozdev/qroz.git",
+    "directory": "packages/idempotency-cloudflare-do"
+  },
+  "bugs": {
+    "url": "https://github.com/aquirozdev/qroz/issues"
+  },
+  "homepage": "https://github.com/aquirozdev/qroz#readme",
+  "engines": {
+    "node": ">=22"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "dependencies": {
-    "@qroz/core": "file:../core"
+    "@qroz/core": "^0.12.0-beta.1"
   },
   "exports": {
     ".": {
