@@ -33,7 +33,16 @@ if (releaseVersion && !releaseVersion.includes("-")) {
 }
 
 if (!(await exists(join(root, "LICENSE")))) {
-  fail("LICENSE is missing; the repository owner must choose an explicit license before publication")
+  fail("LICENSE is missing")
+} else {
+  const licenseText = await readFile(join(root, "LICENSE"), "utf8")
+  if (!licenseText.includes("Apache License") || !licenseText.includes("Version 2.0")) {
+    fail("LICENSE must contain the Apache License 2.0 text")
+  }
+}
+
+if (rootManifest.license !== "Apache-2.0") {
+  fail(`root package license must be 'Apache-2.0', found '${rootManifest.license ?? "missing"}'`)
 }
 
 const packagesDir = join(root, "packages")
@@ -79,8 +88,8 @@ for (const entry of await readdir(packagesDir, { withFileTypes: true })) {
     }
   }
 
-  if (manifest.license === undefined) {
-    fail(`${label}: missing package.json field 'license'; set it only after the repository license is chosen`)
+  if (manifest.license !== "Apache-2.0") {
+    fail(`${label}: license must be 'Apache-2.0', found '${manifest.license ?? "missing"}'`)
   }
 }
 
