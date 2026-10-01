@@ -172,6 +172,7 @@ export default app({
     "packages/cli/bin/qroz.mjs",
     "dev",
     appPath,
+    "--watch",
     "--port",
     String(port),
     "--no-open"
@@ -199,28 +200,8 @@ export default app({
 
   try {
     await waitForMessage("one")
-    const studioUrl = `http://127.0.0.1:${port}/__qroz/`
-    assert.equal((await fetch(studioUrl)).status, 200)
-
     await writeFile(messagePath, 'export const message = "two"\n', "utf8")
     await waitForMessage("two")
-
-    await writeFile(messagePath, 'export const message: string = 123\n', "utf8")
-    const diagnosticDeadline = Date.now() + 8_000
-    while (!/TS2322/.test(stdout) && Date.now() < diagnosticDeadline) {
-      if (child.exitCode !== null) throw new Error(`source-first qroz dev exited during compile error: ${stderr}`)
-      await new Promise((resolve) => setTimeout(resolve, 75))
-    }
-    assert.match(stdout, /TS2322/)
-
-    const healthyDuringError = await fetch(`http://127.0.0.1:${port}/version`)
-    assert.equal(healthyDuringError.status, 200)
-    assert.deepEqual(await healthyDuringError.json(), { message: "two" })
-    assert.equal((await fetch(studioUrl)).status, 200)
-
-    await writeFile(messagePath, 'export const message = "three"\n', "utf8")
-    await waitForMessage("three")
-    assert.equal((await fetch(studioUrl)).status, 200)
   } finally {
     child.kill("SIGTERM")
     await Promise.race([
@@ -289,7 +270,6 @@ export default app({
     "packages/cli/bin/qroz.mjs",
     "dev",
     appPath,
-    "--watch",
     "--port",
     String(port),
     "--no-open"
@@ -298,8 +278,11 @@ export default app({
     stdio: ["ignore", "pipe", "pipe"]
   })
 
+  let stdout = ""
   let stderr = ""
+  child.stdout.setEncoding("utf8")
   child.stderr.setEncoding("utf8")
+  child.stdout.on("data", (chunk) => { stdout += chunk })
   child.stderr.on("data", (chunk) => { stderr += chunk })
 
   async function waitForMessage(expected) {
@@ -317,8 +300,28 @@ export default app({
 
   try {
     await waitForMessage("one")
+    const studioUrl = `http://127.0.0.1:${port}/__qroz/`
+    assert.equal((await fetch(studioUrl)).status, 200)
+
     await writeFile(messagePath, 'export const message = "two"\n', "utf8")
     await waitForMessage("two")
+
+    await writeFile(messagePath, 'export const message: string = 123\n', "utf8")
+    const diagnosticDeadline = Date.now() + 8_000
+    while (!/TS2322/.test(stdout) && Date.now() < diagnosticDeadline) {
+      if (child.exitCode !== null) throw new Error(`source-first qroz dev exited during compile error: ${stderr}`)
+      await new Promise((resolve) => setTimeout(resolve, 75))
+    }
+    assert.match(stdout, /TS2322/)
+
+    const healthyDuringError = await fetch(`http://127.0.0.1:${port}/version`)
+    assert.equal(healthyDuringError.status, 200)
+    assert.deepEqual(await healthyDuringError.json(), { message: "two" })
+    assert.equal((await fetch(studioUrl)).status, 200)
+
+    await writeFile(messagePath, 'export const message = "three"\n', "utf8")
+    await waitForMessage("three")
+    assert.equal((await fetch(studioUrl)).status, 200)
   } finally {
     child.kill("SIGTERM")
     await Promise.race([
